@@ -94,3 +94,37 @@ def test_qty_zero_removes_material(pricebook):
                           library=lib, pricebook=pricebook)
     # Only the receptacle remains: 1.50.
     assert on.subtotal_materials_cad == Decimal("1.50")
+
+
+# --- whole-library integrity (§3.2: assemblies are the product) -------------
+
+def test_library_has_grown(library):
+    assert len(library.all()) >= 24
+
+
+def test_all_assembly_skus_exist_in_pricebook(library, pricebook):
+    """Every material referenced by every assembly (base + ON/QC overrides)
+    must exist in the price book, or the engine would raise at quote time."""
+    from quoteforge_api.services.estimating.engine import effective_materials
+
+    missing: list[str] = []
+    for a in library.all():
+        for prov in (Province.ON, Province.QC):
+            for m in effective_materials(a, prov):
+                if m.sku not in pricebook:
+                    missing.append(f"{a.id}/{prov.value}:{m.sku}")
+    assert missing == [], f"unknown SKUs: {missing}"
+
+
+def test_every_assembly_computes_in_on_and_qc(library, pricebook):
+    """Each assembly must produce a valid estimate with default parameters in
+    both launch provinces — exercises formulas, multipliers, and overrides."""
+    c = ContractorRates(Decimal("110"), Decimal("70"), Decimal("35"), Decimal("0"), Decimal("1"))
+    for a in library.all():
+        for prov in (Province.ON, Province.QC):
+            r = compute_estimate(
+                c, prov, "code", [AssemblyRequest(a.id, Decimal("1"), {})],
+                library=library, pricebook=pricebook,
+            )
+            assert r.total_cad > Decimal("0"), f"{a.id}/{prov.value} total not positive"
+            assert any(li.assembly_id == a.id for li in r.line_items)

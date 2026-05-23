@@ -1,0 +1,35 @@
+schema_version: "1.0"
+id: breaker_replace
+category: troubleshooting
+trade: electrical
+work_type: [service]
+names:
+  en: "Replace breaker (15A)"
+  fr: "Remplacer un disjoncteur (15A)"
+description:
+  en: "Remove and replace one failed 15A single-pole breaker in a compatible panel."
+  fr: "Retirer et remplacer un disjoncteur unipolaire 15A défectueux dans un panneau compatible."
+parameters: {}
+materials:
+  - {sku: BREAKER_15A_1P, qty: 1}
+labor:
+  base_hours: 0.35
+  phase: service
+  apprentice_compatible: false
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 14-010", note: "Overcurrent device must match the panel and circuit."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 14", note: "Le dispositif de protection doit convenir au panneau et au circuit."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

@@ -1,0 +1,43 @@
+schema_version: "1.0"
+id: service_call_diagnostic
+category: troubleshooting
+trade: electrical
+work_type: [service]
+names:
+  en: "Service call — diagnostic"
+  fr: "Appel de service — diagnostic"
+description:
+  en: "Attend site and diagnose an electrical fault. Repairs are quoted separately."
+  fr: "Se rendre sur place et diagnostiquer une défaillance électrique. Les réparations sont soumissionnées séparément."
+parameters:
+  complexity:
+    type: enum
+    default: standard
+    values: [standard, complex]
+    sensitivity: high
+    prompt_en: "Straightforward fault or complex/intermittent issue?"
+    prompt_fr: "Défaillance simple ou problème complexe/intermittent?"
+    labor_multipliers: {standard: 1.0, complex: 2.0}
+materials:
+  - {sku: WIRE_CONNECTOR, qty: 4}
+labor:
+  base_hours: 1.0
+  phase: special
+  apprentice_compatible: false
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 2-300", note: "Existing installations to be left in a safe condition."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 2", note: "Les installations existantes doivent être laissées sécuritaires."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

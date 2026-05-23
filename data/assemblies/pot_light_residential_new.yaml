@@ -1,0 +1,45 @@
+schema_version: "1.0"
+id: pot_light_residential_new
+category: lighting
+trade: electrical
+work_type: [new_construction]
+names:
+  en: "Recessed pot light — new construction (per fixture)"
+  fr: "Encastré (pot light) — nouvelle construction (par luminaire)"
+description:
+  en: "Supply and install one 4 in. LED recessed pot light in open framing, including inter-fixture wiring."
+  fr: "Fournir et installer un encastré DEL 4 po dans une charpente ouverte, câblage entre luminaires inclus."
+parameters:
+  inter_fixture_ft:
+    type: number
+    default: 8
+    sensitivity: medium
+    prompt_en: "Average cable length between fixtures (ft)?"
+    prompt_fr: "Longueur moyenne de câble entre les luminaires (pi)?"
+materials:
+  - {sku: POTLIGHT_LED_4_NEW, qty: 1}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "inter_fixture_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(inter_fixture_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 1}
+labor:
+  base_hours: 0.5
+  phase: rough_in
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-300", note: "Luminaire installation; IC-rated where in contact with insulation."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Installation des luminaires; homologués IC au contact de l'isolant."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

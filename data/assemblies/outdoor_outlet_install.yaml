@@ -1,0 +1,47 @@
+schema_version: "1.0"
+id: outdoor_outlet_install
+category: exterior
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Outdoor GFCI outlet"
+  fr: "Prise DDFT extérieure"
+description:
+  en: "Install one weatherproof GFCI receptacle on an exterior wall with an in-use cover."
+  fr: "Installer une prise DDFT étanche sur un mur extérieur avec couvercle en usage."
+parameters:
+  cable_run_ft:
+    type: number
+    default: 20
+    sensitivity: high
+    prompt_en: "Cable length from the source to the exterior box (ft)?"
+    prompt_fr: "Longueur du câble de la source à la boîte extérieure (pi)?"
+materials:
+  - {sku: RECEP_GFCI_15A, qty: 1}
+  - {sku: PLATE_WP_INUSE, qty: 1}
+  - {sku: BOX_DEVICE_PVC, qty: 1}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "cable_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(cable_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor:
+  base_hours: 1.0
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 26-712", note: "Outdoor receptacles require GFCI protection and weatherproofing."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 26", note: "Les prises extérieures exigent une protection DDFT et l'étanchéité."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

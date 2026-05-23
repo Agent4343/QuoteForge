@@ -1,0 +1,54 @@
+schema_version: "1.0"
+id: switch_single_pole
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Single-pole switch"
+  fr: "Interrupteur unipolaire"
+description:
+  en: "Install one single-pole switch on an existing circuit."
+  fr: "Installer un interrupteur unipolaire sur un circuit existant."
+parameters:
+  mount_type:
+    type: enum
+    default: standard
+    values: [standard, old_work]
+    sensitivity: medium
+    prompt_en: "New rough-in or cut into a finished wall (old-work)?"
+    prompt_fr: "Nouvelle installation ou découpe dans un mur fini (rénovation)?"
+    labor_multipliers: {standard: 1.0, old_work: 1.4}
+  cable_run_ft:
+    type: number
+    default: 12
+    sensitivity: medium
+    prompt_en: "Approximate cable length to the switch (ft)?"
+    prompt_fr: "Longueur approximative du câble jusqu'à l'interrupteur (pi)?"
+materials:
+  - {sku: SWITCH_SP, qty: 1}
+  - {sku: BOX_DEVICE_PVC, qty: 1}
+  - {sku: PLATE_TOGGLE, qty: 1}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "cable_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 3}
+  - {sku: CONNECTOR_NM, qty: 1}
+labor:
+  base_hours: 0.45
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-600", note: "Switch installation requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Exigences d'installation des interrupteurs."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

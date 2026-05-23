@@ -1,0 +1,47 @@
+schema_version: "1.0"
+id: recep_duplex_20a_residential
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "20A duplex receptacle (residential)"
+  fr: "Prise double 20A (résidentiel)"
+description:
+  en: "Install one 20A tamper-resistant duplex receptacle on an existing 20A circuit."
+  fr: "Installer une prise double 20A anti-sabotage sur un circuit 20A existant."
+parameters:
+  cable_run_ft:
+    type: number
+    default: 15
+    sensitivity: medium
+    prompt_en: "Approximate cable length from the source to this device (ft)?"
+    prompt_fr: "Longueur approximative du câble de la source à l'appareil (pi)?"
+materials:
+  - {sku: RECEP_DUPLEX_20A, qty: 1}
+  - {sku: BOX_DEVICE_PVC, qty: 1}
+  - {sku: PLATE_DECORA, qty: 1}
+  - {sku: WIRE_NMD90_12_2, qty_formula: "cable_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(cable_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 1}
+labor:
+  base_hours: 0.55
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 26-700", note: "Receptacle configuration and installation requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 26", note: "Exigences d'installation des prises de courant."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

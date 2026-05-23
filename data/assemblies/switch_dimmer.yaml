@@ -1,0 +1,46 @@
+schema_version: "1.0"
+id: switch_dimmer
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Dimmer switch"
+  fr: "Gradateur"
+description:
+  en: "Replace or install one dimmer switch on an existing circuit."
+  fr: "Remplacer ou installer un gradateur sur un circuit existant."
+parameters:
+  mount_type:
+    type: enum
+    default: replace
+    values: [replace, new]
+    sensitivity: low
+    prompt_en: "Replacing an existing switch or a new install?"
+    prompt_fr: "Remplacement d'un interrupteur existant ou nouvelle installation?"
+    labor_multipliers: {replace: 1.0, new: 1.6}
+materials:
+  - {sku: DIMMER, qty: 1}
+  - {sku: BOX_DEVICE_PVC, qty: 1}
+  - {sku: PLATE_DECORA, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 3}
+labor:
+  base_hours: 0.4
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-600", note: "Dimmer rating must suit the connected load."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Le calibre du gradateur doit convenir à la charge."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

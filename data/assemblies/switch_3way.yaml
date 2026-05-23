@@ -1,0 +1,47 @@
+schema_version: "1.0"
+id: switch_3way
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "3-way switch pair"
+  fr: "Paire d'interrupteurs à trois voies"
+description:
+  en: "Install a pair of 3-way switches controlling one load, including traveler wiring."
+  fr: "Installer une paire d'interrupteurs à trois voies commandant une charge, câblage de navette inclus."
+parameters:
+  traveler_run_ft:
+    type: number
+    default: 18
+    sensitivity: high
+    prompt_en: "Cable length between the two switch locations (ft)?"
+    prompt_fr: "Longueur de câble entre les deux interrupteurs (pi)?"
+materials:
+  - {sku: SWITCH_3WAY, qty: 2}
+  - {sku: BOX_DEVICE_PVC, qty: 2}
+  - {sku: PLATE_TOGGLE, qty: 2}
+  - {sku: WIRE_NMD90_14_3, qty_formula: "traveler_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(traveler_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor:
+  base_hours: 1.1
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-600", note: "Switch installation requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Exigences d'installation des interrupteurs."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

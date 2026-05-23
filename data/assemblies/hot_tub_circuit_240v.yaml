@@ -1,0 +1,57 @@
+schema_version: "1.0"
+id: hot_tub_circuit_240v
+category: special
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Hot tub circuit (240V, GFCI)"
+  fr: "Circuit de spa (240V, DDFT)"
+description:
+  en: "Install a 240V 50A GFCI-protected circuit and outdoor-rated disconnect for a hot tub."
+  fr: "Installer un circuit 240V 50A protégé par DDFT et un sectionneur extérieur pour un spa."
+parameters:
+  run_length_ft:
+    type: number
+    default: 40
+    sensitivity: high
+    prompt_en: "Cable run from the panel to the hot tub disconnect (ft)?"
+    prompt_fr: "Longueur du câble du panneau au sectionneur du spa (pi)?"
+  routing:
+    type: enum
+    default: open
+    values: [open, finished]
+    sensitivity: high
+    prompt_en: "Open path or fished through finished walls?"
+    prompt_fr: "Parcours ouvert ou tiré dans des murs finis?"
+    labor_multipliers: {open: 1.0, finished: 1.5}
+materials:
+  - {sku: BREAKER_GFCI_2P_50A, qty: 1}
+  - {sku: DISCONNECT_60A, qty: 1}
+  - {sku: WIRE_NMD90_6_3, qty_formula: "run_length_ft", waste: 0.10}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(run_length_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor:
+  base_hours: 3.5
+  phase: special
+  apprentice_compatible: false
+  minimum_callout_applies: false
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 68-068", note: "GFCI protection and disconnect for hydromassage/hot tubs."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 68", note: "Protection DDFT et sectionneur pour spas."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

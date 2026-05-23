@@ -1,0 +1,49 @@
+schema_version: "1.0"
+id: recep_240v_30a_dryer
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "240V 30A dryer receptacle"
+  fr: "Prise de sécheuse 240V 30A"
+description:
+  en: "Install a 30A 240V dryer receptacle on a new or existing dedicated circuit."
+  fr: "Installer une prise de sécheuse 240V 30A sur un circuit dédié neuf ou existant."
+parameters:
+  run_length_ft:
+    type: number
+    default: 20
+    sensitivity: high
+    prompt_en: "Cable run from the panel to the dryer location (ft)?"
+    prompt_fr: "Longueur du câble du panneau à l'emplacement de la sécheuse (pi)?"
+materials:
+  - {sku: RECEP_DRYER_30A, qty: 1}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: BREAKER_30A_2P, qty: 1}
+  - {sku: WIRE_NMD90_10_3, qty_formula: "run_length_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(run_length_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor:
+  base_hours: 1.5
+  phase: rough_in
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 26-744", note: "Receptacles for electric clothes dryers."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 26", note: "Prises pour sécheuses électriques."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

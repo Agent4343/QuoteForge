@@ -1,0 +1,49 @@
+schema_version: "1.0"
+id: recep_240v_50a_range
+category: devices
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "240V 50A range receptacle"
+  fr: "Prise de cuisinière 240V 50A"
+description:
+  en: "Install a 50A 240V range receptacle on a new or existing dedicated circuit."
+  fr: "Installer une prise de cuisinière 240V 50A sur un circuit dédié neuf ou existant."
+parameters:
+  run_length_ft:
+    type: number
+    default: 25
+    sensitivity: high
+    prompt_en: "Cable run from the panel to the range location (ft)?"
+    prompt_fr: "Longueur du câble du panneau à l'emplacement de la cuisinière (pi)?"
+materials:
+  - {sku: RECEP_RANGE_50A, qty: 1}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: BREAKER_50A_2P, qty: 1}
+  - {sku: WIRE_NMD90_6_3, qty_formula: "run_length_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(run_length_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor:
+  base_hours: 1.75
+  phase: rough_in
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 26-744", note: "Receptacles for electric ranges."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 26", note: "Prises pour cuisinières électriques."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

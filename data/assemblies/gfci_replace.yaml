@@ -1,0 +1,37 @@
+schema_version: "1.0"
+id: gfci_replace
+category: troubleshooting
+trade: electrical
+work_type: [service]
+names:
+  en: "Replace GFCI receptacle"
+  fr: "Remplacer une prise DDFT"
+description:
+  en: "Remove and replace one failed GFCI receptacle on an existing circuit."
+  fr: "Retirer et remplacer une prise DDFT défectueuse sur un circuit existant."
+parameters: {}
+materials:
+  - {sku: RECEP_GFCI_15A, qty: 1}
+  - {sku: PLATE_DECORA, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 2}
+labor:
+  base_hours: 0.4
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 26-710", note: "Class A GFCI protection for specified locations."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 26", note: "Protection DDFT aux emplacements prescrits."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft
