@@ -1,14 +1,14 @@
 # QuoteForge production image (§18).
 # One service: builds the React frontend, then serves API + static files via FastAPI.
 
-# --- Stage 1: build the frontend (optional; skipped gracefully if absent) ---
-FROM node:22-slim AS web
-WORKDIR /web
-COPY apps/web/package*.json ./
-# The frontend is scaffolded later; build only if a lockfile + sources exist.
-RUN if [ -f package-lock.json ]; then npm ci; fi
-COPY apps/web/ ./
-RUN if [ -f package.json ] && [ -d src ]; then npm run build; else mkdir -p dist; fi
+# --- Stage 1: build the frontend ---
+# TODO: Restore the web build stage once apps/web/ is committed to the repo.
+# FROM node:22-slim AS web
+# WORKDIR /web
+# COPY apps/web/package*.json ./
+# RUN if [ -f package-lock.json ]; then npm ci; fi
+# COPY apps/web/ ./
+# RUN if [ -f package.json ] && [ -d src ]; then npm run build; else mkdir -p dist; fi
 
 # --- Stage 2: API runtime ---
 FROM python:3.12-slim AS api
@@ -28,7 +28,8 @@ COPY apps/api/ apps/api/
 RUN pip install --upgrade pip && pip install ./apps/api
 
 COPY data/ data/
-COPY --from=web /web/dist/ apps/api/static/
+# TODO: Replace with COPY --from=web /web/dist/ apps/api/static/ once the frontend is built.
+RUN mkdir -p apps/api/static/
 
 WORKDIR /app/apps/api
 EXPOSE 8000
