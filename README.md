@@ -5,11 +5,12 @@ describes a job in plain language; QuoteForge produces an accurate, code-aware
 estimate and a customer-ready proposal — and warns the contractor before they
 underbid.
 
-> Status: **backend complete; frontend pending.** The deterministic core
-> (estimating engine, audit engine, tax engine, assembly library, price book),
-> persistence, auth, the full quote lifecycle API, Claude-driven quote
-> generation (§12), and bilingual WeasyPrint PDFs (§14) are built and tested.
-> The React web frontend (§15) is the remaining major surface. See **Roadmap**.
+> Status: **v1 feature-complete.** The deterministic core (estimating engine,
+> audit engine, tax engine, assembly library, price book), persistence, auth,
+> the full quote lifecycle API, Claude-driven quote generation (§12), bilingual
+> WeasyPrint PDFs (§14), and the React web frontend (§15) are all built. What
+> remains before launch is data/translation review and beta polish — see
+> **Roadmap** and **Important caveats**.
 
 ## Architecture principles (non-negotiable, §3)
 
@@ -86,9 +87,29 @@ curl -s localhost:8000/api/estimate/preview -H 'content-type: application/json' 
 }' | jq
 ```
 
+## Frontend (§15)
+React 18 + Vite + TypeScript + Tailwind, in `apps/web`. Zustand (auth), TanStack
+Query (server state), React Hook Form + Zod (forms), react-i18next (en/fr),
+Recharts (dashboard). API types are generated from the live OpenAPI schema
+(`npm run gen:api`). Pages: login/register/forgot/reset, dashboard, customers
+CRUD, quotes list, the three-pane quote builder (Chat | Estimate | Preview;
+tabs on mobile), in-browser PDF preview, and settings (profile / labour rates /
+markup).
+
+```bash
+cd apps/web
+npm install
+npm run dev          # proxies /api to http://localhost:8000
+npm run build        # tsc --noEmit && vite build  -> dist/
+```
+
+In production the built `dist/` is served by FastAPI at the root (one service,
+§6); the Dockerfile builds it into the image.
+
 ## Repo layout
 ```
 apps/api/quoteforge_api/   FastAPI app + services (estimating, audit, tax, pdf, llm)
+apps/web/                  React + Vite frontend (§15)
 data/assemblies/           Version-controlled assembly YAML (the product)
 data/pricebook/            Material price book JSON
 Dockerfile, railway.json   Single-service production deploy (§18)
@@ -116,7 +137,8 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - [x] Full quote CRUD + lifecycle routes (§13), with engine-backed recompute and audit-gated send/finalize.
 - [x] LLM orchestration with Claude tool-use (§12) — engine/audit/permits exposed as tools, prompt caching, ask/resume.
 - [x] WeasyPrint PDF generation — EN/FR customer templates + internal breakdown (§14), audit-gated, `GET /quotes/{id}/pdf?variant=customer|internal`.
-- [ ] React + Vite frontend (quote builder, dashboard, settings) (§15).
-- [ ] Professional French translation + Quebec electrician review of the library.
-- [ ] Expand the assembly library to the full ~50 (§8) and price book to ~200 SKUs.
-- [ ] Logo upload to the Railway volume + `/auth/*` and `/quotes/*/generate` rate limiting on the generate route.
+- [x] React + Vite frontend — auth, dashboard, customers, three-pane quote builder, PDF preview, settings (§15).
+- [ ] Browser/E2E test pass (the frontend builds under strict TS and its API wiring is verified through the dev proxy, but it has not been driven in a live browser here).
+- [ ] Professional French translation + Quebec electrician review of the library and PDF/UI strings.
+- [ ] Expand the assembly library to the full ~50 (§8) and price book to ~200 SKUs with real reviewed values.
+- [ ] Logo upload to the Railway volume; tighten `/quotes/*/generate` rate limiting; add business address/phone fields for the PDF header.

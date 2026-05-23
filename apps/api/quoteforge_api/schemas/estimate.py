@@ -76,7 +76,7 @@ class TaxOut(BaseModel):
     total_tax_cad: Decimal
 
 
-class AuditFlagOut(BaseModel):
+class PreviewAuditFlagOut(BaseModel):
     severity: str
     code: str
     message_en: str
@@ -96,6 +96,6 @@ class EstimatePreviewResponse(BaseModel):
     gross_margin_pct: Decimal
     code_edition: str
     assumptions: list[str]
-    audit_flags: list[AuditFlagOut]
+    audit_flags: list[PreviewAuditFlagOut]
     audit_passed: bool
     pdf_blocked: bool

@@ -1,0 +1,49 @@
+{
+  "app": { "name": "QuoteForge", "tagline": "Estimation assistée par IA pour les électriciens canadiens" },
+  "nav": { "dashboard": "Tableau de bord", "quotes": "Soumissions", "customers": "Clients", "settings": "Paramètres", "logout": "Déconnexion" },
+  "auth": {
+    "login": "Connexion", "register": "Créer un compte", "email": "Courriel", "password": "Mot de passe",
+    "fullName": "Votre nom", "businessName": "Nom de l'entreprise", "province": "Province",
+    "noAccount": "Besoin d'un compte? S'inscrire", "haveAccount": "Vous avez déjà un compte? Connexion",
+    "forgot": "Mot de passe oublié?", "reset": "Réinitialiser le mot de passe", "newPassword": "Nouveau mot de passe",
+    "resetSent": "Si ce courriel existe, un lien de réinitialisation a été envoyé.",
+    "resetDone": "Mot de passe mis à jour. Vous pouvez vous connecter.", "sendReset": "Envoyer le lien"
+  },
+  "dashboard": {
+    "title": "Tableau de bord", "openQuotes": "Soumissions ouvertes", "winRate": "Taux de réussite",
+    "avgMargin": "Marge moyenne", "approved": "Acceptées", "declined": "Refusées",
+    "byStatus": "Soumissions par statut", "none": "Aucune donnée — créez votre première soumission."
+  },
+  "customers": {
+    "title": "Clients", "new": "Nouveau client", "name": "Nom", "company": "Entreprise",
+    "phone": "Téléphone", "address1": "Adresse", "address2": "Adresse (ligne 2)", "city": "Ville",
+    "postal": "Code postal", "notes": "Notes", "save": "Enregistrer", "empty": "Aucun client.",
+    "delete": "Supprimer", "confirmDelete": "Supprimer ce client?"
+  },
+  "quotes": {
+    "title": "Soumissions", "new": "Nouvelle soumission", "number": "Numéro", "status": "Statut",
+    "total": "Total", "margin": "Marge", "empty": "Aucune soumission.",
+    "jobTitle": "Titre des travaux", "jobDescription": "Décrivez les travaux en langage clair",
+    "customer": "Client", "selectCustomer": "Choisir un client", "create": "Créer la soumission",
+    "chat": "Discussion", "estimate": "Estimation", "preview": "Aperçu",
+    "generate": "Générer avec l'IA", "generating": "Génération…", "answer": "Votre réponse",
+    "send": "Envoyer au client", "recompute": "Recalculer", "finalize": "Finaliser",
+    "override": "Passer outre", "addLine": "Ajouter un ensemble", "qty": "Qté", "remove": "Retirer",
+    "materials": "Matériaux", "labour": "Main-d'œuvre", "permits": "Permis", "tax": "Taxes",
+    "scope": "Description des travaux", "noScope": "Aucune description rédigée.",
+    "pdfBlocked": "Un drapeau critique doit être levé avant l'envoi ou le téléchargement du PDF client.",
+    "downloadPdf": "Télécharger le PDF", "internalPdf": "Copie interne", "markStatus": "Marquer comme",
+    "assemblyId": "Ensemble", "auditFlags": "Vérification", "noFlags": "Aucun drapeau."
+  },
+  "settings": {
+    "title": "Paramètres", "profile": "Profil d'entreprise", "laborRates": "Taux de main-d'œuvre",
+    "markup": "Majoration", "blendedRate": "Taux horaire combiné ($/h)",
+    "apprenticeRate": "Taux apprenti ($/h)", "minCallout": "Appel de service minimum (h)",
+    "materialMarkup": "Majoration matériaux (%)", "labourMarkup": "Majoration main-d'œuvre (%)",
+    "minMargin": "Marge minimale (%)", "esa": "Licence ESA #", "rbq": "Licence RBQ #",
+    "cmeq": "Adhésion CMEQ #", "logoUrl": "URL du logo", "color": "Couleur de marque",
+    "language": "Langue", "saved": "Enregistré.", "save": "Enregistrer"
+  },
+  "common": { "loading": "Chargement…", "error": "Une erreur est survenue", "back": "Retour", "cancel": "Annuler", "saving": "Enregistrement…", "yes": "Oui", "no": "Non" },
+  "status": { "draft": "Brouillon", "sent": "Envoyée", "approved": "Acceptée", "declined": "Refusée", "expired": "Expirée" }
+}

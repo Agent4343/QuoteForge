@@ -5,10 +5,10 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from quoteforge_api.schemas.estimate import (
-    AuditFlagOut,
     EstimatePreviewRequest,
     EstimatePreviewResponse,
     LineItemOut,
+    PreviewAuditFlagOut,
     TaxOut,
 )
 from quoteforge_api.services.audit import AuditContext, run_audit
@@ -106,7 +106,7 @@ def preview(req: EstimatePreviewRequest) -> EstimatePreviewResponse:
         code_edition=result.code_edition,
         assumptions=result.assumptions,
         audit_flags=[
-            AuditFlagOut(
+            PreviewAuditFlagOut(
                 severity=f.severity,
                 code=f.code,
                 message_en=f.message_en,

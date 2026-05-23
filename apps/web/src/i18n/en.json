@@ -1,0 +1,49 @@
+{
+  "app": { "name": "QuoteForge", "tagline": "AI-powered estimating for Canadian electrical contractors" },
+  "nav": { "dashboard": "Dashboard", "quotes": "Quotes", "customers": "Customers", "settings": "Settings", "logout": "Log out" },
+  "auth": {
+    "login": "Log in", "register": "Create account", "email": "Email", "password": "Password",
+    "fullName": "Your name", "businessName": "Business name", "province": "Province",
+    "noAccount": "Need an account? Register", "haveAccount": "Already have an account? Log in",
+    "forgot": "Forgot password?", "reset": "Reset password", "newPassword": "New password",
+    "resetSent": "If that email exists, a reset link has been sent.",
+    "resetDone": "Password updated. You can log in now.", "sendReset": "Send reset link"
+  },
+  "dashboard": {
+    "title": "Dashboard", "openQuotes": "Open quotes", "winRate": "Win rate",
+    "avgMargin": "Average margin", "approved": "Approved", "declined": "Declined",
+    "byStatus": "Quotes by status", "none": "No data yet — create your first quote."
+  },
+  "customers": {
+    "title": "Customers", "new": "New customer", "name": "Name", "company": "Company",
+    "phone": "Phone", "address1": "Address", "address2": "Address line 2", "city": "City",
+    "postal": "Postal code", "notes": "Notes", "save": "Save", "empty": "No customers yet.",
+    "delete": "Delete", "confirmDelete": "Delete this customer?"
+  },
+  "quotes": {
+    "title": "Quotes", "new": "New quote", "number": "Number", "status": "Status",
+    "total": "Total", "margin": "Margin", "empty": "No quotes yet.",
+    "jobTitle": "Job title", "jobDescription": "Describe the job in plain language",
+    "customer": "Customer", "selectCustomer": "Select a customer", "create": "Create quote",
+    "chat": "Chat", "estimate": "Estimate", "preview": "Preview",
+    "generate": "Generate with AI", "generating": "Generating…", "answer": "Your answer",
+    "send": "Send to customer", "recompute": "Recompute", "finalize": "Finalize",
+    "override": "Override", "addLine": "Add assembly", "qty": "Qty", "remove": "Remove",
+    "materials": "Materials", "labour": "Labour", "permits": "Permits", "tax": "Tax",
+    "scope": "Scope of work", "noScope": "No scope written yet.",
+    "pdfBlocked": "A critical flag must be overridden before sending or downloading the customer PDF.",
+    "downloadPdf": "Download PDF", "internalPdf": "Internal copy", "markStatus": "Mark as",
+    "assemblyId": "Assembly", "auditFlags": "Audit", "noFlags": "No audit flags."
+  },
+  "settings": {
+    "title": "Settings", "profile": "Business profile", "laborRates": "Labour rates",
+    "markup": "Markup", "blendedRate": "Blended labour rate ($/hr)",
+    "apprenticeRate": "Apprentice rate ($/hr)", "minCallout": "Minimum call-out (hrs)",
+    "materialMarkup": "Material markup (%)", "labourMarkup": "Labour markup (%)",
+    "minMargin": "Minimum margin (%)", "esa": "ESA licence #", "rbq": "RBQ licence #",
+    "cmeq": "CMEQ membership #", "logoUrl": "Logo URL", "color": "Brand colour",
+    "language": "Language", "saved": "Saved.", "save": "Save"
+  },
+  "common": { "loading": "Loading…", "error": "Something went wrong", "back": "Back", "cancel": "Cancel", "saving": "Saving…", "yes": "Yes", "no": "No" },
+  "status": { "draft": "Draft", "sent": "Sent", "approved": "Approved", "declined": "Declined", "expired": "Expired" }
+}
