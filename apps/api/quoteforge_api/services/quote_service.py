@@ -105,6 +105,22 @@ def recompute_quote(quote: Quote, user: User, customer: Customer) -> None:
     earlier decision to proceed, so the contractor must re-confirm (§3.5).
     """
     assemblies, extras = _inputs_from_quote(quote)
+    apply_estimate(quote, user, customer, assemblies, extras)
+
+
+def apply_estimate(
+    quote: Quote,
+    user: User,
+    customer: Customer,
+    assemblies: list[AssemblyRequest],
+    extras: list[CustomLineItem],
+) -> None:
+    """Run the engine + audit for explicit inputs and persist onto the quote.
+
+    Used both by recompute (inputs read from the quote) and by the LLM
+    ``compute_estimate`` tool (inputs chosen by Claude). Numbers are produced
+    only here, by the engine — never by the LLM (principle §3.1).
+    """
     library = get_library()
     pricebook = get_pricebook()
 

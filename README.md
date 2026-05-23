@@ -6,10 +6,10 @@ estimate and a customer-ready proposal — and warns the contractor before they
 underbid.
 
 > Status: **backend in progress.** The deterministic core (estimating engine,
-> audit engine, tax engine, assembly library, price book) plus persistence,
-> auth, and the full quote lifecycle API are built and tested. The LLM, PDF
-> generation, and web frontend are scaffolded but not yet implemented. See
-> **Roadmap** below.
+> audit engine, tax engine, assembly library, price book), persistence, auth,
+> the full quote lifecycle API, and Claude-driven quote generation (§12) are
+> built and tested. PDF generation and the web frontend are scaffolded but not
+> yet implemented. See **Roadmap** below.
 
 ## Architecture principles (non-negotiable, §3)
 
@@ -39,12 +39,25 @@ underbid.
 | Customer CRUD + per-user isolation (§13, §16) | `routes/customers.py` | `test_app_flow.py` |
 | Quote CRUD + lifecycle + recompute/audit/override (§13) | `routes/quotes.py` + `services/quote_service.py` | `test_app_flow.py` |
 | Dashboard stats (§13) | `routes/dashboard.py` | `test_app_flow.py` |
+| **LLM orchestration (§12)** — Claude tool-use, ask/resume, question cap | `services/llm/` + `routes/quotes.py` | `test_llm.py` |
 | Stateless preview API | `routes/estimate.py` + `schemas/` | `test_api.py` |
 
-`63 tests` cover hand-verified reference estimates, provincial tax rules, the
+`67 tests` cover hand-verified reference estimates, provincial tax rules, the
 full audit rule set, the §21 guarantee that a deliberately underbid quote is
-**always** caught by a blocking critical flag, and the end-to-end auth → customer
-→ quote lifecycle (including cross-tenant isolation and refresh-token rotation).
+**always** caught by a blocking critical flag, the end-to-end auth → customer →
+quote lifecycle (cross-tenant isolation, refresh-token rotation), and the Claude
+tool-use loop (with a scripted fake client — no network) including pause/resume
+on `ask_contractor` and the rule that the engine, not the model, produces totals.
+
+### LLM generation (§12)
+`POST /api/quotes/{id}/generate` runs a synchronous Claude tool-use loop:
+identify assemblies → `get_assembly_detail` → (`ask_contractor` if a
+high-sensitivity parameter is unknown, max 4) → `compute_estimate` (the only path
+to numbers) → `audit_estimate` → customer scope. A paused question is answered via
+`POST /api/quotes/{id}/answer-question`. The system prompt caches the invariant
+assembly index block. Requires `ANTHROPIC_API_KEY` (returns 503 without it).
+Seeded assemblies are `draft`, so set `LLM_INCLUDE_DRAFT_ASSEMBLIES=true` in dev to
+exercise the flow before electrician review.
 
 ## Running
 
@@ -100,7 +113,7 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - [x] SQLAlchemy models + Alembic migrations (User, Customer, Quote, line items, audit flags, LLM sessions).
 - [x] Auth (Argon2id, JWT access/refresh rotation, password reset) and per-user data isolation.
 - [x] Full quote CRUD + lifecycle routes (§13), with engine-backed recompute and audit-gated send/finalize.
-- [ ] LLM orchestration with Claude tool-use (§12) — engine/audit exposed as tools (`/generate` returns 501 today).
+- [x] LLM orchestration with Claude tool-use (§12) — engine/audit/permits exposed as tools, prompt caching, ask/resume.
 - [ ] WeasyPrint PDF generation (EN/FR customer + internal templates, §14) (`/pdf` returns 501 today).
 - [ ] React + Vite frontend (quote builder, dashboard, settings) (§15).
 - [ ] Professional French translation + Quebec electrician review of the library.

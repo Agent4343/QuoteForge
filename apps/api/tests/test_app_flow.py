@@ -203,11 +203,18 @@ async def test_dashboard_stats(client):
 
 
 @pytest.mark.asyncio
-async def test_generate_and_pdf_not_implemented(client):
+async def test_generate_requires_job_and_key_pdf_not_implemented(client):
     token = await _register(client)
     cust = await _create_customer(client, token)
     q = await client.post("/api/quotes", headers=_auth(token), json={
         "customer_id": cust, "job_title": "x"})
     qid = q.json()["id"]
-    assert (await client.post(f"/api/quotes/{qid}/generate", headers=_auth(token))).status_code == 501
+    # No job description anywhere -> 422.
+    no_job = await client.post(f"/api/quotes/{qid}/generate", headers=_auth(token), json={})
+    assert no_job.status_code == 422
+    # With a job description but no ANTHROPIC_API_KEY configured -> 503.
+    no_key = await client.post(f"/api/quotes/{qid}/generate", headers=_auth(token),
+                               json={"job_description": "Add a circuit"})
+    assert no_key.status_code == 503
+    # PDF generation is still pending (§14).
     assert (await client.get(f"/api/quotes/{qid}/pdf", headers=_auth(token))).status_code == 501

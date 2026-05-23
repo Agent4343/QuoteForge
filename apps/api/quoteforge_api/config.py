@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     database_url: str = Field(default="postgresql+asyncpg://localhost/quoteforge")
     jwt_secret: str = Field(default="dev-insecure-change-me")
     anthropic_api_key: str = Field(default="")
+    # LLM orchestration (§12).
+    anthropic_model: str = Field(default="claude-sonnet-4-5")
+    llm_max_questions: int = Field(default=4)  # §12 hard limit on clarifying questions
+    llm_max_tool_turns: int = Field(default=12)  # safety cap on the agent loop
+    # Whether unreviewed (draft) assemblies appear in the LLM index. §8 says they
+    # should not in production; enable in dev/test to exercise the flow pre-review.
+    llm_include_draft_assemblies: bool = Field(default=False)
 
     smtp_host: str = Field(default="")
     smtp_port: int = Field(default=587)

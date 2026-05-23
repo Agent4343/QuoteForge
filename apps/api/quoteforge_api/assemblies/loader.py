@@ -41,23 +41,36 @@ class AssemblyLibrary:
     def reviewed(self) -> list[Assembly]:
         return [a for a in self._by_id.values() if a.status == Status.REVIEWED]
 
-    def llm_index(self) -> list[dict]:
-        """Compact index for the Claude system prompt (reviewed assemblies only)."""
-        index = []
-        for a in self.reviewed():
-            index.append(
-                {
-                    "id": a.id,
-                    "category": a.category.value,
-                    "names": {"en": a.names.en, "fr": a.names.fr},
-                    "description": {"en": a.description.en, "fr": a.description.fr},
-                    "parameters": {
-                        name: {"type": p.type.value, "sensitivity": p.sensitivity.value}
-                        for name, p in a.parameters.items()
-                    },
-                }
-            )
-        return index
+    def llm_index(self, include_draft: bool = False) -> list[dict]:
+        """Compact index for the Claude system prompt.
+
+        Reviewed assemblies only by default (§8). ``include_draft`` is for dev/test
+        so the LLM flow can be exercised before electrician review.
+        """
+        source = self.all() if include_draft else self.reviewed()
+        return [
+            {
+                "id": a.id,
+                "category": a.category.value,
+                "names": {"en": a.names.en, "fr": a.names.fr},
+                "description": {"en": a.description.en, "fr": a.description.fr},
+                "status": a.status.value,
+                "parameters": {
+                    name: {
+                        "type": p.type.value,
+                        "sensitivity": p.sensitivity.value,
+                        **({"values": p.values} if p.values else {}),
+                    }
+                    for name, p in a.parameters.items()
+                },
+            }
+            for a in source
+        ]
+
+    def indexable(self, include_draft: bool = False) -> set[str]:
+        """Assembly ids the LLM is allowed to reference."""
+        source = self.all() if include_draft else self.reviewed()
+        return {a.id for a in source}
 
 
 def load_library(directory: Path | None = None) -> AssemblyLibrary:

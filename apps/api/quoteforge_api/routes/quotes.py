@@ -10,9 +10,12 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from quoteforge_api.auth import ratelimit
 from quoteforge_api.auth.dependencies import CurrentUser, SessionDep
-from quoteforge_api.models import Customer, Quote, QuoteLineItem
+from quoteforge_api.config import get_settings
+from quoteforge_api.models import Customer, LLMSession, Quote, QuoteLineItem
 from quoteforge_api.models.enums import LineSource, QuoteStatus
+from quoteforge_api.schemas.llm import AnswerQuestionRequest, GenerateRequest, GenerationResponse
 from quoteforge_api.schemas.quote import (
     MarkStatusRequest,
     OverrideFlagRequest,
@@ -23,6 +26,9 @@ from quoteforge_api.schemas.quote import (
     QuoteUpdate,
 )
 from quoteforge_api.services import quote_service
+from quoteforge_api.services.llm import client as llm_client
+from quoteforge_api.services.llm import estimator
+from quoteforge_api.services.llm.tools import ToolContext
 
 router = APIRouter(prefix="/api/quotes", tags=["quotes"])
 
@@ -210,9 +216,84 @@ async def mark_status(
     return _serialize(await _load_quote(session, user, quote.id))
 
 
-@router.post("/{quote_id}/generate", status_code=501)
-async def generate(quote_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> dict:
-    raise HTTPException(status_code=501, detail="LLM generation not yet implemented (§12).")
+def _build_tool_context(quote: Quote, user, customer) -> ToolContext:
+    from quoteforge_api.assemblies.loader import get_library
+    from quoteforge_api.pricebook import get_pricebook
+
+    return ToolContext(
+        quote=quote,
+        user=user,
+        customer=customer,
+        library=get_library(),
+        pricebook=get_pricebook(),
+        include_draft=get_settings().llm_include_draft_assemblies,
+    )
+
+
+async def _get_or_create_llm_session(session: SessionDep, quote_id: uuid.UUID) -> LLMSession:
+    llm_session = await session.scalar(select(LLMSession).where(LLMSession.quote_id == quote_id))
+    if llm_session is None:
+        llm_session = LLMSession(quote_id=quote_id, messages=[], tool_calls=[])
+        session.add(llm_session)
+        await session.flush()
+    return llm_session
+
+
+@router.post("/{quote_id}/generate", response_model=GenerationResponse)
+async def generate(
+    quote_id: uuid.UUID, body: GenerateRequest, user: CurrentUser, session: SessionDep
+) -> GenerationResponse:
+    ratelimit.enforce(f"generate:{user.id}", limit=10, window_seconds=3600)  # §16
+    quote = await _load_quote(session, user, quote_id)
+    if quote.status != QuoteStatus.DRAFT:
+        raise HTTPException(status_code=409, detail="Only draft quotes can be generated")
+    job = body.job_description or quote.job_description
+    if not job:
+        raise HTTPException(status_code=422, detail="A job description is required")
+    if body.job_description:
+        quote.job_description = body.job_description
+
+    customer = await session.get(Customer, quote.customer_id)
+    llm_session = await _get_or_create_llm_session(session, quote.id)
+    ctx = _build_tool_context(quote, user, customer)
+    try:
+        client = llm_client.get_client()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = estimator.start_generation(ctx, client, llm_session, job)
+    await session.commit()
+    quote = await _load_quote(session, user, quote_id)
+    return GenerationResponse(
+        status=result.status, question=result.question,
+        assistant_text=result.assistant_text, error=result.error, quote=_serialize(quote),
+    )
+
+
+@router.post("/{quote_id}/answer-question", response_model=GenerationResponse)
+async def answer_question(
+    quote_id: uuid.UUID, body: AnswerQuestionRequest, user: CurrentUser, session: SessionDep
+) -> GenerationResponse:
+    quote = await _load_quote(session, user, quote_id)
+    customer = await session.get(Customer, quote.customer_id)
+    llm_session = await session.scalar(
+        select(LLMSession).where(LLMSession.quote_id == quote.id)
+    )
+    if llm_session is None:
+        raise HTTPException(status_code=409, detail="No active generation to answer")
+    ctx = _build_tool_context(quote, user, customer)
+    try:
+        client = llm_client.get_client()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = estimator.continue_generation(ctx, client, llm_session, body.answer)
+    await session.commit()
+    quote = await _load_quote(session, user, quote_id)
+    return GenerationResponse(
+        status=result.status, question=result.question,
+        assistant_text=result.assistant_text, error=result.error, quote=_serialize(quote),
+    )
 
 
 @router.get("/{quote_id}/pdf", status_code=501)

@@ -28,6 +28,11 @@ def _check(key: str, limit: int, window_seconds: int) -> None:
     bucket.append(now)
 
 
+def enforce(key: str, limit: int, window_seconds: int) -> None:
+    """Imperative check (e.g. per-user generate cap, §16). Raises 429 if exceeded."""
+    _check(key, limit, window_seconds)
+
+
 def rate_limit(scope: str, limit: int, window_seconds: int):
     """Build a FastAPI dependency limiting requests per client IP for a scope."""
 
