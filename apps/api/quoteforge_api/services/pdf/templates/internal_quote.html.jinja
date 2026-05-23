@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>{{ styles|safe }}</style>
+  <style>:root { --accent: {{ contractor.primary_color }}; }</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="business">{{ contractor.business_name }} — INTERNAL</div>
+      <div class="subtle">Contractor copy. Not for the customer.</div>
+    </div>
+    <div class="meta">
+      <div class="quote-title">{{ quote_number }}</div>
+      <div>Date: {{ issue_date }}</div>
+      <div>Province: {{ province }} &middot; {{ code_edition }}</div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div class="party">
+      <h3>Customer</h3>
+      <div><strong>{{ customer.name }}</strong></div>
+      <div>{{ customer.city }}, {{ customer.province }}</div>
+    </div>
+    <div class="party">
+      <h3>Job</h3>
+      <div><strong>{{ job_title }}</strong></div>
+      <div class="subtle">{{ job_description }}</div>
+    </div>
+    <div class="party">
+      <h3>Status</h3>
+      {% if audit_passed %}
+      <span class="badge pass">Audit passed</span>
+      {% else %}
+      <span class="badge block">PDF blocked — critical flag</span>
+      {% endif %}
+      <div>Gross margin: {{ gross_margin_pct }}%</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>Item</th><th class="num">Qty</th>
+        <th class="num">Materials</th><th class="num">Hrs</th>
+        <th class="num">Labour</th><th class="num">Line total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.line_number }}</td>
+        <td>
+          {{ item.description }}
+          <div class="subtle">{{ item.assembly_id }} ({{ item.source }})</div>
+          {% if item.code_refs %}
+          <div class="code-refs">
+            {% for ref in item.code_refs %}{{ ref.section }}: {{ ref.note }}{% if not loop.last %}; {% endif %}{% endfor %}
+          </div>
+          {% endif %}
+        </td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num">{{ item.materials }}</td>
+        <td class="num">{{ item.labor_hours }}</td>
+        <td class="num">{{ item.labor }}</td>
+        <td class="num">{{ item.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td class="label">Materials</td><td class="num">{{ subtotal_materials }}</td></tr>
+    <tr><td class="label">Labour</td><td class="num">{{ subtotal_labor }}</td></tr>
+    <tr><td class="label">Permits</td><td class="num">{{ subtotal_permits }}</td></tr>
+    <tr><td class="label">Other</td><td class="num">{{ subtotal_other }}</td></tr>
+    <tr class="grand"><td>Total (incl. tax)</td><td class="num">{{ total }}</td></tr>
+  </table>
+
+  <h3 style="margin-top:22px;">Audit flags</h3>
+  {% if flags %}
+    {% for flag in flags %}
+    <div class="flag {{ flag.severity }}">
+      <span class="code">{{ flag.severity|upper }} — {{ flag.code }}</span>
+      {% if flag.overridden %}<span class="overridden">(overridden)</span>{% endif %}
+      <div>{{ flag.message }}</div>
+      {% if flag.suggested_action %}<div class="subtle">Action: {{ flag.suggested_action }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="subtle">No audit flags raised.</div>
+  {% endif %}
+
+  {% if internal_notes %}
+  <h3 style="margin-top:18px;">Internal notes</h3>
+  <div class="subtle">{{ internal_notes }}</div>
+  {% endif %}
+
+  <div class="footer-note">QuoteForge internal estimate — confidential</div>
+</body>
+</html>

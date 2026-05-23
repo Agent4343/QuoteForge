@@ -1,0 +1,88 @@
+{# FR strings are machine drafts pending professional review (§3.6, §21). #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <style>{{ styles|safe }}</style>
+  <style>:root { --accent: {{ contractor.primary_color }}; }</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      {% if contractor.logo_url %}<img class="logo" src="{{ contractor.logo_url }}" alt="logo">{% endif %}
+      <div class="business">{{ contractor.business_name }}</div>
+      <div class="subtle">{{ contractor.contact_name }} &middot; {{ contractor.email }}</div>
+      {% if contractor.licences %}<div class="licences">{{ contractor.licences|join(" &nbsp; ") }}</div>{% endif %}
+    </div>
+    <div class="meta">
+      <div class="quote-title">Soumission</div>
+      <div><strong>{{ quote_number }}</strong></div>
+      <div>Date : {{ issue_date }}</div>
+      <div>Valide jusqu'au : {{ valid_until }}</div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div class="party">
+      <h3>Préparé pour</h3>
+      <div><strong>{{ customer.name }}</strong></div>
+      {% if customer.company %}<div>{{ customer.company }}</div>{% endif %}
+      <div>{{ customer.address_line1 }}</div>
+      {% if customer.address_line2 %}<div>{{ customer.address_line2 }}</div>{% endif %}
+      <div>{{ customer.city }} ({{ customer.province }}) {{ customer.postal_code }}</div>
+      {% if customer.email %}<div>{{ customer.email }}</div>{% endif %}
+      {% if customer.phone %}<div>{{ customer.phone }}</div>{% endif %}
+    </div>
+    <div class="party">
+      <h3>Travaux</h3>
+      <div><strong>{{ job_title }}</strong></div>
+      {% if job_site_address %}<div>Chantier : {{ job_site_address }}</div>{% endif %}
+    </div>
+  </div>
+
+  {% if scope %}
+  <div class="scope">
+    <h3>Description des travaux</h3>
+    <div>{{ scope }}</div>
+  </div>
+  {% endif %}
+
+  <table>
+    <thead>
+      <tr><th>Description</th><th class="num">Qté</th><th class="num">Montant</th></tr>
+    </thead>
+    <tbody>
+      {% for group in groups %}
+      <tr class="group-row"><td colspan="3">{{ group.label }}</td></tr>
+      {% for item in group.lines %}
+      <tr>
+        <td>{{ item.description }}</td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num">{{ item.total }}</td>
+      </tr>
+      {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td class="label">Sous-total</td><td class="num">{{ subtotal }}</td></tr>
+    {% for tax in tax_lines %}
+    <tr><td class="label">{{ tax.label }} ({{ tax.rate }})</td><td class="num">{{ tax.amount }}</td></tr>
+    {% endfor %}
+    <tr class="grand"><td>Total (CAD)</td><td class="num">{{ total }}</td></tr>
+  </table>
+
+  <div class="terms">
+    <h3>Conditions générales</h3>
+    <div>{{ terms }}</div>
+  </div>
+
+  <div class="signature">
+    <div class="sig-line">Signature du client</div>
+    <div class="sig-line">Date</div>
+  </div>
+
+  <div class="footer-note">Généré par QuoteForge</div>
+</body>
+</html>

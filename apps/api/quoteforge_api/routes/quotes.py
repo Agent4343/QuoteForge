@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -296,6 +298,31 @@ async def answer_question(
     )
 
 
-@router.get("/{quote_id}/pdf", status_code=501)
-async def pdf(quote_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> dict:
-    raise HTTPException(status_code=501, detail="PDF generation not yet implemented (§14).")
+@router.get("/{quote_id}/pdf")
+async def pdf(
+    quote_id: uuid.UUID,
+    user: CurrentUser,
+    session: SessionDep,
+    variant: Annotated[str, Query(pattern="^(customer|internal)$")] = "customer",
+) -> Response:
+    from quoteforge_api.services.pdf import renderer
+
+    quote = await _load_quote(session, user, quote_id)
+    customer = await session.get(Customer, quote.customer_id)
+    if variant == "internal":
+        content = await asyncio.to_thread(renderer.render_internal_pdf, quote, user, customer)
+        filename = f"{quote.quote_number}-internal.pdf"
+    else:
+        # Customer PDF is gated on the audit: no PDF while a critical flag is open (§3.5).
+        if quote_service.pdf_blocked(quote):
+            raise HTTPException(
+                status_code=409,
+                detail="Critical audit flags must be overridden before the customer PDF.",
+            )
+        content = await asyncio.to_thread(renderer.render_customer_pdf, quote, user, customer)
+        filename = f"{quote.quote_number}.pdf"
+    return Response(
+        content=content,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+    )

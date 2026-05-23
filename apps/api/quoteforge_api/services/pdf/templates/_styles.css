@@ -1,0 +1,78 @@
+@page {
+  size: Letter;
+  margin: 1.6cm 1.8cm 2.2cm 1.8cm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-size: 8pt;
+    color: #999;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 10.5pt;
+  color: #1f2933;
+  line-height: 1.45;
+  margin: 0;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 600; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 3px solid var(--accent, #1a3e5c);
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+}
+.header .business { font-size: 15pt; font-weight: 700; color: var(--accent, #1a3e5c); }
+.header .meta { text-align: right; font-size: 9pt; color: #52606d; }
+.header .logo { max-height: 64px; max-width: 220px; }
+.licences { margin-top: 4px; font-size: 9pt; font-weight: 600; color: var(--accent, #1a3e5c); }
+
+.quote-title { font-size: 18pt; font-weight: 700; margin: 6px 0 2px; }
+.subtle { color: #7b8794; font-size: 9pt; }
+
+.parties { display: flex; justify-content: space-between; gap: 24px; margin: 16px 0 8px; }
+.party { flex: 1; }
+.party h3 { font-size: 9pt; text-transform: uppercase; letter-spacing: 0.05em; color: #7b8794; margin-bottom: 4px; }
+
+.scope { margin: 14px 0; padding: 12px 14px; background: #f5f7fa; border-radius: 6px; }
+.scope h3 { font-size: 10pt; margin-bottom: 6px; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em;
+     color: #7b8794; border-bottom: 1.5px solid #cbd2d9; padding: 6px 4px; }
+td { padding: 6px 4px; border-bottom: 1px solid #e4e7eb; vertical-align: top; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.group-row td { background: #eef2f6; font-weight: 600; font-size: 9pt; }
+
+.totals { margin-top: 14px; margin-left: auto; width: 52%; }
+.totals td { border: none; padding: 3px 4px; }
+.totals .label { color: #52606d; }
+.totals .num { text-align: right; white-space: nowrap; }
+.totals .grand td { border-top: 2px solid var(--accent, #1a3e5c); font-weight: 700; font-size: 12pt;
+                    padding-top: 8px; }
+
+.terms { margin-top: 22px; font-size: 8.5pt; color: #52606d; }
+.terms h3 { font-size: 9pt; color: #1f2933; margin-bottom: 4px; }
+
+.signature { margin-top: 30px; display: flex; gap: 40px; }
+.sig-line { flex: 1; border-top: 1px solid #1f2933; padding-top: 4px; font-size: 8.5pt; color: #52606d; }
+
+.footer-note { margin-top: 24px; text-align: center; font-size: 8pt; color: #9aa5b1; }
+
+/* Internal document */
+.flag { padding: 8px 10px; border-radius: 5px; margin: 6px 0; font-size: 9pt; }
+.flag.critical { background: #fbeae5; border-left: 4px solid #cf1124; }
+.flag.warn { background: #fff8e1; border-left: 4px solid #cb6e17; }
+.flag.info { background: #e6f6ff; border-left: 4px solid #2186eb; }
+.flag .code { font-weight: 700; }
+.flag .overridden { color: #cf1124; font-weight: 600; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8.5pt; font-weight: 600; }
+.badge.pass { background: #e3f9e5; color: #207227; }
+.badge.block { background: #fbeae5; color: #cf1124; }
+.code-refs { font-size: 8pt; color: #7b8794; }

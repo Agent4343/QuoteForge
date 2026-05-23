@@ -5,11 +5,11 @@ describes a job in plain language; QuoteForge produces an accurate, code-aware
 estimate and a customer-ready proposal — and warns the contractor before they
 underbid.
 
-> Status: **backend in progress.** The deterministic core (estimating engine,
-> audit engine, tax engine, assembly library, price book), persistence, auth,
-> the full quote lifecycle API, and Claude-driven quote generation (§12) are
-> built and tested. PDF generation and the web frontend are scaffolded but not
-> yet implemented. See **Roadmap** below.
+> Status: **backend complete; frontend pending.** The deterministic core
+> (estimating engine, audit engine, tax engine, assembly library, price book),
+> persistence, auth, the full quote lifecycle API, Claude-driven quote
+> generation (§12), and bilingual WeasyPrint PDFs (§14) are built and tested.
+> The React web frontend (§15) is the remaining major surface. See **Roadmap**.
 
 ## Architecture principles (non-negotiable, §3)
 
@@ -40,9 +40,10 @@ underbid.
 | Quote CRUD + lifecycle + recompute/audit/override (§13) | `routes/quotes.py` + `services/quote_service.py` | `test_app_flow.py` |
 | Dashboard stats (§13) | `routes/dashboard.py` | `test_app_flow.py` |
 | **LLM orchestration (§12)** — Claude tool-use, ask/resume, question cap | `services/llm/` + `routes/quotes.py` | `test_llm.py` |
+| **PDF generation (§14)** — EN/FR customer + internal, WeasyPrint, audit-gated | `services/pdf/` + `routes/quotes.py` | `test_app_flow.py` |
 | Stateless preview API | `routes/estimate.py` + `schemas/` | `test_api.py` |
 
-`67 tests` cover hand-verified reference estimates, provincial tax rules, the
+`69 tests` cover hand-verified reference estimates, provincial tax rules, the
 full audit rule set, the §21 guarantee that a deliberately underbid quote is
 **always** caught by a blocking critical flag, the end-to-end auth → customer →
 quote lifecycle (cross-tenant isolation, refresh-token rotation), and the Claude
@@ -114,7 +115,7 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - [x] Auth (Argon2id, JWT access/refresh rotation, password reset) and per-user data isolation.
 - [x] Full quote CRUD + lifecycle routes (§13), with engine-backed recompute and audit-gated send/finalize.
 - [x] LLM orchestration with Claude tool-use (§12) — engine/audit/permits exposed as tools, prompt caching, ask/resume.
-- [ ] WeasyPrint PDF generation (EN/FR customer + internal templates, §14) (`/pdf` returns 501 today).
+- [x] WeasyPrint PDF generation — EN/FR customer templates + internal breakdown (§14), audit-gated, `GET /quotes/{id}/pdf?variant=customer|internal`.
 - [ ] React + Vite frontend (quote builder, dashboard, settings) (§15).
 - [ ] Professional French translation + Quebec electrician review of the library.
 - [ ] Expand the assembly library to the full ~50 (§8) and price book to ~200 SKUs.

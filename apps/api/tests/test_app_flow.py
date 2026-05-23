@@ -203,7 +203,7 @@ async def test_dashboard_stats(client):
 
 
 @pytest.mark.asyncio
-async def test_generate_requires_job_and_key_pdf_not_implemented(client):
+async def test_generate_requires_job_and_key(client):
     token = await _register(client)
     cust = await _create_customer(client, token)
     q = await client.post("/api/quotes", headers=_auth(token), json={
@@ -216,5 +216,56 @@ async def test_generate_requires_job_and_key_pdf_not_implemented(client):
     no_key = await client.post(f"/api/quotes/{qid}/generate", headers=_auth(token),
                                json={"job_description": "Add a circuit"})
     assert no_key.status_code == 503
-    # PDF generation is still pending (§14).
-    assert (await client.get(f"/api/quotes/{qid}/pdf", headers=_auth(token))).status_code == 501
+
+
+@pytest.mark.asyncio
+async def test_pdf_generation_gated_on_audit(client):
+    token = await _register(client)
+    await _set_rates(client, token)  # 35% material / 0% labour -> underbid -> critical flag
+    cust = await _create_customer(client, token)
+    create = await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "New kitchen circuit",
+        "line_items": [{"source": "assembly", "assembly_id": "circuit_new_15a_residential",
+                        "quantity": "1", "parameters": {"run_length_ft": 40, "access": "open"}}]})
+    q = create.json()
+    qid = q["id"]
+    assert q["pdf_blocked"] is True
+
+    # Customer PDF is blocked while the critical flag is open.
+    blocked = await client.get(f"/api/quotes/{qid}/pdf", headers=_auth(token))
+    assert blocked.status_code == 409
+
+    # Internal PDF renders regardless (it shows the flag to the contractor).
+    internal = await client.get(f"/api/quotes/{qid}/pdf?variant=internal", headers=_auth(token))
+    assert internal.status_code == 200
+    assert internal.headers["content-type"] == "application/pdf"
+    assert internal.content[:5] == b"%PDF-"
+
+    # Override the critical flag, then the customer PDF renders.
+    crit = next(f for f in q["audit_flags"] if f["code"] == "MARGIN_BELOW_MIN")
+    await client.post(f"/api/quotes/{qid}/override-flag", headers=_auth(token),
+                      json={"flag_id": crit["id"]})
+    pdf = await client.get(f"/api/quotes/{qid}/pdf", headers=_auth(token))
+    assert pdf.status_code == 200
+    assert pdf.headers["content-type"] == "application/pdf"
+    assert pdf.content[:5] == b"%PDF-"
+    assert "Q-2026-0001.pdf" in pdf.headers.get("content-disposition", "")
+
+
+@pytest.mark.asyncio
+async def test_quebec_customer_pdf_renders_in_french(client):
+    token = await _register(client, email="qc@example.com", province="QC")
+    # Generous markup so the quote is not audit-blocked.
+    await client.patch("/api/me", headers=_auth(token), json={
+        "blended_labor_rate_cad": "110", "default_material_markup_pct": "60",
+        "default_labor_markup_pct": "60", "minimum_margin_pct": "20"})
+    cust = await _create_customer(client, token, province="QC")
+    create = await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "Nouveau circuit",
+        "line_items": [{"source": "assembly", "assembly_id": "recep_duplex_15a_residential",
+                        "quantity": "2"}]})
+    q = create.json()
+    assert q["customer_language"] == "fr"
+    pdf = await client.get(f"/api/quotes/{q['id']}/pdf", headers=_auth(token))
+    assert pdf.status_code == 200
+    assert pdf.content[:5] == b"%PDF-"
