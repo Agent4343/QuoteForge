@@ -6,6 +6,7 @@ frontend as static files, falling back to ``index.html`` for SPA routes.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -15,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from quoteforge_api import __version__
 from quoteforge_api.config import get_settings
-from quoteforge_api.routes import estimate, meta
+from quoteforge_api.routes import auth, customers, dashboard, estimate, me, meta, quotes
 
 logging.basicConfig(level=get_settings().log_level.upper())
 
@@ -28,6 +29,14 @@ async def lifespan(_: FastAPI):
 
     get_library()
     get_pricebook()
+
+    # Run DB migrations on startup for deployed environments only (§18). In dev/
+    # test, run `alembic upgrade head` (or docker compose) manually so the
+    # stateless surfaces don't require a database.
+    if get_settings().environment in {"prod", "staging"}:
+        from quoteforge_api.db_migrate import run_upgrade
+
+        await asyncio.to_thread(run_upgrade)
     yield
 
 
@@ -35,6 +44,11 @@ app = FastAPI(title="QuoteForge API", version=__version__, lifespan=lifespan)
 
 app.include_router(meta.router)
 app.include_router(estimate.router)
+app.include_router(auth.router)
+app.include_router(me.router)
+app.include_router(customers.router)
+app.include_router(quotes.router)
+app.include_router(dashboard.router)
 
 
 # Static frontend (production). The Dockerfile builds apps/web into ./static.

@@ -84,6 +84,7 @@ class ComputedLineItem:
     raw_materials_cost_cad: Decimal = D(0)
     raw_labor_cost_cad: Decimal = D(0)
     base_labor_hours: Decimal = D(0)  # assembly base hours × qty, pre-multipliers
+    generated: bool = False  # True for engine-synthesised lines (e.g. minimum call-out)
 
 
 @dataclass

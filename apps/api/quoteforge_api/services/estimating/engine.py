@@ -237,6 +237,7 @@ def compute_estimate(
                 code_refs=[],
                 raw_labor_cost_cad=money(uplift_cost),
                 base_labor_hours=uplift_hours,
+                generated=True,
             )
         )
         sub_labor += money(priced_uplift)

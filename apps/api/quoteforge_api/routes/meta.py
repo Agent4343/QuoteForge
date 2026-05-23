@@ -3,18 +3,28 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
+from sqlalchemy import text
 
 from quoteforge_api.assemblies.loader import get_library
+from quoteforge_api.auth.dependencies import SessionDep
 from quoteforge_api.config import get_settings
 
 router = APIRouter(prefix="/api", tags=["meta"])
 
 
 @router.get("/healthz")
-def healthz() -> dict:
-    """Liveness check (§18). DB connectivity is added when the DB layer lands."""
-    settings = get_settings()
-    return {"status": "ok", "environment": settings.environment}
+async def healthz(session: SessionDep) -> dict:
+    """Liveness + DB connectivity check (§18)."""
+    db_ok = True
+    try:
+        await session.execute(text("SELECT 1"))
+    except Exception:  # noqa: BLE001
+        db_ok = False
+    return {
+        "status": "ok" if db_ok else "degraded",
+        "db": db_ok,
+        "environment": get_settings().environment,
+    }
 
 
 @router.get("/assemblies")

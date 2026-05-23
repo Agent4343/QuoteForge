@@ -8,9 +8,11 @@ client = TestClient(app)
 
 
 def test_healthz():
+    # No DB is wired in this stateless surface, so 'db' may be False ('degraded').
     r = client.get("/api/healthz")
     assert r.status_code == 200
-    assert r.json()["status"] == "ok"
+    assert "db" in r.json()
+    assert r.json()["status"] in {"ok", "degraded"}
 
 
 def test_list_assemblies():

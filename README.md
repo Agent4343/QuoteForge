@@ -5,10 +5,11 @@ describes a job in plain language; QuoteForge produces an accurate, code-aware
 estimate and a customer-ready proposal — and warns the contractor before they
 underbid.
 
-> Status: **foundation in progress.** The deterministic core (estimating
-> engine, audit engine, tax engine, assembly library, price book) is built and
-> fully tested. The LLM, persistence/auth, PDF generation, and web frontend are
-> scaffolded but not yet implemented. See **Roadmap** below.
+> Status: **backend in progress.** The deterministic core (estimating engine,
+> audit engine, tax engine, assembly library, price book) plus persistence,
+> auth, and the full quote lifecycle API are built and tested. The LLM, PDF
+> generation, and web frontend are scaffolded but not yet implemented. See
+> **Roadmap** below.
 
 ## Architecture principles (non-negotiable, §3)
 
@@ -33,11 +34,17 @@ underbid.
 | Permit lookup (§9.4) | `services/estimating/permits.py` | covered |
 | **Estimating engine (§9)** | `services/estimating/` | `test_estimating.py` |
 | **Audit engine (§10)** | `services/audit/` | `test_audit.py` |
-| Stateless preview API | `routes/` + `schemas/` | `test_api.py` |
+| SQLAlchemy models + Alembic (§7) | `models/` + `alembic/` | covered |
+| Auth: Argon2id, JWT, refresh rotation, reset (§16) | `auth/` | `test_app_flow.py` |
+| Customer CRUD + per-user isolation (§13, §16) | `routes/customers.py` | `test_app_flow.py` |
+| Quote CRUD + lifecycle + recompute/audit/override (§13) | `routes/quotes.py` + `services/quote_service.py` | `test_app_flow.py` |
+| Dashboard stats (§13) | `routes/dashboard.py` | `test_app_flow.py` |
+| Stateless preview API | `routes/estimate.py` + `schemas/` | `test_api.py` |
 
-`55 tests` cover hand-verified reference estimates, provincial tax rules, the
-full audit rule set, and the §21 guarantee that a deliberately underbid quote is
-**always** caught by a blocking critical flag.
+`63 tests` cover hand-verified reference estimates, provincial tax rules, the
+full audit rule set, the §21 guarantee that a deliberately underbid quote is
+**always** caught by a blocking critical flag, and the end-to-end auth → customer
+→ quote lifecycle (including cross-tenant isolation and refresh-token rotation).
 
 ## Running
 
@@ -89,12 +96,13 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - All seeded assemblies are `status: draft`, so the (future) LLM index is empty
   until an electrician reviews them.
 
-## Roadmap (remaining, per §20)
-- [ ] SQLAlchemy models + Alembic migrations (User, Customer, Quote, line items, audit flags, LLM sessions).
-- [ ] Auth (Argon2id, JWT access/refresh, password reset) and per-user data isolation.
-- [ ] Full quote CRUD + lifecycle routes (§13).
-- [ ] LLM orchestration with Claude tool-use (§12) — engine/audit exposed as tools.
-- [ ] WeasyPrint PDF generation (EN/FR customer + internal templates, §14).
+## Roadmap (per §20)
+- [x] SQLAlchemy models + Alembic migrations (User, Customer, Quote, line items, audit flags, LLM sessions).
+- [x] Auth (Argon2id, JWT access/refresh rotation, password reset) and per-user data isolation.
+- [x] Full quote CRUD + lifecycle routes (§13), with engine-backed recompute and audit-gated send/finalize.
+- [ ] LLM orchestration with Claude tool-use (§12) — engine/audit exposed as tools (`/generate` returns 501 today).
+- [ ] WeasyPrint PDF generation (EN/FR customer + internal templates, §14) (`/pdf` returns 501 today).
 - [ ] React + Vite frontend (quote builder, dashboard, settings) (§15).
 - [ ] Professional French translation + Quebec electrician review of the library.
 - [ ] Expand the assembly library to the full ~50 (§8) and price book to ~200 SKUs.
+- [ ] Logo upload to the Railway volume + `/auth/*` and `/quotes/*/generate` rate limiting on the generate route.
