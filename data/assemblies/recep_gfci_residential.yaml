@@ -1,0 +1,75 @@
+schema_version: "1.0"
+id: recep_gfci_residential
+category: devices
+trade: electrical
+work_type: [service, renovation]
+
+names:
+  en: "GFCI receptacle (residential)"
+  fr: "Prise DDFT (résidentiel)"
+
+description:
+  en: "Install one 15A tamper-resistant GFCI receptacle on an existing circuit."
+  fr: "Installer une prise DDFT 15A anti-sabotage sur un circuit existant."
+
+parameters:
+  mount_type:
+    type: enum
+    default: standard
+    values: [standard, old_work]
+    sensitivity: medium
+    prompt_en: "New rough-in (standard box) or cut into a finished wall (old-work)?"
+    prompt_fr: "Nouvelle installation (boîte standard) ou découpe dans un mur fini (rénovation)?"
+    labor_multipliers:
+      standard: 1.0
+      old_work: 1.4
+  cable_run_ft:
+    type: number
+    default: 15
+    sensitivity: medium
+    prompt_en: "Approximate cable length from the source to this device (ft)?"
+    prompt_fr: "Longueur approximative du câble de la source à l'appareil (pi)?"
+
+materials:
+  - sku: RECEP_GFCI_15A
+    qty: 1
+  - sku: BOX_DEVICE_PVC
+    qty: 1
+  - sku: PLATE_DECORA
+    qty: 1
+  - sku: WIRE_NMD90_14_2
+    qty_formula: "cable_run_ft"
+    waste: 0.10
+  - sku: WIRE_CONNECTOR
+    qty: 4
+  - sku: STAPLE_NMD
+    qty_formula: "ceil(cable_run_ft / 4)"
+  - sku: CONNECTOR_NM
+    qty: 1
+
+labor:
+  base_hours: 0.65
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - section: "Rule 26-710"
+        note: "Class A GFCI protection required for specified receptacle locations."
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - section: "Section 26"
+        note: "Protection DDFT requise aux emplacements prescrits."
+
+audit_flags: []
+
+last_reviewed: null
+reviewed_by: null
+status: draft

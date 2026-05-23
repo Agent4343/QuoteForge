@@ -1,0 +1,69 @@
+schema_version: "1.0"
+id: pot_light_residential_remodel
+category: lighting
+trade: electrical
+work_type: [renovation]
+
+names:
+  en: "Recessed pot light — remodel (per fixture)"
+  fr: "Encastré (pot light) — rénovation (par luminaire)"
+
+description:
+  en: "Supply and install one 4 in. LED recessed pot light in a finished ceiling, including inter-fixture wiring."
+  fr: "Fournir et installer un encastré DEL 4 po dans un plafond fini, câblage entre luminaires inclus."
+
+parameters:
+  inter_fixture_ft:
+    type: number
+    default: 8
+    sensitivity: medium
+    prompt_en: "Average cable length between fixtures (ft)?"
+    prompt_fr: "Longueur moyenne de câble entre les luminaires (pi)?"
+  ceiling_access:
+    type: enum
+    default: attic_above
+    values: [attic_above, no_access]
+    sensitivity: high
+    prompt_en: "Is there attic access above the ceiling, or must wiring be fished blind?"
+    prompt_fr: "Y a-t-il accès par le grenier au-dessus, ou faut-il tirer les fils à l'aveugle?"
+    labor_multipliers:
+      attic_above: 1.0
+      no_access: 1.5
+
+materials:
+  - sku: POTLIGHT_LED_4
+    qty: 1
+  - sku: WIRE_NMD90_14_2
+    qty_formula: "inter_fixture_ft"
+    waste: 0.10
+  - sku: WIRE_CONNECTOR
+    qty: 4
+  - sku: CONNECTOR_NM
+    qty: 1
+
+labor:
+  base_hours: 0.75
+  phase: trim
+  apprentice_compatible: true
+  minimum_callout_applies: true
+
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - section: "Rule 30-300"
+        note: "Luminaire installation; IC-rated fixtures where in contact with insulation."
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - section: "Section 30"
+        note: "Installation des luminaires; appareils homologués IC au contact de l'isolant."
+
+audit_flags: []
+
+last_reviewed: null
+reviewed_by: null
+status: draft
