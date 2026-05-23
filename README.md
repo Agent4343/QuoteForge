@@ -120,6 +120,13 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - Quote validity: 30 days default.
 - Logo storage: Railway volume.
 - Multi-location contractors: out of scope for v1.
+- **Margin model:** `blended_labor_rate_cad` is the rate **billed** to the customer
+  (revenue). Gross margin is computed against a separate `labor_cost_rate_cad`
+  (the contractor's loaded cost/hr). It defaults to 0, meaning "use the billed
+  rate" — conservative (no labour profit), so the audit's critical margin flag
+  errs toward firing until a contractor enters their real cost rate. Setting it
+  makes the profit-protection audit (§3.5) meaningful without changing the
+  customer-facing total.
 
 ## Important caveats
 - **Prices and labour hours are PLACEHOLDERS.** Per §9/§20/§21 they must be

@@ -23,6 +23,10 @@ class ContractorRates:
     default_material_markup_pct: Decimal
     default_labor_markup_pct: Decimal
     minimum_callout_hours: Decimal
+    # Loaded labour COST per hour, used only for gross-margin (the blended rate is
+    # what the customer is billed). 0 means "use the blended rate" — a conservative
+    # default that attributes no profit to labour.
+    labor_cost_rate_cad: Decimal = D(0)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "blended_labor_rate_cad", D(self.blended_labor_rate_cad))
@@ -32,6 +36,12 @@ class ContractorRates:
         )
         object.__setattr__(self, "default_labor_markup_pct", D(self.default_labor_markup_pct))
         object.__setattr__(self, "minimum_callout_hours", D(self.minimum_callout_hours))
+        object.__setattr__(self, "labor_cost_rate_cad", D(self.labor_cost_rate_cad))
+
+    @property
+    def effective_labor_cost_rate(self) -> Decimal:
+        """Cost rate for margin: the configured cost rate, or the billed rate if unset."""
+        return self.labor_cost_rate_cad if self.labor_cost_rate_cad > D(0) else self.blended_labor_rate_cad
 
 
 @dataclass

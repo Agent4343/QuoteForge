@@ -25,6 +25,7 @@ class UserOut(BaseModel):
     cmeq_membership_number: str | None
     blended_labor_rate_cad: Decimal
     apprentice_labor_rate_cad: Decimal
+    labor_cost_rate_cad: Decimal
     default_material_markup_pct: Decimal
     default_labor_markup_pct: Decimal
     minimum_callout_hours: Decimal
@@ -45,6 +46,7 @@ class UserUpdate(BaseModel):
     cmeq_membership_number: str | None = Field(default=None, max_length=60)
     blended_labor_rate_cad: Decimal | None = Field(default=None, ge=0)
     apprentice_labor_rate_cad: Decimal | None = Field(default=None, ge=0)
+    labor_cost_rate_cad: Decimal | None = Field(default=None, ge=0)
     default_material_markup_pct: Decimal | None = Field(default=None, ge=0)
     default_labor_markup_pct: Decimal | None = Field(default=None, ge=0)
     minimum_callout_hours: Decimal | None = Field(default=None, ge=0)

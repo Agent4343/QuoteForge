@@ -465,6 +465,11 @@ export interface components {
              */
             apprentice_labor_rate_cad: number | string;
             /**
+             * Labor Cost Rate Cad
+             * @default 0
+             */
+            labor_cost_rate_cad: number | string;
+            /**
              * Default Material Markup Pct
              * @default 35
              */
@@ -1061,6 +1066,8 @@ export interface components {
             blended_labor_rate_cad: string;
             /** Apprentice Labor Rate Cad */
             apprentice_labor_rate_cad: string;
+            /** Labor Cost Rate Cad */
+            labor_cost_rate_cad: string;
             /** Default Material Markup Pct */
             default_material_markup_pct: string;
             /** Default Labor Markup Pct */
@@ -1095,6 +1102,8 @@ export interface components {
             blended_labor_rate_cad?: number | string | null;
             /** Apprentice Labor Rate Cad */
             apprentice_labor_rate_cad?: number | string | null;
+            /** Labor Cost Rate Cad */
+            labor_cost_rate_cad?: number | string | null;
             /** Default Material Markup Pct */
             default_material_markup_pct?: number | string | null;
             /** Default Labor Markup Pct */

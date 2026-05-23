@@ -118,7 +118,8 @@ def compute_estimate(
                    else contractor.default_material_markup_pct)
     lab_markup = D(labor_markup_pct if labor_markup_pct is not None
                    else contractor.default_labor_markup_pct)
-    rate = contractor.blended_labor_rate_cad
+    rate = contractor.blended_labor_rate_cad  # billed to the customer (revenue)
+    cost_rate = contractor.effective_labor_cost_rate  # loaded cost (for margin only)
 
     assumptions: list[str] = []
     lines: list[ComputedLineItem] = []
@@ -154,14 +155,15 @@ def compute_estimate(
             base_hours = variant.labor_override.base_hours
         unit_hours = D(base_hours) * _labor_multiplier(assembly, params)
         line_hours = unit_hours * req.quantity
-        raw_labor_cost = line_hours * rate
+        revenue_labor_base = line_hours * rate
+        line_labor_cost = line_hours * cost_rate
 
         if assembly.labor.minimum_callout_applies:
             callout_eligible = True
         total_labor_hours += line_hours
 
         priced_materials = raw_material_cost * (D(1) + mat_markup / D(100))
-        priced_labor = raw_labor_cost * (D(1) + lab_markup / D(100))
+        priced_labor = revenue_labor_base * (D(1) + lab_markup / D(100))
         line_total = money(priced_materials) + money(priced_labor)
 
         code_refs = [r.model_dump() for r in variant.code_refs] if variant else []
@@ -181,14 +183,14 @@ def compute_estimate(
                 line_total_cad=line_total,
                 code_refs=code_refs,
                 raw_materials_cost_cad=money(raw_material_cost),
-                raw_labor_cost_cad=money(raw_labor_cost),
+                raw_labor_cost_cad=money(line_labor_cost),
                 base_labor_hours=D(base_hours) * req.quantity,
             )
         )
         sub_materials += money(priced_materials)
         sub_labor += money(priced_labor)
         raw_materials_total += raw_material_cost
-        raw_labor_total += raw_labor_cost
+        raw_labor_total += line_labor_cost
 
     # Custom + permit lines.
     for item in additional_line_items:
@@ -219,8 +221,9 @@ def compute_estimate(
     # Minimum callout: floor total billable labour for qualifying jobs (§9).
     if callout_eligible and total_labor_hours < contractor.minimum_callout_hours:
         uplift_hours = contractor.minimum_callout_hours - total_labor_hours
-        uplift_cost = uplift_hours * rate
-        priced_uplift = uplift_cost * (D(1) + lab_markup / D(100))
+        uplift_revenue_base = uplift_hours * rate
+        uplift_cost = uplift_hours * cost_rate
+        priced_uplift = uplift_revenue_base * (D(1) + lab_markup / D(100))
         lines.append(
             ComputedLineItem(
                 line_number=(line_no := line_no + 1),

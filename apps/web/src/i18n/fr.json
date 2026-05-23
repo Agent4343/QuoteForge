@@ -39,6 +39,7 @@
     "title": "Paramètres", "profile": "Profil d'entreprise", "laborRates": "Taux de main-d'œuvre",
     "markup": "Majoration", "blendedRate": "Taux horaire combiné ($/h)",
     "apprenticeRate": "Taux apprenti ($/h)", "minCallout": "Appel de service minimum (h)",
+    "costRate": "Coût horaire chargé ($/h)", "costRateHint": "Votre coût réel par heure, utilisé uniquement pour le calcul de la marge. Laissez 0 pour utiliser le taux facturé.",
     "materialMarkup": "Majoration matériaux (%)", "labourMarkup": "Majoration main-d'œuvre (%)",
     "minMargin": "Marge minimale (%)", "esa": "Licence ESA #", "rbq": "Licence RBQ #",
     "cmeq": "Adhésion CMEQ #", "logoUrl": "URL du logo", "color": "Couleur de marque",

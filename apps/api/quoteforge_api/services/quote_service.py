@@ -56,6 +56,7 @@ def contractor_rates(user: User) -> ContractorRates:
         default_material_markup_pct=user.default_material_markup_pct,
         default_labor_markup_pct=user.default_labor_markup_pct,
         minimum_callout_hours=user.minimum_callout_hours,
+        labor_cost_rate_cad=user.labor_cost_rate_cad,
     )
 
 

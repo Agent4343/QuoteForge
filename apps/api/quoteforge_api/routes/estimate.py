@@ -30,6 +30,7 @@ def preview(req: EstimatePreviewRequest) -> EstimatePreviewResponse:
         default_material_markup_pct=req.contractor.default_material_markup_pct,
         default_labor_markup_pct=req.contractor.default_labor_markup_pct,
         minimum_callout_hours=req.contractor.minimum_callout_hours,
+        labor_cost_rate_cad=req.contractor.labor_cost_rate_cad,
     )
     assemblies = [
         AssemblyRequest(a.assembly_id, a.quantity, a.parameters) for a in req.assemblies

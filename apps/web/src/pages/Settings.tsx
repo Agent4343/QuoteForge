@@ -70,6 +70,10 @@ export default function Settings() {
           <Field label={t("settings.minCallout")}>
             <input className="input" inputMode="decimal" {...register("minimum_callout_hours")} />
           </Field>
+          <Field label={t("settings.costRate")}>
+            <input className="input" inputMode="decimal" {...register("labor_cost_rate_cad")} />
+            <p className="mt-1 text-xs text-gray-500">{t("settings.costRateHint")}</p>
+          </Field>
         </section>
 
         <section className="card" id="markup">

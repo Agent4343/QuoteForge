@@ -1479,6 +1479,20 @@
             "title": "Apprentice Labor Rate Cad",
             "default": "0"
           },
+          "labor_cost_rate_cad": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Labor Cost Rate Cad",
+            "default": "0"
+          },
           "default_material_markup_pct": {
             "anyOf": [
               {
@@ -3314,6 +3328,11 @@
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Apprentice Labor Rate Cad"
           },
+          "labor_cost_rate_cad": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Labor Cost Rate Cad"
+          },
           "default_material_markup_pct": {
             "type": "string",
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -3370,6 +3389,7 @@
           "cmeq_membership_number",
           "blended_labor_rate_cad",
           "apprentice_labor_rate_cad",
+          "labor_cost_rate_cad",
           "default_material_markup_pct",
           "default_labor_markup_pct",
           "minimum_callout_hours",
@@ -3492,6 +3512,22 @@
               }
             ],
             "title": "Apprentice Labor Rate Cad"
+          },
+          "labor_cost_rate_cad": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Labor Cost Rate Cad"
           },
           "default_material_markup_pct": {
             "anyOf": [

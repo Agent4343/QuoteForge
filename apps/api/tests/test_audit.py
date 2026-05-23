@@ -86,6 +86,18 @@ def test_healthy_margin_does_not_block(library, pricebook):
     assert not result.blocks_pdf
 
 
+def test_labor_cost_rate_clears_margin_flag(library, pricebook):
+    # Billed $110/hr with a true loaded cost of $70/hr -> healthy labour margin,
+    # so a normal job clears the 20% minimum without inflating the customer price.
+    rates = ContractorRates(D("110"), D("70"), D("35"), D("0"), D("1"), labor_cost_rate_cad=D("70"))
+    assemblies = [AssemblyRequest("circuit_new_15a_residential", D("1"),
+                                  {"run_length_ft": 40, "access": "open"})]
+    est = _estimate(rates, library, pricebook, Province.ON, assemblies)
+    result = run_audit(_ctx(est, assemblies, library, pricebook, min_margin="20"))
+    assert "MARGIN_BELOW_MIN" not in codes(result)
+    assert not result.blocks_pdf
+
+
 # --- individual rules -------------------------------------------------------
 
 def test_permit_missing_on_service_change(library, pricebook, contractor):

@@ -185,3 +185,20 @@ def test_deterministic_repeatable(contractor, library, pricebook):
     r1 = _estimate(contractor, library, pricebook, *args)
     r2 = _estimate(contractor, library, pricebook, *args)
     assert r1.total_cad == r2.total_cad == D("630.56")
+
+
+def test_labor_cost_rate_below_billed_raises_margin(library, pricebook):
+    from quoteforge_api.services.estimating import ContractorRates
+    job = [AssemblyRequest("circuit_new_15a_residential", D("1"),
+                           {"run_length_ft": 40, "access": "open"})]
+    # Same billed rate ($110) so the customer total is unchanged; a $70 cost rate
+    # attributes labour profit and lifts the margin.
+    billed_eq_cost = ContractorRates(D("110"), D("70"), D("35"), D("0"), D("1"))
+    with_cost = ContractorRates(
+        D("110"), D("70"), D("35"), D("0"), D("1"), labor_cost_rate_cad=D("70")
+    )
+    a = compute_estimate(billed_eq_cost, Province.ON, "x", job, library=library, pricebook=pricebook)
+    b = compute_estimate(with_cost, Province.ON, "x", job, library=library, pricebook=pricebook)
+    assert a.total_cad == b.total_cad == D("242.02")  # customer total identical
+    assert b.gross_margin_pct > a.gross_margin_pct
+    assert b.gross_margin_pct > D("20")  # now clears a typical 20% minimum

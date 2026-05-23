@@ -35,6 +35,8 @@ class User(Base):
     # Business defaults.
     blended_labor_rate_cad: Mapped[Decimal] = mapped_column(sa.Numeric(8, 2), default=0)
     apprentice_labor_rate_cad: Mapped[Decimal] = mapped_column(sa.Numeric(8, 2), default=0)
+    # Loaded labour COST per hour (margin basis). 0 -> use the billed blended rate.
+    labor_cost_rate_cad: Mapped[Decimal] = mapped_column(sa.Numeric(8, 2), default=0, server_default="0")
     default_material_markup_pct: Mapped[Decimal] = mapped_column(sa.Numeric(6, 2), default=35)
     default_labor_markup_pct: Mapped[Decimal] = mapped_column(sa.Numeric(6, 2), default=0)
     minimum_callout_hours: Mapped[Decimal] = mapped_column(sa.Numeric(6, 2), default=1)

@@ -17,6 +17,7 @@ from quoteforge_api.provinces import Province
 class ContractorRatesIn(BaseModel):
     blended_labor_rate_cad: Decimal = Field(gt=0)
     apprentice_labor_rate_cad: Decimal = Field(default=Decimal("0"), ge=0)
+    labor_cost_rate_cad: Decimal = Field(default=Decimal("0"), ge=0)
     default_material_markup_pct: Decimal = Field(default=Decimal("35"), ge=0)
     default_labor_markup_pct: Decimal = Field(default=Decimal("0"), ge=0)
     minimum_callout_hours: Decimal = Field(default=Decimal("1"), ge=0)

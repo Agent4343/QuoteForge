@@ -39,6 +39,7 @@
     "title": "Settings", "profile": "Business profile", "laborRates": "Labour rates",
     "markup": "Markup", "blendedRate": "Blended labour rate ($/hr)",
     "apprenticeRate": "Apprentice rate ($/hr)", "minCallout": "Minimum call-out (hrs)",
+    "costRate": "Loaded labour cost ($/hr)", "costRateHint": "Your true cost per hour, used only for the margin calculation. Leave 0 to use the billed rate.",
     "materialMarkup": "Material markup (%)", "labourMarkup": "Labour markup (%)",
     "minMargin": "Minimum margin (%)", "esa": "ESA licence #", "rbq": "RBQ licence #",
     "cmeq": "CMEQ membership #", "logoUrl": "Logo URL", "color": "Brand colour",
