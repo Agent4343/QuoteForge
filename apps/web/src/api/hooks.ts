@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "./client";
+import { api, postForm } from "./client";
 import type {
   AnswerQuestionRequest,
   CustomerCreate,
@@ -43,6 +43,18 @@ export function useUpdateMe() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: UserUpdate) => api.patch<UserOut>("/api/me", body),
+    onSuccess: (u) => qc.setQueryData(["me"], u),
+  });
+}
+
+export function useUploadLogo() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      return postForm<UserOut>("/api/me/logo", form);
+    },
     onSuccess: (u) => qc.setQueryData(["me"], u),
   });
 }

@@ -17,6 +17,7 @@ from quoteforge_api.assemblies.loader import get_library
 from quoteforge_api.assemblies.schema import Category
 from quoteforge_api.models import Customer, Quote, User
 from quoteforge_api.models.enums import LineSource
+from quoteforge_api.services import logos
 from quoteforge_api.services.pdf.formatting import format_currency, format_date, format_pct
 from quoteforge_api.services.tax.engine import compute_taxes
 
@@ -112,13 +113,28 @@ def _contractor_block(user: User) -> dict:
         licences.append(f"RBQ #{user.rbq_license_number}")
     if user.cmeq_membership_number:
         licences.append(f"CMEQ #{user.cmeq_membership_number}")
+    # Resolve a stored logo to a file:// URI so WeasyPrint reads the bytes
+    # directly; otherwise fall back to whatever logo_url holds (e.g. an http URL).
+    local_logo = logos.logo_path(user.id)
+    logo_src = local_logo.as_uri() if local_logo else user.logo_url
+
+    address = ", ".join(
+        p for p in [
+            user.business_address_line1,
+            user.business_address_line2,
+            f"{user.business_city}, {user.province.value} {user.business_postal_code}"
+            if user.business_city else None,
+        ] if p
+    )
     return {
         "business_name": user.business_name,
         "contact_name": user.full_name,
-        "email": user.email,
+        "email": user.business_email or user.email,
+        "phone": user.business_phone,
+        "address": address,
         "province": user.province.value,
         "licences": licences,
-        "logo_url": user.logo_url,
+        "logo_url": logo_src,
         "primary_color": user.primary_color_hex or "#1a3e5c",
     }
 

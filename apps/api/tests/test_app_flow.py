@@ -7,6 +7,7 @@ assemblies/price book.
 
 from __future__ import annotations
 
+import base64
 import os
 import tempfile
 from collections.abc import AsyncIterator
@@ -20,8 +21,14 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 import quoteforge_api.models  # noqa: F401  (register tables)
 from quoteforge_api.auth import ratelimit
 from quoteforge_api.auth.security import create_reset_token
+from quoteforge_api.config import get_settings
 from quoteforge_api.db import Base, get_session
 from quoteforge_api.main import app
+
+# 1x1 transparent PNG.
+_PNG = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC"
+)
 
 
 @pytest_asyncio.fixture
@@ -269,3 +276,66 @@ async def test_quebec_customer_pdf_renders_in_french(client):
     pdf = await client.get(f"/api/quotes/{q['id']}/pdf", headers=_auth(token))
     assert pdf.status_code == 200
     assert pdf.content[:5] == b"%PDF-"
+
+
+@pytest.fixture
+def logo_dir(monkeypatch, tmp_path):
+    monkeypatch.setenv("LOGO_STORAGE_DIR", str(tmp_path / "logos"))
+    get_settings.cache_clear()
+    yield tmp_path / "logos"
+    get_settings.cache_clear()
+
+
+@pytest.mark.asyncio
+async def test_business_contact_fields_round_trip(client):
+    token = await _register(client)
+    patch = await client.patch("/api/me", headers=_auth(token), json={
+        "business_phone": "613-555-0101", "business_email": "office@sparks.ca",
+        "business_address_line1": "12 Trade Ave", "business_city": "Ottawa",
+        "business_postal_code": "K1A0A1"})
+    assert patch.status_code == 200
+    me = (await client.get("/api/me", headers=_auth(token))).json()
+    assert me["business_phone"] == "613-555-0101"
+    assert me["business_address_line1"] == "12 Trade Ave"
+
+
+@pytest.mark.asyncio
+async def test_logo_upload_serve_and_pdf(client, logo_dir):
+    token = await _register(client)
+    up = await client.post("/api/me/logo", headers=_auth(token),
+                           files={"file": ("logo.png", _PNG, "image/png")})
+    assert up.status_code == 200, up.text
+    user = up.json()
+    assert user["logo_url"].startswith("/api/logos/")
+    assert (logo_dir / f"{user['id']}.png").exists()
+
+    # Public serve endpoint returns the bytes.
+    served = await client.get(user["logo_url"])
+    assert served.status_code == 200
+    assert served.headers["content-type"] == "image/png"
+    assert served.content == _PNG
+
+    # A PDF still renders with the logo resolved from the volume.
+    await _set_rates(client, token)
+    cust = await _create_customer(client, token)
+    q = (await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "x",
+        "line_items": [{"source": "assembly", "assembly_id": "recep_duplex_15a_residential"}]})).json()
+    pdf = await client.get(f"/api/quotes/{q['id']}/pdf?variant=internal", headers=_auth(token))
+    assert pdf.status_code == 200
+    assert pdf.content[:5] == b"%PDF-"
+
+
+@pytest.mark.asyncio
+async def test_logo_rejects_bad_type(client, logo_dir):
+    token = await _register(client)
+    bad = await client.post("/api/me/logo", headers=_auth(token),
+                            files={"file": ("x.txt", b"not an image", "text/plain")})
+    assert bad.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_logo_missing_returns_404(client, logo_dir):
+    import uuid as _uuid
+    r = await client.get(f"/api/logos/{_uuid.uuid4()}")
+    assert r.status_code == 404

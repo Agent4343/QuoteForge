@@ -10,7 +10,8 @@
     <div>
       {% if contractor.logo_url %}<img class="logo" src="{{ contractor.logo_url }}" alt="logo">{% endif %}
       <div class="business">{{ contractor.business_name }}</div>
-      <div class="subtle">{{ contractor.contact_name }} &middot; {{ contractor.email }}</div>
+      <div class="subtle">{{ contractor.contact_name }} &middot; {{ contractor.email }}{% if contractor.phone %} &middot; {{ contractor.phone }}{% endif %}</div>
+      {% if contractor.address %}<div class="subtle">{{ contractor.address }}</div>{% endif %}
       {% if contractor.licences %}<div class="licences">{{ contractor.licences|join(" &nbsp; ") }}</div>{% endif %}
     </div>
     <div class="meta">

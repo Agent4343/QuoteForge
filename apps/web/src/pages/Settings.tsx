@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useMe, useUpdateMe } from "../api/hooks";
+import { useMe, useUpdateMe, useUploadLogo } from "../api/hooks";
 import { PROVINCES } from "../api/types";
 import type { UserUpdate } from "../api/types";
 import { setLanguage } from "../i18n";
@@ -13,6 +13,7 @@ export default function Settings() {
   const token = useAuth((s) => s.accessToken);
   const me = useMe(!!token);
   const update = useUpdateMe();
+  const uploadLogo = useUploadLogo();
   const { register, handleSubmit, reset } = useForm<UserUpdate>();
 
   useEffect(() => {
@@ -53,8 +54,40 @@ export default function Settings() {
           <Field label={t("settings.esa")}><input className="input" {...register("esa_license_number")} /></Field>
           <Field label={t("settings.rbq")}><input className="input" {...register("rbq_license_number")} /></Field>
           <Field label={t("settings.cmeq")}><input className="input" {...register("cmeq_membership_number")} /></Field>
-          <Field label={t("settings.logoUrl")}><input className="input" {...register("logo_url")} /></Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t("settings.businessEmail")}>
+              <input className="input" type="email" inputMode="email" {...register("business_email")} />
+            </Field>
+            <Field label={t("settings.businessPhone")}>
+              <input className="input" type="tel" inputMode="tel" {...register("business_phone")} />
+            </Field>
+          </div>
+          <Field label={t("settings.address1")}><input className="input" {...register("business_address_line1")} /></Field>
+          <Field label={t("settings.address2")}><input className="input" {...register("business_address_line2")} /></Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t("settings.city")}><input className="input" {...register("business_city")} /></Field>
+            <Field label={t("settings.postal")}><input className="input" {...register("business_postal_code")} /></Field>
+          </div>
           <Field label={t("settings.color")}><input className="input" type="text" {...register("primary_color_hex")} placeholder="#1a3e5c" /></Field>
+        </section>
+
+        <section className="card">
+          <h2 className="mb-3 font-semibold">{t("settings.logo")}</h2>
+          {me.data.logo_url && (
+            <img src={me.data.logo_url} alt="logo" className="mb-3 max-h-20 rounded border border-gray-200 p-1" />
+          )}
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/svg+xml,image/webp"
+            className="block text-sm"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadLogo.mutate(file);
+            }}
+          />
+          <p className="mt-1 text-xs text-gray-500">{t("settings.logoHint")}</p>
+          {uploadLogo.isPending && <Spinner label={t("common.saving")} />}
+          {uploadLogo.isError && <p className="field-error mt-1">{t("common.error")}</p>}
         </section>
 
         <section className="card" id="labor-rates">

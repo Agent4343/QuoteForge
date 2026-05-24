@@ -43,7 +43,11 @@
     "materialMarkup": "Material markup (%)", "labourMarkup": "Labour markup (%)",
     "minMargin": "Minimum margin (%)", "esa": "ESA licence #", "rbq": "RBQ licence #",
     "cmeq": "CMEQ membership #", "logoUrl": "Logo URL", "color": "Brand colour",
-    "language": "Language", "saved": "Saved.", "save": "Save"
+    "language": "Language", "saved": "Saved.", "save": "Save",
+    "businessEmail": "Business email", "businessPhone": "Business phone",
+    "address1": "Business address", "address2": "Address line 2", "city": "City",
+    "postal": "Postal code", "logo": "Logo", "uploadLogo": "Upload logo",
+    "logoHint": "PNG, JPG, SVG or WebP, up to 2 MB. Shown on customer PDFs."
   },
   "common": { "loading": "Loading…", "error": "Something went wrong", "back": "Back", "cancel": "Cancel", "saving": "Saving…", "yes": "Yes", "no": "No" },
   "status": { "draft": "Draft", "sent": "Sent", "approved": "Approved", "declined": "Declined", "expired": "Expired" }

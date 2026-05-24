@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/logos/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Logo
+         * @description Serve a contractor logo from the volume. Public (logos appear on quotes).
+         */
+        get: operations["get_logo_api_logos__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/assemblies": {
         parameters: {
             query?: never;
@@ -165,6 +185,23 @@ export interface paths {
         head?: never;
         /** Update Me */
         patch: operations["update_me_api_me_patch"];
+        trace?: never;
+    };
+    "/api/me/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Logo */
+        post: operations["upload_logo_api_me_logo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/customers": {
@@ -454,6 +491,11 @@ export interface components {
             overridden: boolean;
             /** Overridden At */
             overridden_at: string | null;
+        };
+        /** Body_upload_logo_api_me_logo_post */
+        Body_upload_logo_api_me_logo_post: {
+            /** File */
+            file: string;
         };
         /** ContractorRatesIn */
         ContractorRatesIn: {
@@ -1062,6 +1104,18 @@ export interface components {
             rbq_license_number: string | null;
             /** Cmeq Membership Number */
             cmeq_membership_number: string | null;
+            /** Business Email */
+            business_email: string | null;
+            /** Business Phone */
+            business_phone: string | null;
+            /** Business Address Line1 */
+            business_address_line1: string | null;
+            /** Business Address Line2 */
+            business_address_line2: string | null;
+            /** Business City */
+            business_city: string | null;
+            /** Business Postal Code */
+            business_postal_code: string | null;
             /** Blended Labor Rate Cad */
             blended_labor_rate_cad: string;
             /** Apprentice Labor Rate Cad */
@@ -1098,6 +1152,18 @@ export interface components {
             rbq_license_number?: string | null;
             /** Cmeq Membership Number */
             cmeq_membership_number?: string | null;
+            /** Business Email */
+            business_email?: string | null;
+            /** Business Phone */
+            business_phone?: string | null;
+            /** Business Address Line1 */
+            business_address_line1?: string | null;
+            /** Business Address Line2 */
+            business_address_line2?: string | null;
+            /** Business City */
+            business_city?: string | null;
+            /** Business Postal Code */
+            business_postal_code?: string | null;
             /** Blended Labor Rate Cad */
             blended_labor_rate_cad?: number | string | null;
             /** Apprentice Labor Rate Cad */
@@ -1157,6 +1223,37 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    get_logo_api_logos__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1415,6 +1512,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UserUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_logo_api_me_logo_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_logo_api_me_logo_post"];
             };
         };
         responses: {

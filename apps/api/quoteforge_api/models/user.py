@@ -42,6 +42,14 @@ class User(Base):
     minimum_callout_hours: Mapped[Decimal] = mapped_column(sa.Numeric(6, 2), default=1)
     minimum_margin_pct: Mapped[Decimal] = mapped_column(sa.Numeric(6, 2), default=20)
 
+    # Business contact details for the PDF header (§14). Province uses `province` above.
+    business_email: Mapped[str | None] = mapped_column(sa.String(320), nullable=True)
+    business_phone: Mapped[str | None] = mapped_column(sa.String(40), nullable=True)
+    business_address_line1: Mapped[str | None] = mapped_column(sa.String(200), nullable=True)
+    business_address_line2: Mapped[str | None] = mapped_column(sa.String(200), nullable=True)
+    business_city: Mapped[str | None] = mapped_column(sa.String(120), nullable=True)
+    business_postal_code: Mapped[str | None] = mapped_column(sa.String(10), nullable=True)
+
     # Branding.
     logo_url: Mapped[str | None] = mapped_column(sa.String(500), nullable=True)
     primary_color_hex: Mapped[str | None] = mapped_column(sa.String(7), nullable=True)

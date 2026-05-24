@@ -43,7 +43,11 @@
     "materialMarkup": "Majoration matériaux (%)", "labourMarkup": "Majoration main-d'œuvre (%)",
     "minMargin": "Marge minimale (%)", "esa": "Licence ESA #", "rbq": "Licence RBQ #",
     "cmeq": "Adhésion CMEQ #", "logoUrl": "URL du logo", "color": "Couleur de marque",
-    "language": "Langue", "saved": "Enregistré.", "save": "Enregistrer"
+    "language": "Langue", "saved": "Enregistré.", "save": "Enregistrer",
+    "businessEmail": "Courriel d'entreprise", "businessPhone": "Téléphone d'entreprise",
+    "address1": "Adresse de l'entreprise", "address2": "Adresse (ligne 2)", "city": "Ville",
+    "postal": "Code postal", "logo": "Logo", "uploadLogo": "Téléverser un logo",
+    "logoHint": "PNG, JPG, SVG ou WebP, jusqu'à 2 Mo. Affiché sur les PDF clients."
   },
   "common": { "loading": "Chargement…", "error": "Une erreur est survenue", "back": "Retour", "cancel": "Annuler", "saving": "Enregistrement…", "yes": "Oui", "no": "Non" },
   "status": { "draft": "Brouillon", "sent": "Envoyée", "approved": "Acceptée", "declined": "Refusée", "expired": "Expirée" }

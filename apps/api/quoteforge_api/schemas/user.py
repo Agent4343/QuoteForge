@@ -23,6 +23,12 @@ class UserOut(BaseModel):
     esa_license_number: str | None
     rbq_license_number: str | None
     cmeq_membership_number: str | None
+    business_email: str | None
+    business_phone: str | None
+    business_address_line1: str | None
+    business_address_line2: str | None
+    business_city: str | None
+    business_postal_code: str | None
     blended_labor_rate_cad: Decimal
     apprentice_labor_rate_cad: Decimal
     labor_cost_rate_cad: Decimal
@@ -44,6 +50,12 @@ class UserUpdate(BaseModel):
     esa_license_number: str | None = Field(default=None, max_length=60)
     rbq_license_number: str | None = Field(default=None, max_length=60)
     cmeq_membership_number: str | None = Field(default=None, max_length=60)
+    business_email: str | None = Field(default=None, max_length=320)
+    business_phone: str | None = Field(default=None, max_length=40)
+    business_address_line1: str | None = Field(default=None, max_length=200)
+    business_address_line2: str | None = Field(default=None, max_length=200)
+    business_city: str | None = Field(default=None, max_length=120)
+    business_postal_code: str | None = Field(default=None, max_length=10)
     blended_labor_rate_cad: Decimal | None = Field(default=None, ge=0)
     apprentice_labor_rate_cad: Decimal | None = Field(default=None, ge=0)
     labor_cost_rate_cad: Decimal | None = Field(default=None, ge=0)

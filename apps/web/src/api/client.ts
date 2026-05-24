@@ -63,6 +63,30 @@ export const api = {
   del: <T>(path: string) => request<T>(path, "DELETE"),
 };
 
+/** POST multipart form data (e.g. logo upload), with auth + one refresh retry. */
+export async function postForm<T>(path: string, form: FormData): Promise<T> {
+  const send = () => {
+    const token = useAuth.getState().accessToken;
+    return fetch(path, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+  };
+  let res = await send();
+  if (res.status === 401 && (await tryRefresh())) res = await send();
+  if (!res.ok) {
+    let detail: unknown = res.statusText;
+    try {
+      detail = (await res.json()).detail ?? detail;
+    } catch {
+      /* ignore */
+    }
+    throw new ApiError(res.status, detail);
+  }
+  return (await res.json()) as T;
+}
+
 /** Fetch a PDF as an object URL (for in-browser preview). */
 export async function fetchPdf(path: string): Promise<string> {
   let res = await rawFetch(path, "GET");

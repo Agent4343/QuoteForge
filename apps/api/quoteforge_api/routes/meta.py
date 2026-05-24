@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+import uuid
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy import text
 
 from quoteforge_api.assemblies.loader import get_library
 from quoteforge_api.auth.dependencies import SessionDep
 from quoteforge_api.config import get_settings
+from quoteforge_api.services import logos
 
 router = APIRouter(prefix="/api", tags=["meta"])
 
@@ -25,6 +29,15 @@ async def healthz(session: SessionDep) -> dict:
         "db": db_ok,
         "environment": get_settings().environment,
     }
+
+
+@router.get("/logos/{user_id}")
+def get_logo(user_id: uuid.UUID) -> FileResponse:
+    """Serve a contractor logo from the volume. Public (logos appear on quotes)."""
+    path = logos.logo_path(user_id)
+    if path is None:
+        raise HTTPException(status_code=404, detail="No logo")
+    return FileResponse(path, media_type=logos.content_type_for(path))
 
 
 @router.get("/assemblies")
