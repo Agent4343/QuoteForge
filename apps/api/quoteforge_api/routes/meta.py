@@ -29,6 +29,7 @@ async def healthz(session: SessionDep) -> dict:
     return {
         "status": "ok" if db_ok else "degraded",
         "db": db_ok,
+        "data": STARTUP_STATE.get("data", "unknown"),
         "migrations": STARTUP_STATE.get("migrations", "unknown"),
         "environment": get_settings().environment,
     }
