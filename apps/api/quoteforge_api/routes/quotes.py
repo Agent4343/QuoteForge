@@ -245,7 +245,9 @@ async def _get_or_create_llm_session(session: SessionDep, quote_id: uuid.UUID) -
 async def generate(
     quote_id: uuid.UUID, body: GenerateRequest, user: CurrentUser, session: SessionDep
 ) -> GenerationResponse:
-    ratelimit.enforce(f"generate:{user.id}", limit=10, window_seconds=3600)  # §16
+    ratelimit.enforce(
+        f"generate:{user.id}", limit=get_settings().llm_generates_per_hour, window_seconds=3600
+    )  # §16
     quote = await _load_quote(session, user, quote_id)
     if quote.status != QuoteStatus.DRAFT:
         raise HTTPException(status_code=409, detail="Only draft quotes can be generated")

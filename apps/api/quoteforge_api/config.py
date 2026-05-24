@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     anthropic_model: str = Field(default="claude-sonnet-4-5")
     llm_max_questions: int = Field(default=4)  # §12 hard limit on clarifying questions
     llm_max_tool_turns: int = Field(default=12)  # safety cap on the agent loop
+    # Per-user hourly cap on /generate calls (each chat refinement is one call).
+    # §16 suggested 10; raised so iterative chat refinement isn't blocked quickly.
+    llm_generates_per_hour: int = Field(default=40)
     # Whether unreviewed (draft) assemblies appear in the LLM index. §8 says they
     # should not in production; enable in dev/test to exercise the flow pre-review.
     llm_include_draft_assemblies: bool = Field(default=False)

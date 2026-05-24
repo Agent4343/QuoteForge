@@ -6,6 +6,7 @@ import { ApiError, api, fetchPdf } from "../api/client";
 import { useQuote, useQuoteActions } from "../api/hooks";
 import type { QuoteLineItemIn, QuoteLineItemOut, QuoteOut } from "../api/types";
 import { Badge, PageHeader, Spinner } from "../components/ui";
+import { errorMessage } from "../lib/errors";
 import { money, percent } from "../lib/format";
 
 interface AssemblyIndexItem {
@@ -48,67 +49,81 @@ function toInput(lines: QuoteLineItemOut[]): QuoteLineItemIn[] {
 function ChatPane({ quote, id }: { quote: QuoteOut; id: string }) {
   const { t } = useTranslation();
   const { generate, answer } = useQuoteActions(id);
-  const [desc, setDesc] = useState(quote.job_description ?? "");
+  type Msg = { who: "you" | "ai" | "sys"; text: string };
+  const [log, setLog] = useState<Msg[]>([]);
+  const [input, setInput] = useState(quote.job_description ?? "");
   const [question, setQuestion] = useState<Record<string, unknown> | null>(null);
-  const [answerText, setAnswerText] = useState("");
   const [error, setError] = useState("");
 
-  const onGenerate = () => {
-    setError("");
-    generate.mutate(
-      { job_description: desc },
-      {
-        onSuccess: (r) => setQuestion(r.status === "question" ? (r.question ?? null) : null),
-        onError: (e) => setError(e instanceof ApiError ? String(e.detail) : t("common.error")),
-      },
-    );
-  };
-  const onAnswer = () => {
-    answer.mutate(
-      { answer: answerText },
-      {
-        onSuccess: (r) => {
-          setQuestion(r.status === "question" ? (r.question ?? null) : null);
-          setAnswerText("");
-        },
-        onError: (e) => setError(e instanceof ApiError ? String(e.detail) : t("common.error")),
-      },
-    );
+  const busy = generate.isPending || answer.isPending;
+
+  const handleResult = (r: { status: string; question?: Record<string, unknown> | null; assistant_text?: string }) => {
+    if (r.status === "question") {
+      const q = r.question ?? null;
+      setQuestion(q);
+      const why = q && q["why_it_matters"] ? `\n${String(q["why_it_matters"])}` : "";
+      setLog((l) => [...l, { who: "ai", text: (q ? String(q["question"] ?? "") : "") + why || "(needs more detail)" }]);
+    } else {
+      setQuestion(null);
+      setLog((l) => [...l, { who: "ai", text: r.assistant_text || "Updated the estimate — see the middle and preview panes." }]);
+    }
   };
 
-  const busy = generate.isPending || answer.isPending;
+  const send = () => {
+    const text = input.trim();
+    if (!text) return;
+    setError("");
+    setInput("");
+    setLog((l) => [...l, { who: "you", text }]);
+    const opts = {
+      onSuccess: handleResult,
+      onError: (e: unknown) => {
+        const m = errorMessage(e);
+        setError(m);
+        setLog((l) => [...l, { who: "sys", text: m }]);
+      },
+    };
+    // A pending question must be answered as a tool result; otherwise the text
+    // is a new message that continues the same conversation (refining the quote).
+    if (question) answer.mutate({ answer: text }, opts);
+    else generate.mutate({ job_description: text }, opts);
+  };
 
   return (
     <div className="card">
       <h2 className="mb-2 font-semibold">{t("quotes.chat")}</h2>
+
+      <div className="mb-3 max-h-[360px] space-y-2 overflow-y-auto">
+        {log.length === 0 && <p className="text-sm text-gray-500">{t("quotes.jobDescription")}</p>}
+        {log.map((m, i) => (
+          <div key={i} className={m.who === "you" ? "text-right" : ""}>
+            <span
+              className={
+                "inline-block max-w-[90%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm " +
+                (m.who === "you"
+                  ? "bg-brand text-white"
+                  : m.who === "ai"
+                    ? "bg-gray-100 text-gray-800"
+                    : "bg-red-50 text-red-700")
+              }
+            >
+              {m.text}
+            </span>
+          </div>
+        ))}
+        {busy && <Spinner label={t("quotes.generating")} />}
+      </div>
+
       <textarea
-        className="input min-h-[120px] py-2"
-        placeholder={t("quotes.jobDescription")}
-        value={desc}
-        onChange={(e) => setDesc(e.target.value)}
+        className="input min-h-[70px] py-2"
+        placeholder={question ? t("quotes.answer") : t("quotes.jobDescription")}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
-      <button className="btn-primary mt-2 w-full" onClick={onGenerate} disabled={busy || !desc}>
-        {busy ? <Spinner label={t("quotes.generating")} /> : t("quotes.generate")}
+      <button className="btn-primary mt-2 w-full" onClick={send} disabled={busy || !input.trim()}>
+        {busy ? <Spinner label={t("quotes.generating")} /> : question ? t("quotes.answer") : t("quotes.generate")}
       </button>
       {error && <p className="field-error mt-2">{error}</p>}
-
-      {question && (
-        <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3">
-          <p className="font-medium">{String(question["question"] ?? "")}</p>
-          {question["why_it_matters"] ? (
-            <p className="mt-1 text-sm text-gray-600">{String(question["why_it_matters"])}</p>
-          ) : null}
-          <textarea
-            className="input mt-2 min-h-[60px] py-2"
-            value={answerText}
-            onChange={(e) => setAnswerText(e.target.value)}
-            placeholder={t("quotes.answer")}
-          />
-          <button className="btn-secondary mt-2 w-full" onClick={onAnswer} disabled={busy || !answerText}>
-            {t("quotes.answer")}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
