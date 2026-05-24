@@ -47,3 +47,10 @@ def test_sqlite_unchanged():
     url, args = normalize_async_db_url("sqlite+aiosqlite:///./x.db")
     assert url == "sqlite+aiosqlite:///./x.db"
     assert args == {}
+
+
+def test_trailing_whitespace_is_stripped():
+    # A stray newline/tab pasted into the env var must not end up in the dbname.
+    url, _ = normalize_async_db_url("postgresql://u:p@host:5432/postgres\n\t\t")
+    assert url == "postgresql+asyncpg://u:p@host:5432/postgres"
+    assert not url.endswith(("\n", "\t", " "))

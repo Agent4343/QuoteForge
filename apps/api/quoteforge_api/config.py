@@ -28,8 +28,12 @@ def normalize_async_db_url(raw: str) -> tuple[str, dict]:
     URLs, but our async engine needs the ``postgresql+asyncpg`` driver. We also
     move libpq-only query params (``sslmode``, ``channel_binding``) out of the
     DSN into asyncpg ``connect_args`` so the connection doesn't error.
+
+    Leading/trailing whitespace (a stray newline/tab pasted into an env var) is
+    stripped — otherwise it ends up inside the database name (e.g. "postgres\\n")
+    and the server reports the database "does not exist".
     """
-    url = raw
+    url = raw.strip()
     for prefix in ("postgres://", "postgresql://"):
         if url.startswith(prefix):
             url = "postgresql+asyncpg://" + url[len(prefix):]
