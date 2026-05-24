@@ -45,15 +45,18 @@ def run_migrations_offline() -> None:
 
 
 def _do_run_migrations(connection) -> None:  # noqa: ANN001
-    if connection.dialect.name == "postgresql":
-        connection.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _MIGRATION_LOCK_KEY})
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        render_as_batch=True,
+        render_as_batch=False,
         compare_type=True,
     )
+    # The advisory lock must be taken INSIDE Alembic's transaction so it commits
+    # together with the migration DDL. Taking it beforehand started a separate
+    # implicit transaction that left the DDL uncommitted (rolled back on close).
     with context.begin_transaction():
+        if connection.dialect.name == "postgresql":
+            connection.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _MIGRATION_LOCK_KEY})
         context.run_migrations()
 
 
