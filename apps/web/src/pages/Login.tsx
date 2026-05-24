@@ -5,11 +5,14 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useLogin } from "../api/hooks";
-import { ApiError } from "../api/client";
 import { Field, Spinner } from "../components/ui";
+import { errorMessage } from "../lib/errors";
 import { useAuth } from "../stores/auth";
 
-const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
+const schema = z.object({
+  email: z.string().min(1, "Email is required").email("Enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 type Form = z.infer<typeof schema>;
 
 export default function Login() {
@@ -27,7 +30,7 @@ export default function Login() {
         setTokens(tokens);
         navigate("/dashboard");
       },
-      onError: (e) => setError(e instanceof ApiError ? String(e.detail) : t("common.error")),
+      onError: (e) => setError(errorMessage(e)),
     });
   };
 
@@ -35,9 +38,15 @@ export default function Login() {
     <div className="mx-auto mt-16 max-w-sm px-4">
       <h1 className="mb-1 text-2xl font-bold text-brand">{t("app.name")}</h1>
       <p className="mb-6 text-sm text-gray-500">{t("app.tagline")}</p>
-      <form onSubmit={handleSubmit(onSubmit)} className="card">
+      <form
+        onSubmit={handleSubmit(onSubmit, () => setError("Please fix the highlighted fields below."))}
+        className="card"
+        noValidate
+      >
         <h2 className="mb-4 text-lg font-semibold">{t("auth.login")}</h2>
-        {error && <p className="field-error mb-3">{error}</p>}
+        {error && (
+          <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        )}
         <Field label={t("auth.email")} error={formState.errors.email?.message}>
           <input className="input" type="email" inputMode="email" autoComplete="email" {...register("email")} />
         </Field>
