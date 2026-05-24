@@ -1,0 +1,33 @@
+schema_version: "1.0"
+id: light_fixture_chandelier_tall
+category: lighting
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Chandelier install — tall ceiling (owner-supplied)"
+  fr: "Installation de lustre — plafond haut (fourni par le client)"
+description:
+  en: "Install an owner-supplied chandelier on a fixture-rated box, with access equipment for tall ceilings."
+  fr: "Installer un lustre fourni par le client sur une boîte homologuée, avec équipement d'accès pour plafonds hauts."
+parameters:
+  ceiling_height: {type: enum, default: standard, values: [standard, tall, very_tall], sensitivity: high, prompt_en: "Ceiling height: standard (8 ft), tall (to ~16 ft), or very tall?", prompt_fr: "Hauteur du plafond : standard (8 pi), haut (jusqu'à ~16 pi) ou très haut?", labor_multipliers: {standard: 1.0, tall: 1.8, very_tall: 2.6}}
+materials:
+  - {sku: BOX_OCTAGON, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+labor: {base_hours: 1.5, phase: trim, apprentice_compatible: false, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-302", note: "Outlet boxes must support the weight of the luminaire."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Les boîtes doivent supporter le poids du luminaire."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

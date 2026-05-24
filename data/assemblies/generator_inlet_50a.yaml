@@ -1,0 +1,40 @@
+schema_version: "1.0"
+id: generator_inlet_50a
+category: special
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Generator inlet + interlock (50A)"
+  fr: "Entrée de génératrice + verrouillage (50A)"
+description:
+  en: "Install a 50A generator power inlet and panel interlock kit for backup power."
+  fr: "Installer une entrée de génératrice 50A et une trousse de verrouillage de panneau."
+parameters:
+  inlet_run_ft: {type: number, default: 15, sensitivity: high, prompt_en: "Cable run from the panel to the inlet box (ft)?", prompt_fr: "Longueur du câble du panneau à la boîte d'entrée (pi)?"}
+materials:
+  - {sku: GEN_INLET_50A, qty: 1}
+  - {sku: INTERLOCK_KIT, qty: 1}
+  - {sku: BREAKER_50A_2P, qty: 1}
+  - {sku: WIRE_NMD90_6_3, qty_formula: "inlet_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(inlet_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 3.5, phase: special, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 84-000", note: "Interconnection of a portable generator via interlock."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 84", note: "Raccordement d'une génératrice portative par verrouillage."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

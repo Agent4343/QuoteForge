@@ -1,0 +1,40 @@
+schema_version: "1.0"
+id: light_fixture_install_new
+category: lighting
+trade: electrical
+work_type: [renovation, new_construction]
+names:
+  en: "Install new light fixture location (owner-supplied fixture)"
+  fr: "Installer un nouvel emplacement de luminaire (luminaire fourni par le client)"
+description:
+  en: "Add a new switched ceiling outlet and install an owner-supplied fixture, including wiring."
+  fr: "Ajouter une nouvelle sortie de plafond commandée et installer un luminaire fourni par le client, câblage inclus."
+parameters:
+  cable_run_ft: {type: number, default: 18, sensitivity: high, prompt_en: "Cable length from the source to the fixture (ft)?", prompt_fr: "Longueur de câble de la source au luminaire (pi)?"}
+  ceiling_access: {type: enum, default: attic_above, values: [attic_above, no_access], sensitivity: high, prompt_en: "Attic access above, or fished blind?", prompt_fr: "Accès au grenier au-dessus, ou tiré à l'aveugle?", labor_multipliers: {attic_above: 1.0, no_access: 1.5}}
+materials:
+  - {sku: BOX_OCTAGON, qty: 1}
+  - {sku: SWITCH_SP, qty: 1}
+  - {sku: BOX_DEVICE_PVC, qty: 1}
+  - {sku: PLATE_TOGGLE, qty: 1}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "cable_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(cable_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 1.5, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-300", note: "Luminaire support and connection requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Support et raccordement des luminaires."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

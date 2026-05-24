@@ -1,0 +1,41 @@
+schema_version: "1.0"
+id: ev_charger_l2_outdoor
+category: ev
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Level 2 EV charger circuit — outdoor wall"
+  fr: "Circuit de borne de recharge VÉ niveau 2 — mur extérieur"
+description:
+  en: "Install a 40A 240V circuit and outdoor-rated disconnect for a wall-mounted Level 2 EV charger."
+  fr: "Installer un circuit 240V 40A et un sectionneur extérieur pour une borne VÉ niveau 2 murale."
+parameters:
+  wire_run_ft: {type: number, default: 35, sensitivity: high, prompt_en: "Cable run from the panel to the charger (ft)?", prompt_fr: "Longueur du câble du panneau à la borne (pi)?"}
+materials:
+  - {sku: BREAKER_40A_2P, qty: 1}
+  - {sku: WIRE_NMD90_8_3, qty_formula: "wire_run_ft", waste: 0.10}
+  - {sku: DISCONNECT_60A, qty: 1}
+  - {sku: PLATE_WP_INUSE, qty: 1}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(wire_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 4.0, phase: special, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 86-300", note: "EVSE branch-circuit and outdoor disconnect requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 86", note: "Exigences d'alimentation et de sectionnement extérieur des bornes VÉ."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

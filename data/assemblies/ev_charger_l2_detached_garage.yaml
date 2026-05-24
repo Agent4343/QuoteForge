@@ -1,0 +1,42 @@
+schema_version: "1.0"
+id: ev_charger_l2_detached_garage
+category: ev
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Level 2 EV charger circuit — detached garage"
+  fr: "Circuit de borne de recharge VÉ niveau 2 — garage détaché"
+description:
+  en: "Install a 40A 240V circuit to a detached garage for a Level 2 EV charger, including buried conduit."
+  fr: "Installer un circuit 240V 40A vers un garage détaché pour une borne VÉ niveau 2, conduit enfoui inclus."
+parameters:
+  trench_run_ft: {type: number, default: 60, sensitivity: high, prompt_en: "Buried run from the house to the detached garage (ft)?", prompt_fr: "Longueur enfouie de la maison au garage détaché (pi)?"}
+materials:
+  - {sku: BREAKER_40A_2P, qty: 1}
+  - {sku: WIRE_NMD90_8_3, qty_formula: "trench_run_ft + 20", waste: 0.10}
+  - {sku: PVC_3_4, qty_formula: "trench_run_ft", waste: 0.05}
+  - {sku: CONNECTOR_PVC_3_4, qty_formula: "ceil(trench_run_ft / 10)"}
+  - {sku: RECEP_EV_1450, qty: 1}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 5.0, phase: special, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 86-300", note: "EVSE branch-circuit requirements."}
+      - {section: "Rule 12-012", note: "Underground conductor burial depth."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 86", note: "Exigences d'alimentation des bornes VÉ."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

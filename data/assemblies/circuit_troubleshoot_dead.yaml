@@ -1,0 +1,33 @@
+schema_version: "1.0"
+id: circuit_troubleshoot_dead
+category: troubleshooting
+trade: electrical
+work_type: [service]
+names:
+  en: "Troubleshoot dead circuit"
+  fr: "Dépanner un circuit hors tension"
+description:
+  en: "Locate and repair the cause of a dead branch circuit (loose connection, tripped device, or break)."
+  fr: "Localiser et réparer la cause d'un circuit de dérivation hors tension (connexion lâche, dispositif déclenché ou rupture)."
+parameters:
+  complexity: {type: enum, default: standard, values: [standard, complex], sensitivity: high, prompt_en: "Straightforward or complex/hidden fault?", prompt_fr: "Défaillance simple ou complexe/cachée?", labor_multipliers: {standard: 1.0, complex: 2.0}}
+materials:
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: RECEP_DUPLEX_15A, qty: 1}
+labor: {base_hours: 1.25, phase: special, apprentice_compatible: false, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 2-300", note: "Existing installations to be left in a safe condition."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 2", note: "Les installations existantes doivent être laissées sécuritaires."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

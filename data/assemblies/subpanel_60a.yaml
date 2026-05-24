@@ -1,0 +1,40 @@
+schema_version: "1.0"
+id: subpanel_60a
+category: panels
+trade: electrical
+work_type: [service, renovation, new_construction]
+names:
+  en: "60A subpanel"
+  fr: "Sous-panneau 60A"
+description:
+  en: "Install a 60A subpanel fed from the main panel, including feeder breaker and feeder run."
+  fr: "Installer un sous-panneau 60A alimenté depuis le panneau principal, disjoncteur d'alimentation et alimentation inclus."
+parameters:
+  feeder_run_ft: {type: number, default: 30, sensitivity: high, prompt_en: "Feeder run from the main panel (ft)?", prompt_fr: "Longueur d'alimentation depuis le panneau principal (pi)?"}
+materials:
+  - {sku: SUBPANEL_60A, qty: 1}
+  - {sku: BREAKER_60A_2P, qty: 1}
+  - {sku: WIRE_NMD90_6_3, qty_formula: "feeder_run_ft", waste: 0.10}
+  - {sku: BREAKER_15A_1P, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(feeder_run_ft / 4)"}
+  - {sku: WIRE_CONNECTOR, qty: 6}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 3.5, phase: service, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 8-104", note: "Feeder and subpanel ampacity and overcurrent protection."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 8", note: "Ampacité et protection des alimentations et sous-panneaux."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

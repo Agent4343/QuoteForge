@@ -1,0 +1,32 @@
+schema_version: "1.0"
+id: conduit_run_pvc_buried_per_ft
+category: exterior
+trade: electrical
+work_type: [service, renovation, new_construction]
+names:
+  en: "Buried PVC conduit run (per ft)"
+  fr: "Parcours de conduit PVC enfoui (par pi)"
+description:
+  en: "Buried 3/4 in. PVC conduit run, priced per foot (set quantity to the total length). Trenching quoted separately."
+  fr: "Parcours de conduit PVC 3/4 po enfoui, au pied (réglez la quantité à la longueur totale). Tranchée soumissionnée séparément."
+parameters: {}
+materials:
+  - {sku: PVC_3_4, qty: 1}
+  - {sku: CONNECTOR_PVC_3_4, qty: 0.12}
+labor: {base_hours: 0.05, phase: rough_in, apprentice_compatible: true, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 12-012", note: "Underground conduit burial depth and protection."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 12", note: "Profondeur d'enfouissement et protection des conduits souterrains."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

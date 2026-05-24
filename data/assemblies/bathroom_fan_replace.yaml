@@ -1,0 +1,32 @@
+schema_version: "1.0"
+id: bathroom_fan_replace
+category: safety
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Bathroom exhaust fan — replace"
+  fr: "Ventilateur de salle de bain — remplacement"
+description:
+  en: "Remove an existing bathroom fan and install a replacement on the existing wiring and duct."
+  fr: "Retirer un ventilateur existant et installer un remplacement sur le câblage et le conduit existants."
+parameters: {}
+materials:
+  - {sku: BATH_FAN, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 3}
+labor: {base_hours: 1.2, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 26-700", note: "Bathroom device replacement requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 26", note: "Exigences de remplacement des appareils de salle de bain."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

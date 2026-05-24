@@ -1,0 +1,37 @@
+schema_version: "1.0"
+id: light_fixture_exterior
+category: lighting
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Exterior light fixture (owner-supplied)"
+  fr: "Luminaire extérieur (fourni par le client)"
+description:
+  en: "Install an owner-supplied exterior wall fixture on a weatherproof box, including wiring."
+  fr: "Installer un luminaire mural extérieur fourni par le client sur une boîte étanche, câblage inclus."
+parameters:
+  cable_run_ft: {type: number, default: 15, sensitivity: medium, prompt_en: "Cable length to the fixture location (ft)?", prompt_fr: "Longueur de câble jusqu'au luminaire (pi)?"}
+materials:
+  - {sku: BOX_OCTAGON, qty: 1}
+  - {sku: PLATE_WP_INUSE, qty: 1}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "cable_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(cable_run_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 1.0, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-320", note: "Luminaires in wet/damp locations require suitable enclosures."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Les luminaires en endroits humides exigent des boîtiers appropriés."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

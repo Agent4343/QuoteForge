@@ -1,0 +1,39 @@
+schema_version: "1.0"
+id: range_hood_circuit
+category: circuits
+trade: electrical
+work_type: [renovation, new_construction]
+names:
+  en: "Range hood circuit"
+  fr: "Circuit de hotte de cuisinière"
+description:
+  en: "Run a dedicated 15A circuit and outlet for a range hood or over-range microwave fan."
+  fr: "Installer un circuit dédié 15A et une sortie pour une hotte de cuisinière."
+parameters:
+  run_length_ft: {type: number, default: 25, sensitivity: high, prompt_en: "Cable run from the panel to the hood (ft)?", prompt_fr: "Longueur du câble du panneau à la hotte (pi)?"}
+materials:
+  - {sku: WIRE_NMD90_14_2, qty_formula: "run_length_ft", waste: 0.10}
+  - {sku: BREAKER_15A_1P, qty: 1}
+  - {sku: BOX_DEVICE_METAL, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+  - {sku: STAPLE_NMD, qty_formula: "ceil(run_length_ft / 4)"}
+  - {sku: CONNECTOR_NM, qty: 2}
+labor: {base_hours: 1.2, phase: rough_in, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 26-744", note: "Dedicated branch circuit for fixed appliances."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 26", note: "Circuit de dérivation dédié pour appareils fixes."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

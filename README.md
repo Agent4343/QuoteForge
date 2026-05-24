@@ -147,5 +147,6 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - [x] React + Vite frontend — auth, dashboard, customers, three-pane quote builder, PDF preview, settings (§15).
 - [ ] Browser/E2E test pass (the frontend builds under strict TS and its API wiring is verified through the dev proxy, but it has not been driven in a live browser here).
 - [ ] Professional French translation + Quebec electrician review of the library and PDF/UI strings.
-- [ ] Expand the assembly library to the full ~50 (§8) and price book to ~200 SKUs with real reviewed values. (24 of ~50 assemblies built; all load + compute + price-book-resolve in ON & QC, tested.)
+- [x] Build the full ~50-assembly §8 library (49 across every category; 68 price-book SKUs). Every assembly loads + computes + price-book-resolves in ON & QC, tested.
+- [ ] Replace placeholder prices/labour hours with real electrician-reviewed values and grow the price book toward ~200 SKUs.
 - [ ] Logo upload to the Railway volume; tighten `/quotes/*/generate` rate limiting; add business address/phone fields for the PDF header.

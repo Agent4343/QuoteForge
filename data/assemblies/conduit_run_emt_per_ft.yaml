@@ -1,0 +1,32 @@
+schema_version: "1.0"
+id: conduit_run_emt_per_ft
+category: exterior
+trade: electrical
+work_type: [service, renovation, new_construction]
+names:
+  en: "EMT conduit run (per ft)"
+  fr: "Parcours de conduit EMT (par pi)"
+description:
+  en: "Surface-mounted 3/4 in. EMT conduit run, priced per foot (set quantity to the total length)."
+  fr: "Parcours de conduit EMT 3/4 po en surface, au pied (réglez la quantité à la longueur totale)."
+parameters: {}
+materials:
+  - {sku: EMT_3_4, qty: 1}
+  - {sku: CONNECTOR_EMT_1_2, qty: 0.12}
+labor: {base_hours: 0.06, phase: rough_in, apprentice_compatible: true, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 12-1300", note: "EMT installation and support spacing."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 12", note: "Installation et espacement des supports d'EMT."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

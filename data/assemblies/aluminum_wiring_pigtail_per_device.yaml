@@ -1,0 +1,32 @@
+schema_version: "1.0"
+id: aluminum_wiring_pigtail_per_device
+category: troubleshooting
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Aluminum wiring pigtail (per device)"
+  fr: "Raccord de queue de cochon pour câblage d'aluminium (par appareil)"
+description:
+  en: "Remediate one aluminum-wired device with a copper pigtail using approved Cu/Al connectors and antioxidant."
+  fr: "Corriger un appareil câblé en aluminium avec une queue de cochon en cuivre à l'aide de connecteurs Cu/Al homologués et d'antioxydant."
+parameters: {}
+materials:
+  - {sku: WIRE_CONNECTOR, qty: 2}
+  - {sku: WIRE_NMD90_14_2, qty: 2, waste: 0.0}
+labor: {base_hours: 0.4, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 12-118", note: "Termination of aluminum conductors with approved connectors."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 12", note: "Terminaison des conducteurs d'aluminium avec connecteurs homologués."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

@@ -75,6 +75,11 @@
     "BATH_FAN": {"description_en": "Bathroom exhaust fan, 110 CFM", "description_fr": "Ventilateur de salle de bain, 110 PCM", "unit": "ea", "cost_cad": 65.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
     "GEN_INLET_30A": {"description_en": "30A generator power inlet box", "description_fr": "Boîte d'entrée de génératrice 30A", "unit": "ea", "cost_cad": 55.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
     "GEN_INLET_50A": {"description_en": "50A generator power inlet box", "description_fr": "Boîte d'entrée de génératrice 50A", "unit": "ea", "cost_cad": 78.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
-    "INTERLOCK_KIT": {"description_en": "Generator panel interlock kit", "description_fr": "Trousse de verrouillage de panneau pour génératrice", "unit": "ea", "cost_cad": 60.00, "supplier": "Gescan", "last_updated": "2026-05-01"}
+    "INTERLOCK_KIT": {"description_en": "Generator panel interlock kit", "description_fr": "Trousse de verrouillage de panneau pour génératrice", "unit": "ea", "cost_cad": 60.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
+    "CABLE_SE_2": {"description_en": "2-2-4 aluminum SE service/feeder cable", "description_fr": "Câble SE aluminium 2-2-4 (entrée/alimentation)", "unit": "ft", "cost_cad": 4.20, "supplier": "Gescan", "last_updated": "2026-05-01"},
+    "BREAKER_60A_2P": {"description_en": "60A double-pole breaker", "description_fr": "Disjoncteur bipolaire 60A", "unit": "ea", "cost_cad": 34.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
+    "BREAKER_100A_2P": {"description_en": "100A double-pole breaker", "description_fr": "Disjoncteur bipolaire 100A", "unit": "ea", "cost_cad": 62.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
+    "DOORBELL_KIT": {"description_en": "Wired doorbell kit (transformer, button, chime)", "description_fr": "Trousse de sonnette câblée (transformateur, bouton, carillon)", "unit": "ea", "cost_cad": 42.00, "supplier": "Gescan", "last_updated": "2026-05-01"},
+    "WIRE_BELL_18_2": {"description_en": "18/2 low-voltage bell wire", "description_fr": "Fil de sonnette basse tension 18/2", "unit": "ft", "cost_cad": 0.30, "supplier": "Gescan", "last_updated": "2026-05-01"}
   }
 }

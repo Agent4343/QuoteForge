@@ -1,0 +1,45 @@
+schema_version: "1.0"
+id: service_upgrade_200a_underground
+category: service
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "200A underground service upgrade"
+  fr: "Mise à niveau du branchement souterrain 200A"
+description:
+  en: "Upgrade an existing service to 200A underground: meter base, 200A panel, conduit, and grounding."
+  fr: "Mettre à niveau un branchement existant à 200A souterrain : base de compteur, panneau 200A, conduit et mise à la terre."
+parameters:
+  service_entrance_ft: {type: number, default: 25, sensitivity: high, prompt_en: "Underground run from the meter to the panel (ft)?", prompt_fr: "Longueur souterraine du compteur au panneau (pi)?"}
+  ground_run_ft: {type: number, default: 25, sensitivity: low, prompt_en: "Grounding conductor run (ft)?", prompt_fr: "Longueur du conducteur de terre (pi)?"}
+materials:
+  - {sku: PANEL_200A_40CKT, qty: 1}
+  - {sku: METER_BASE_200A, qty: 1}
+  - {sku: CABLE_SE_2_0, qty_formula: "service_entrance_ft", waste: 0.10}
+  - {sku: PVC_1, qty_formula: "service_entrance_ft", waste: 0.05}
+  - {sku: GROUND_ROD, qty: 2}
+  - {sku: GROUND_CLAMP, qty: 2}
+  - {sku: ACORN_CLAMP, qty: 1}
+  - {sku: GROUND_6_BARE, qty_formula: "ground_run_ft", waste: 0.05}
+  - {sku: BREAKER_15A_1P, qty: 6}
+  - {sku: BREAKER_20A_1P, qty: 4}
+labor: {base_hours: 9.0, phase: service, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 12-012", note: "Underground service-conductor installation and burial depth."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal et coordination Hydro-Québec requis"
+    labor_override: {base_hours: 10.0}
+    code_refs:
+      - {section: "Section 12", note: "Installation des conducteurs souterrains et profondeur d'enfouissement."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

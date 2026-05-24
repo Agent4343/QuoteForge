@@ -1,0 +1,31 @@
+schema_version: "1.0"
+id: light_fixture_replace
+category: lighting
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Replace light fixture (owner-supplied)"
+  fr: "Remplacer un luminaire (fourni par le client)"
+description:
+  en: "Remove an existing fixture and install an owner-supplied replacement on the existing outlet box."
+  fr: "Retirer un luminaire existant et installer un luminaire de remplacement fourni par le client sur la boîte existante."
+parameters: {}
+materials:
+  - {sku: WIRE_CONNECTOR, qty: 3}
+labor: {base_hours: 0.5, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 30-300", note: "Luminaire support and connection requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 30", note: "Support et raccordement des luminaires."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

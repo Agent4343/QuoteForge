@@ -1,0 +1,36 @@
+schema_version: "1.0"
+id: co_alarm_hardwired_install
+category: safety
+trade: electrical
+work_type: [renovation, new_construction]
+names:
+  en: "Hardwired CO alarm (per unit)"
+  fr: "Avertisseur de CO câblé (par unité)"
+description:
+  en: "Install one interconnected hardwired carbon-monoxide alarm with battery backup."
+  fr: "Installer un avertisseur de monoxyde de carbone câblé interconnecté avec pile de secours."
+parameters:
+  interconnect_run_ft: {type: number, default: 20, sensitivity: medium, prompt_en: "Interconnect cable length to the next alarm (ft)?", prompt_fr: "Longueur de câble d'interconnexion vers le prochain avertisseur (pi)?"}
+materials:
+  - {sku: CO_ALARM_HW, qty: 1}
+  - {sku: BOX_OCTAGON, qty: 1}
+  - {sku: WIRE_NMD90_14_3, qty_formula: "interconnect_run_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 3}
+  - {sku: CONNECTOR_NM, qty: 1}
+labor: {base_hours: 0.8, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 32-200", note: "Alarm wiring and interconnection requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 32", note: "Câblage et interconnexion des avertisseurs."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

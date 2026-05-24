@@ -1,0 +1,46 @@
+schema_version: "1.0"
+id: service_upgrade_100a_overhead
+category: service
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "100A overhead service upgrade"
+  fr: "Mise à niveau du branchement aérien 100A"
+description:
+  en: "Upgrade an existing overhead service to 100A: mast, meter base, 100A panel, and grounding."
+  fr: "Mettre à niveau un branchement aérien existant à 100A : mât, base de compteur, panneau 100A et mise à la terre."
+parameters:
+  service_entrance_ft: {type: number, default: 12, sensitivity: high, prompt_en: "SE cable length from weatherhead to panel (ft)?", prompt_fr: "Longueur du câble d'entrée du capuchon au panneau (pi)?"}
+  ground_run_ft: {type: number, default: 25, sensitivity: low, prompt_en: "Grounding conductor run (ft)?", prompt_fr: "Longueur du conducteur de terre (pi)?"}
+materials:
+  - {sku: PANEL_100A_24CKT, qty: 1}
+  - {sku: METER_BASE_200A, qty: 1}
+  - {sku: MAST_2IN, qty: 1}
+  - {sku: WEATHERHEAD_2IN, qty: 1}
+  - {sku: CABLE_SE_2, qty_formula: "service_entrance_ft", waste: 0.10}
+  - {sku: GROUND_ROD, qty: 2}
+  - {sku: GROUND_CLAMP, qty: 2}
+  - {sku: ACORN_CLAMP, qty: 1}
+  - {sku: GROUND_6_BARE, qty_formula: "ground_run_ft", waste: 0.05}
+  - {sku: BREAKER_15A_1P, qty: 4}
+  - {sku: BREAKER_20A_1P, qty: 2}
+labor: {base_hours: 7.0, phase: service, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 6-112", note: "Consumer's service equipment and service-entrance requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal et coordination Hydro-Québec requis"
+    labor_override: {base_hours: 8.0}
+    code_refs:
+      - {section: "Section 6", note: "Exigences relatives à l'appareillage de branchement."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

@@ -99,7 +99,7 @@ def test_qty_zero_removes_material(pricebook):
 # --- whole-library integrity (§3.2: assemblies are the product) -------------
 
 def test_library_has_grown(library):
-    assert len(library.all()) >= 24
+    assert len(library.all()) >= 49
 
 
 def test_all_assembly_skus_exist_in_pricebook(library, pricebook):

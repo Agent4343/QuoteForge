@@ -1,0 +1,39 @@
+schema_version: "1.0"
+id: yard_light_install
+category: exterior
+trade: electrical
+work_type: [renovation, new_construction]
+names:
+  en: "Yard / post light (owner-supplied)"
+  fr: "Lampadaire de cour (fourni par le client)"
+description:
+  en: "Install an owner-supplied yard/post light with a buried feed and weatherproof connections."
+  fr: "Installer un lampadaire de cour fourni par le client avec alimentation enfouie et raccords étanches."
+parameters:
+  trench_run_ft: {type: number, default: 40, sensitivity: high, prompt_en: "Buried run from the source to the post (ft)?", prompt_fr: "Longueur enfouie de la source au poteau (pi)?"}
+materials:
+  - {sku: WIRE_NMD90_14_2, qty_formula: "trench_run_ft + 10", waste: 0.10}
+  - {sku: PVC_3_4, qty_formula: "trench_run_ft", waste: 0.05}
+  - {sku: CONNECTOR_PVC_3_4, qty_formula: "ceil(trench_run_ft / 10)"}
+  - {sku: BOX_OCTAGON, qty: 1}
+  - {sku: PLATE_WP_INUSE, qty: 1}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+labor: {base_hours: 2.5, phase: special, apprentice_compatible: true, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 12-012", note: "Underground conductor burial depth."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 12", note: "Profondeur d'enfouissement des conducteurs souterrains."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

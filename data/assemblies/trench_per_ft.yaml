@@ -1,0 +1,31 @@
+schema_version: "1.0"
+id: trench_per_ft
+category: exterior
+trade: electrical
+work_type: [service, renovation, new_construction]
+names:
+  en: "Hand trench (per ft)"
+  fr: "Tranchée à la main (par pi)"
+description:
+  en: "Hand-dig and backfill a cable/conduit trench, priced per foot (set quantity to the total length)."
+  fr: "Creuser et remblayer à la main une tranchée pour câble/conduit, au pied (réglez la quantité à la longueur totale)."
+parameters:
+  soil: {type: enum, default: normal, values: [normal, hard], sensitivity: high, prompt_en: "Normal soil or hard/rocky?", prompt_fr: "Sol normal ou dur/rocheux?", labor_multipliers: {normal: 1.0, hard: 1.8}}
+materials: []
+labor: {base_hours: 0.12, phase: special, apprentice_compatible: true, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 12-012", note: "Required burial depths determine trench depth."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 12", note: "Les profondeurs d'enfouissement requises déterminent la profondeur de la tranchée."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

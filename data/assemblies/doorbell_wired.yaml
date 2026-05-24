@@ -1,0 +1,34 @@
+schema_version: "1.0"
+id: doorbell_wired
+category: special
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Wired doorbell"
+  fr: "Sonnette câblée"
+description:
+  en: "Install a wired doorbell: transformer, push button, chime, and low-voltage wiring."
+  fr: "Installer une sonnette câblée : transformateur, bouton-poussoir, carillon et câblage basse tension."
+parameters:
+  bell_wire_ft: {type: number, default: 40, sensitivity: medium, prompt_en: "Total low-voltage wire run (ft)?", prompt_fr: "Longueur totale du fil basse tension (pi)?"}
+materials:
+  - {sku: DOORBELL_KIT, qty: 1}
+  - {sku: WIRE_BELL_18_2, qty_formula: "bell_wire_ft", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty: 4}
+labor: {base_hours: 1.5, phase: trim, apprentice_compatible: true, minimum_callout_applies: true}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    code_refs:
+      - {section: "Rule 16-200", note: "Class 2 low-voltage circuit and transformer requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    code_refs:
+      - {section: "Section 16", note: "Exigences des circuits basse tension de classe 2 et du transformateur."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft

@@ -1,0 +1,38 @@
+schema_version: "1.0"
+id: panel_relocation_existing
+category: panels
+trade: electrical
+work_type: [service, renovation]
+names:
+  en: "Relocate existing panel"
+  fr: "Déplacer un panneau existant"
+description:
+  en: "Relocate an existing panel a short distance, extending and junctioning the existing branch circuits."
+  fr: "Déplacer un panneau existant sur une courte distance, en prolongeant et en raccordant les circuits de dérivation existants."
+parameters:
+  circuits: {type: number, default: 16, sensitivity: high, prompt_en: "Approximate number of circuits to extend?", prompt_fr: "Nombre approximatif de circuits à prolonger?"}
+materials:
+  - {sku: BOX_DEVICE_METAL, qty: 4}
+  - {sku: WIRE_NMD90_14_2, qty_formula: "circuits * 6", waste: 0.10}
+  - {sku: WIRE_CONNECTOR, qty_formula: "circuits * 3"}
+  - {sku: CONNECTOR_NM, qty_formula: "circuits"}
+  - {sku: CABLE_SE_2_0, qty: 8, waste: 0.10}
+labor: {base_hours: 6.0, phase: service, apprentice_compatible: false, minimum_callout_applies: false}
+provincial_variants:
+  "ON":
+    code_edition: "OESC 2024 (28th)"
+    permit_handling: "ESA notification required"
+    code_refs:
+      - {section: "Rule 26-400", note: "Panelboard location and working-space requirements."}
+  "QC":
+    code_edition_current: "Chapitre V (CCÉ 2015 + modifications QC)"
+    code_edition_pending: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+    transition_period_until: "2026-09-26"
+    customer_language_default: fr
+    permit_handling: "Permis municipal requis"
+    code_refs:
+      - {section: "Section 26", note: "Emplacement du panneau et espace de travail requis."}
+audit_flags: []
+last_reviewed: null
+reviewed_by: null
+status: draft
