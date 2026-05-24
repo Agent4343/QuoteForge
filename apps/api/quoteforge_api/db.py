@@ -27,11 +27,12 @@ class Base(DeclarativeBase):
 
 @lru_cache
 def get_engine() -> AsyncEngine:
-    url = get_settings().database_url
+    settings = get_settings()
+    url = settings.async_database_url
+    connect_args = dict(settings.db_connect_args)
     # SQLite needs check_same_thread off for the async driver in tests.
-    connect_args = {}
     if url.startswith("sqlite"):
-        connect_args = {"check_same_thread": False}
+        connect_args["check_same_thread"] = False
     return create_async_engine(url, future=True, pool_pre_ping=True, connect_args=connect_args)
 
 

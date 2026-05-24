@@ -29,7 +29,7 @@ _MIGRATION_LOCK_KEY = 728_193_021
 
 
 def _url() -> str:
-    return get_settings().database_url
+    return get_settings().async_database_url
 
 
 def run_migrations_offline() -> None:
@@ -58,7 +58,7 @@ def _do_run_migrations(connection) -> None:  # noqa: ANN001
 
 
 async def _run_async() -> None:
-    engine = create_async_engine(_url())
+    engine = create_async_engine(_url(), connect_args=get_settings().db_connect_args)
     async with engine.connect() as connection:
         await connection.run_sync(_do_run_migrations)
     await engine.dispose()

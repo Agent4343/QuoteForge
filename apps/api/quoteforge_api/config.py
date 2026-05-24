@@ -9,12 +9,42 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # .../apps/api/quoteforge_api/config.py -> repo root is three parents up.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
+
+# libpq DSN query params asyncpg doesn't accept; handled via connect_args instead.
+_SSL_MODES_REQUIRING_TLS = {"require", "verify-ca", "verify-full", "prefer", "allow"}
+
+
+def normalize_async_db_url(raw: str) -> tuple[str, dict]:
+    """Return an asyncpg-compatible URL + connect_args.
+
+    Managed hosts (Railway, Heroku) hand out ``postgres://`` / ``postgresql://``
+    URLs, but our async engine needs the ``postgresql+asyncpg`` driver. We also
+    move libpq-only query params (``sslmode``, ``channel_binding``) out of the
+    DSN into asyncpg ``connect_args`` so the connection doesn't error.
+    """
+    url = raw
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            url = "postgresql+asyncpg://" + url[len(prefix):]
+            break
+
+    connect_args: dict = {}
+    parts = urlsplit(url)
+    if parts.query and parts.scheme.startswith("postgresql+asyncpg"):
+        q = dict(parse_qsl(parts.query, keep_blank_values=True))
+        sslmode = q.pop("sslmode", None)
+        q.pop("channel_binding", None)
+        if sslmode in _SSL_MODES_REQUIRING_TLS:
+            connect_args["ssl"] = True
+        url = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(q), parts.fragment))
+    return url, connect_args
 
 
 class Settings(BaseSettings):
@@ -47,6 +77,15 @@ class Settings(BaseSettings):
 
     # Where contractor logos are stored (Railway volume — see §23.6 decision).
     logo_storage_dir: Path = Field(default=_REPO_ROOT / "var" / "logos")
+
+    @property
+    def async_database_url(self) -> str:
+        """DB URL with a guaranteed async driver (asyncpg / aiosqlite)."""
+        return normalize_async_db_url(self.database_url)[0]
+
+    @property
+    def db_connect_args(self) -> dict:
+        return normalize_async_db_url(self.database_url)[1]
 
     @property
     def assemblies_dir(self) -> Path:
