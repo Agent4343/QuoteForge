@@ -15,6 +15,27 @@ def test_healthz():
     assert r.json()["status"] in {"ok", "degraded"}
 
 
+def test_healthz_degrades_on_unparseable_database_url(monkeypatch):
+    # A bad DATABASE_URL must NOT 500 the healthcheck (Railway boot fix): the
+    # endpoint takes no DB dependency and catches engine-build errors.
+    from quoteforge_api import db
+    from quoteforge_api.config import get_settings
+
+    monkeypatch.setenv("DATABASE_URL", "this is not a url")
+    get_settings.cache_clear()
+    db.get_engine.cache_clear()
+    db.get_sessionmaker.cache_clear()
+    try:
+        r = client.get("/api/healthz")
+        assert r.status_code == 200
+        assert r.json()["db"] is False
+        assert r.json()["status"] == "degraded"
+    finally:
+        get_settings.cache_clear()
+        db.get_engine.cache_clear()
+        db.get_sessionmaker.cache_clear()
+
+
 def test_list_assemblies():
     r = client.get("/api/assemblies")
     assert r.status_code == 200

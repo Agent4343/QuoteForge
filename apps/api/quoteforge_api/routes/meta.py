@@ -9,7 +9,6 @@ from fastapi.responses import FileResponse
 from sqlalchemy import text
 
 from quoteforge_api.assemblies.loader import get_library
-from quoteforge_api.auth.dependencies import SessionDep
 from quoteforge_api.config import get_settings
 from quoteforge_api.services import logos
 
@@ -17,18 +16,31 @@ router = APIRouter(prefix="/api", tags=["meta"])
 
 
 @router.get("/healthz")
-async def healthz(session: SessionDep) -> dict:
-    """Liveness + DB connectivity check (§18)."""
+async def healthz() -> dict:
+    """Liveness + DB connectivity check (§18).
+
+    Deliberately takes NO DB-session dependency: a bad/unparseable DATABASE_URL
+    raises when the engine is built, which during dependency injection would
+    500 before any handler code runs. We build the connection inside a broad
+    try/except so the healthcheck always returns 200 (degraded when the DB is
+    unreachable or misconfigured) and reports what's wrong.
+    """
     from quoteforge_api.main import STARTUP_STATE
 
     db_ok = True
+    db_error = None
     try:
-        await session.execute(text("SELECT 1"))
-    except Exception:  # noqa: BLE001
+        from quoteforge_api.db import get_sessionmaker
+
+        async with get_sessionmaker()() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception as exc:  # noqa: BLE001
         db_ok = False
+        db_error = exc.__class__.__name__
     return {
         "status": "ok" if db_ok else "degraded",
         "db": db_ok,
+        "db_error": db_error,
         "data": STARTUP_STATE.get("data", "unknown"),
         "migrations": STARTUP_STATE.get("migrations", "unknown"),
         "environment": get_settings().environment,
