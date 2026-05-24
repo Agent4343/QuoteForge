@@ -185,7 +185,8 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
       </div>
 
       <div className="mt-3 flex gap-2">
-        <select className="input flex-1" value={addId} onChange={(e) => setAddId(e.target.value)}>
+        <select className="input flex-1" aria-label={t("quotes.addLine")} value={addId}
+                onChange={(e) => setAddId(e.target.value)}>
           <option value="">{t("quotes.addLine")}…</option>
           {assemblies.data?.assemblies.map((a) => (
             <option key={a.id} value={a.id}>{lang === "fr" ? a.names.fr : a.names.en}</option>
@@ -294,6 +295,7 @@ function PreviewPane({ quote, id }: { quote: QuoteOut; id: string }) {
         </button>
         <select
           className="input"
+          aria-label={t("quotes.markStatus")}
           value={quote.status}
           onChange={(e) => markStatus.mutate(e.target.value)}
         >

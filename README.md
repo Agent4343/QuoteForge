@@ -145,7 +145,7 @@ Dockerfile, railway.json   Single-service production deploy (§18)
 - [x] LLM orchestration with Claude tool-use (§12) — engine/audit/permits exposed as tools, prompt caching, ask/resume.
 - [x] WeasyPrint PDF generation — EN/FR customer templates + internal breakdown (§14), audit-gated, `GET /quotes/{id}/pdf?variant=customer|internal`.
 - [x] React + Vite frontend — auth, dashboard, customers, three-pane quote builder, PDF preview, settings (§15).
-- [ ] Browser/E2E test pass (the frontend builds under strict TS and its API wiring is verified through the dev proxy, but it has not been driven in a live browser here).
+- [x] Browser E2E scaffolding: a Playwright golden-path spec (`apps/web/e2e`) + config (API on SQLite + Vite) + a CI job. Runs where a browser is installed (`npx playwright install chromium`); the spec compiles and is collected, but Chromium's download is blocked in the build sandbox so it has not been executed here — it runs in CI.
 - [ ] Professional French translation + Quebec electrician review of the library and PDF/UI strings.
 - [x] Build the full ~50-assembly §8 library (49 across every category; 68 price-book SKUs). Every assembly loads + computes + price-book-resolves in ON & QC, tested.
 - [ ] Replace placeholder prices/labour hours with real electrician-reviewed values and grow the price book toward ~200 SKUs.

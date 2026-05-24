@@ -24,12 +24,14 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <div className="mb-3">
-      <label className="label">{label}</label>
-      {/* Validation message above the input (§15: thumb often covers below). */}
+    // Nesting the control inside the <label> associates them (a11y + lets tests
+    // select by label). Validation message sits above the input (§15: thumb
+    // often covers below).
+    <label className="mb-3 block">
+      <span className="label">{label}</span>
       {error && <ErrorText>{error}</ErrorText>}
       {children}
-    </div>
+    </label>
   );
 }
 

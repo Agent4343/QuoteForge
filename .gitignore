@@ -14,6 +14,11 @@ node_modules/
 apps/web/dist/
 apps/api/static/
 
+# E2E (Playwright) artifacts
+apps/web/playwright-report/
+apps/web/test-results/
+apps/api/e2e.db
+
 # Local runtime data (Railway volume for logos, etc.)
 var/
 
