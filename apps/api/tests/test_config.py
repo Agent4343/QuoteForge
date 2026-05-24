@@ -1,6 +1,14 @@
 """DB URL normalization for managed hosts (Railway/Heroku) — §18."""
 
-from quoteforge_api.config import normalize_async_db_url
+from quoteforge_api.config import Settings, normalize_async_db_url
+
+
+def test_is_deployed_is_case_insensitive():
+    assert Settings(environment="Prod").is_deployed is True
+    assert Settings(environment="PRODUCTION").is_deployed is True
+    assert Settings(environment="staging").is_deployed is True
+    assert Settings(environment="dev").is_deployed is False
+    assert Settings(environment="test").is_deployed is False
 
 
 def test_postgres_scheme_rewritten_to_asyncpg():

@@ -51,7 +51,7 @@ async def lifespan(_: FastAPI):
     # Migration failure is logged but NON-FATAL: the app still binds so the
     # healthcheck can pass and the error is visible in the logs, rather than the
     # container hanging/crashing on boot with no signal.
-    if settings.environment in {"prod", "staging"}:
+    if settings.is_deployed:
         from quoteforge_api.db_migrate import run_upgrade
 
         try:

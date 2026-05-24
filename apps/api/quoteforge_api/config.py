@@ -79,6 +79,11 @@ class Settings(BaseSettings):
     logo_storage_dir: Path = Field(default=_REPO_ROOT / "var" / "logos")
 
     @property
+    def is_deployed(self) -> bool:
+        """True for deployed environments (prod/staging), case-insensitively."""
+        return self.environment.strip().lower() in {"prod", "staging", "production"}
+
+    @property
     def async_database_url(self) -> str:
         """DB URL with a guaranteed async driver (asyncpg / aiosqlite)."""
         return normalize_async_db_url(self.database_url)[0]
