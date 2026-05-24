@@ -11,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # .../apps/api/quoteforge_api/config.py -> repo root is three parents up.
@@ -71,6 +71,15 @@ class Settings(BaseSettings):
     smtp_from: str = Field(default="")
 
     sentry_dsn: str = Field(default="")
+
+    @field_validator("smtp_port", mode="before")
+    @classmethod
+    def _blank_smtp_port_to_default(cls, v: object) -> object:
+        # An optional int var left blank in the environment (e.g. SMTP_PORT="")
+        # must not crash startup; fall back to the default port.
+        if v is None or (isinstance(v, str) and v.strip() == ""):
+            return 587
+        return v
 
     # Data directories (assemblies + price book live in version control).
     data_dir: Path = Field(default=_REPO_ROOT / "data")
