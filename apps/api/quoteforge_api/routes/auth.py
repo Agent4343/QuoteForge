@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import UTC, datetime
 
@@ -33,6 +34,7 @@ from quoteforge_api.schemas.auth import (
 from quoteforge_api.services.email import send_password_reset
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+logger = logging.getLogger("quoteforge.auth")
 
 _AuthLimit = Depends(rate_limit("auth", limit=10, window_seconds=60))
 
@@ -46,8 +48,10 @@ async def _issue_tokens(session: SessionDep, user: User) -> TokenResponse:
 
 @router.post("/register", response_model=TokenResponse, status_code=201, dependencies=[_AuthLimit])
 async def register(body: RegisterRequest, session: SessionDep) -> TokenResponse:
+    logger.info("register attempt: email=%s province=%s", body.email, body.province)
     exists = await session.scalar(select(User).where(User.email == body.email.lower()))
     if exists:
+        logger.info("register rejected: email already exists (%s)", body.email)
         raise HTTPException(status_code=409, detail="Email already registered")
     # Quebec contractors default to French customer-facing output (§3).
     language = body.language or (Language.FR if body.province == Province.QC else Language.EN)
@@ -61,11 +65,14 @@ async def register(body: RegisterRequest, session: SessionDep) -> TokenResponse:
     )
     session.add(user)
     await session.flush()
-    return await _issue_tokens(session, user)
+    tokens = await _issue_tokens(session, user)
+    logger.info("register success: email=%s id=%s", user.email, user.id)
+    return tokens
 
 
 @router.post("/login", response_model=TokenResponse, dependencies=[_AuthLimit])
 async def login(body: LoginRequest, session: SessionDep) -> TokenResponse:
+    logger.info("login attempt: email=%s", body.email)
     user = await session.scalar(select(User).where(User.email == body.email.lower()))
     if user is None or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
