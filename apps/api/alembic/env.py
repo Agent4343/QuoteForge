@@ -58,7 +58,12 @@ def _do_run_migrations(connection) -> None:  # noqa: ANN001
 
 
 async def _run_async() -> None:
-    engine = create_async_engine(_url(), connect_args=get_settings().db_connect_args)
+    # Bound the connect attempt (asyncpg) so an unreachable DB fails fast and
+    # loudly instead of hanging startup past the healthcheck window.
+    connect_args = dict(get_settings().db_connect_args)
+    if _url().startswith("postgresql"):
+        connect_args.setdefault("timeout", 15)
+    engine = create_async_engine(_url(), connect_args=connect_args)
     async with engine.connect() as connection:
         await connection.run_sync(_do_run_migrations)
     await engine.dispose()

@@ -19,6 +19,8 @@ router = APIRouter(prefix="/api", tags=["meta"])
 @router.get("/healthz")
 async def healthz(session: SessionDep) -> dict:
     """Liveness + DB connectivity check (§18)."""
+    from quoteforge_api.main import STARTUP_STATE
+
     db_ok = True
     try:
         await session.execute(text("SELECT 1"))
@@ -27,6 +29,7 @@ async def healthz(session: SessionDep) -> dict:
     return {
         "status": "ok" if db_ok else "degraded",
         "db": db_ok,
+        "migrations": STARTUP_STATE.get("migrations", "unknown"),
         "environment": get_settings().environment,
     }
 
