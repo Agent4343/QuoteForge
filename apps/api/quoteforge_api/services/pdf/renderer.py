@@ -15,6 +15,7 @@ from weasyprint import HTML
 
 from quoteforge_api.assemblies.loader import get_library
 from quoteforge_api.assemblies.schema import Category
+from quoteforge_api.code_editions import get_code_matrix
 from quoteforge_api.models import Customer, Quote, User
 from quoteforge_api.models.enums import LineSource
 from quoteforge_api.services import logos
@@ -153,6 +154,18 @@ def _customer_block(customer: Customer) -> dict:
     }
 
 
+def _code_block(quote: Quote) -> dict:
+    """Province code context for the quote (edition locked at quote time + the
+    regulator/permit model/utility from the code matrix)."""
+    pc = get_code_matrix().get(quote.province)
+    return {
+        "edition": quote.code_edition,
+        "regulator": pc.regulator,
+        "permit_model": pc.permit_model,
+        "utility": pc.utility,
+    }
+
+
 def _customer_context(quote: Quote, user: User, customer: Customer, lang: str) -> dict:
     scope = quote.customer_facing_scope_fr if lang == "fr" else quote.customer_facing_scope_en
     subtotal = (
@@ -178,6 +191,7 @@ def _customer_context(quote: Quote, user: User, customer: Customer, lang: str) -
         "total": format_currency(quote.total_cad, lang),
         "terms": _TERMS[lang],
         "code_edition": quote.code_edition,
+        "code": _code_block(quote),
     }
 
 
@@ -223,6 +237,7 @@ def render_internal_pdf(quote: Quote, user: User, customer: Customer) -> bytes:
         "issue_date": format_date(quote.created_at.date() if quote.created_at else None, "en"),
         "province": quote.province.value,
         "code_edition": quote.code_edition,
+        "code": _code_block(quote),
         "job_title": quote.job_title,
         "job_description": quote.job_description,
         "internal_notes": quote.internal_notes,

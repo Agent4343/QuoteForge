@@ -15,6 +15,8 @@
       <div class="quote-title">{{ quote_number }}</div>
       <div>Date: {{ issue_date }}</div>
       <div>Province: {{ province }} &middot; {{ code_edition }}</div>
+      <div class="subtle">{{ code.permit_model }}</div>
+      <div class="subtle">{{ code.regulator }}{% if code.utility %} &middot; {{ code.utility }}{% endif %}</div>
     </div>
   </div>
 

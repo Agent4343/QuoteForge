@@ -288,6 +288,9 @@ function PreviewPane({ quote, id }: { quote: QuoteOut; id: string }) {
       <h2 className="mb-2 font-semibold">{t("quotes.preview")}</h2>
       <div className="rounded-lg bg-gray-50 p-3 text-sm">
         <div className="font-semibold">{quote.quote_number}</div>
+        <div className="mt-1 text-xs text-gray-500">
+          {quote.province} · {quote.code_edition}
+        </div>
         <p className="mt-2 whitespace-pre-wrap">{scope || t("quotes.noScope")}</p>
       </div>
 
