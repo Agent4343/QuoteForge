@@ -18,6 +18,7 @@ from pathlib import Path
 # Make the package importable when run as a standalone script from any cwd.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from quoteforge_api.data_integrity import validate_data  # noqa: E402
 from quoteforge_api.review import format_summary, summary, worksheet_csv  # noqa: E402
 
 
@@ -33,12 +34,24 @@ def main() -> None:
     group.add_argument(
         "--json", action="store_true", help="Emit the status summary as JSON.",
     )
+    group.add_argument(
+        "--validate", action="store_true",
+        help="Check cross-file data integrity (SKUs, formula params); exit 1 on problems.",
+    )
     args = parser.parse_args()
 
     if args.worksheet:
         sys.stdout.write(worksheet_csv())
     elif args.json:
         print(json.dumps(summary(), indent=2))
+    elif args.validate:
+        problems = validate_data()
+        if problems:
+            print(f"Data integrity: {len(problems)} problem(s)")
+            for p in problems:
+                print(f"  - {p}")
+            sys.exit(1)
+        print("Data integrity: OK")
     else:
         print(format_summary(summary()))
 

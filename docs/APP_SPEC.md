@@ -196,7 +196,7 @@ Railway single service (multi-stage Docker, §6). Env vars: `DATABASE_URL, JWT_S
 
 ## 20. Testing
 
-`pytest` on SQLite (93 tests green): engine, audit, tax, formula, assemblies, code editions, config, LLM, and end-to-end app flow (auth, isolation, quote lifecycle, dashboard stats + assembly metrics, PDF gating, logo, QC French). Playwright e2e specs exist (`golden-path`, `dashboard`) but **require Chromium**, which can't be installed in the build sandbox — run them locally/CI with `npx playwright install chromium && npm run e2e`. `ruff` lint clean.
+`pytest` on SQLite (114 tests green): engine, audit (incl. §24.2/§24.3 rules), tax, formula, assemblies, code editions, config, LLM, proposal quality, data integrity, review tooling, and end-to-end app flow (auth, isolation, quote lifecycle, optional add-ons, dashboard stats + assembly metrics, PDF gating, logo, QC French). A **data-integrity** test (`quoteforge_api/data_integrity.py`) cross-checks that every material SKU exists in the price book and every `qty_formula` references a declared parameter — it runs in the existing CI `pytest` step, so a bad data edit fails the PR before merge. Playwright e2e specs (`golden-path`, `dashboard`) run in CI (the `e2e` job installs Chromium) but **can't run in the build sandbox** (Chromium download is allowlist-blocked). `ruff` lint clean. CI (`.github/workflows/ci.yml`): API lint+test, web typecheck+build, browser e2e.
 
 ## 21. Definition of Done — NOT YET MET
 
