@@ -107,6 +107,9 @@ class QuoteLineItem(Base):
     labor_cost_cad: Mapped[Decimal] = mapped_column(_MONEY, default=0)
     line_total_cad: Mapped[Decimal] = mapped_column(_MONEY, default=0)
     code_refs: Mapped[list] = mapped_column(sa.JSON, default=list)
+    # Recommended add-on the customer can decline (§24.4): priced individually but
+    # excluded from the project subtotals/tax/total/margin.
+    is_optional: Mapped[bool] = mapped_column(sa.Boolean, default=False, server_default=sa.false())
 
     quote: Mapped[Quote] = relationship(back_populates="line_items")
 

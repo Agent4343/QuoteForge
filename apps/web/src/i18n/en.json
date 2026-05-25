@@ -38,7 +38,9 @@
     "pdfBlocked": "A critical flag must be overridden before sending or downloading the customer PDF.",
     "downloadPdf": "Download PDF", "internalPdf": "Internal copy", "markStatus": "Mark as",
     "assemblyId": "Assembly", "auditFlags": "Audit", "noFlags": "No audit flags.",
-    "options": "Options", "resetParam": "Reset to default"
+    "options": "Options", "resetParam": "Reset to default",
+    "optional": "Optional", "markOptional": "Mark as optional add-on",
+    "optionalAddons": "Optional add-ons", "excluded": "not in total"
   },
   "settings": {
     "title": "Settings", "profile": "Business profile", "laborRates": "Labour rates",

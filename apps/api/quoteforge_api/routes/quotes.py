@@ -61,7 +61,7 @@ def _input_rows(items: list[QuoteLineItemIn]) -> list[QuoteLineItem]:
             rows.append(QuoteLineItem(
                 line_number=i, source=LineSource.ASSEMBLY, assembly_id=item.assembly_id,
                 description_en="", description_fr="", quantity=item.quantity,
-                parameters=item.parameters,
+                parameters=item.parameters, is_optional=item.is_optional,
             ))
         else:
             rows.append(QuoteLineItem(
@@ -69,6 +69,7 @@ def _input_rows(items: list[QuoteLineItemIn]) -> list[QuoteLineItem]:
                 description_en=item.description_en or "", description_fr=item.description_fr or "",
                 quantity=item.quantity, parameters={},
                 line_total_cad=item.amount_cad or 0, labor_hours=item.labor_hours,
+                is_optional=item.is_optional,
             ))
     return rows
 

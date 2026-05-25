@@ -87,7 +87,9 @@ def _inputs_from_quote(quote: Quote) -> tuple[list[AssemblyRequest], list[Custom
             continue  # engine-synthesised line; not an input
         if li.source == LineSource.ASSEMBLY and li.assembly_id:
             params = {k: v for k, v in (li.parameters or {}).items() if k != _GENERATED_MARKER}
-            assemblies.append(AssemblyRequest(li.assembly_id, li.quantity, params))
+            assemblies.append(
+                AssemblyRequest(li.assembly_id, li.quantity, params, is_optional=li.is_optional)
+            )
         else:
             extras.append(
                 CustomLineItem(
@@ -96,6 +98,7 @@ def _inputs_from_quote(quote: Quote) -> tuple[list[AssemblyRequest], list[Custom
                     amount_cad=li.line_total_cad,
                     source=li.source.value,
                     labor_hours=li.labor_hours,
+                    is_optional=li.is_optional,
                 )
             )
     return assemblies, extras
@@ -154,6 +157,7 @@ def apply_estimate(
             labor_cost_cad=li.labor_cost_cad,
             line_total_cad=li.line_total_cad,
             code_refs=li.code_refs,
+            is_optional=li.is_optional,
         )
         for li in result.line_items
     ]

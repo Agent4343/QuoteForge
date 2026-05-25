@@ -59,6 +59,12 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 .totals .grand td { border-top: 2px solid var(--accent, #1a3e5c); font-weight: 700; font-size: 12pt;
                     padding-top: 8px; }
 
+.optional { margin-top: 20px; padding: 10px 14px; border: 1px dashed #cbd2d9; border-radius: 6px; }
+.optional h3 { font-size: 10pt; color: var(--accent, #1a3e5c); margin-bottom: 4px; }
+.optional table { margin-top: 2px; }
+.optional .opt-total td { border-top: 1.5px solid #cbd2d9; font-weight: 700; }
+.opt-note { margin-top: 6px; font-size: 8pt; color: #7b8794; font-style: italic; }
+
 .terms { margin-top: 22px; font-size: 8.5pt; color: #52606d; }
 .terms h3 { font-size: 9pt; color: #1f2933; margin-bottom: 4px; }
 

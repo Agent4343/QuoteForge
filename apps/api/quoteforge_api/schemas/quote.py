@@ -6,7 +6,7 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 from quoteforge_api.models.enums import FlagSeverity, Language, LineSource, QuoteStatus
 from quoteforge_api.provinces import Province
@@ -19,6 +19,7 @@ class QuoteLineItemIn(BaseModel):
     assembly_id: str | None = None
     quantity: Decimal = Field(default=Decimal("1"), gt=0)
     parameters: dict[str, object] = Field(default_factory=dict)
+    is_optional: bool = False  # recommended add-on, excluded from the project total (§24.4)
     # For custom / permit lines (contractor-confirmed price):
     description_en: str | None = None
     description_fr: str | None = None
@@ -81,6 +82,7 @@ class QuoteLineItemOut(BaseModel):
     labor_cost_cad: Decimal
     line_total_cad: Decimal
     code_refs: list
+    is_optional: bool = False
 
 
 class AuditFlagOut(BaseModel):
@@ -130,6 +132,15 @@ class QuoteOut(BaseModel):
     line_items: list[QuoteLineItemOut]
     audit_flags: list[AuditFlagOut]
     pdf_blocked: bool = False
+
+    @computed_field
+    @property
+    def optional_subtotal_cad(self) -> Decimal:
+        """Pre-tax sum of optional add-on lines (excluded from total_cad, §24.4)."""
+        return sum(
+            (li.line_total_cad for li in self.line_items if li.is_optional),
+            Decimal("0"),
+        )
 
 
 class QuoteSummary(BaseModel):

@@ -74,6 +74,29 @@
     <tr class="grand"><td>Total (CAD)</td><td class="num">{{ total }}</td></tr>
   </table>
 
+  {% if optional %}
+  <div class="optional">
+    <h3>{{ optional.label }}</h3>
+    <table>
+      <tbody>
+        {% for item in optional.lines %}
+        <tr>
+          <td>{{ item.description }}</td>
+          <td class="num">{{ item.quantity }}</td>
+          <td class="num">{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="opt-total">
+          <td>Si ajouté (taxes incl.)</td>
+          <td></td>
+          <td class="num">{{ optional.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="opt-note">{{ optional.note }}</div>
+  </div>
+  {% endif %}
+
   <div class="terms">
     <h3>Code et permis</h3>
     <div>Réalisé selon {{ code.edition }}. {{ code.permit_model }}.{% if code.regulator %} Autorité d'inspection : {{ code.regulator }}.{% endif %}</div>

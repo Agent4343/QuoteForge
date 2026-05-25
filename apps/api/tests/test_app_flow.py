@@ -146,6 +146,41 @@ async def test_quote_lifecycle_with_engine_and_audit(client):
 
 
 @pytest.mark.asyncio
+async def test_optional_line_excluded_from_total(client):
+    token = await _register(client)
+    await _set_rates(client, token)
+    cust = await _create_customer(client, token)
+
+    with_opt = await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "circuit + optional EV",
+        "line_items": [
+            {"source": "assembly", "assembly_id": "circuit_new_15a_residential",
+             "quantity": "1", "parameters": {"run_length_ft": 40, "access": "open"}},
+            {"source": "assembly", "assembly_id": "ev_charger_l2_attached_garage",
+             "quantity": "1", "is_optional": True},
+        ]})
+    assert with_opt.status_code == 201, with_opt.text
+    q = with_opt.json()
+
+    baseline = await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "circuit only",
+        "line_items": [
+            {"source": "assembly", "assembly_id": "circuit_new_15a_residential",
+             "quantity": "1", "parameters": {"run_length_ft": 40, "access": "open"}},
+        ]})
+    qb = baseline.json()
+
+    # The optional add-on doesn't change the project total or margin.
+    assert q["total_cad"] == qb["total_cad"]
+    assert q["gross_margin_pct"] == qb["gross_margin_pct"]
+    # ...but it's surfaced separately and flagged on its line.
+    assert Decimal(q["optional_subtotal_cad"]) > 0
+    opt = [li for li in q["line_items"] if li["is_optional"]]
+    assert len(opt) == 1
+    assert opt[0]["assembly_id"] == "ev_charger_l2_attached_garage"
+
+
+@pytest.mark.asyncio
 async def test_customer_and_quote_isolation_between_users(client):
     token_a = await _register(client, email="a@example.com")
     token_b = await _register(client, email="b@example.com")

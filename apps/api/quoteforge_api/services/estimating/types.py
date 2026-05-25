@@ -49,6 +49,7 @@ class AssemblyRequest:
     assembly_id: str
     quantity: Decimal = D(1)
     parameters: dict[str, object] = field(default_factory=dict)
+    is_optional: bool = False
 
     def __post_init__(self) -> None:
         self.quantity = D(self.quantity)
@@ -69,6 +70,7 @@ class CustomLineItem:
     source: str = "custom"  # custom | permit
     labor_hours: Decimal = D(0)
     code_refs: list[dict] = field(default_factory=list)
+    is_optional: bool = False
 
     def __post_init__(self) -> None:
         self.amount_cad = D(self.amount_cad)
@@ -95,6 +97,7 @@ class ComputedLineItem:
     raw_labor_cost_cad: Decimal = D(0)
     base_labor_hours: Decimal = D(0)  # assembly base hours × qty, pre-multipliers
     generated: bool = False  # True for engine-synthesised lines (e.g. minimum call-out)
+    is_optional: bool = False  # recommended add-on, excluded from the project total (§24.4)
 
 
 @dataclass
@@ -111,3 +114,8 @@ class EstimateResult:
     assumptions: list[str] = field(default_factory=list)
     # Internal cost totals (for the audit engine):
     total_cost_cad: Decimal = D(0)
+    # Optional add-ons (§24.4): priced but excluded from the totals above. Pre-tax
+    # subtotal, the tax that would apply if accepted, and the tax-inclusive total.
+    subtotal_optional_cad: Decimal = D(0)
+    optional_tax_cad: Decimal = D(0)
+    optional_total_cad: Decimal = D(0)

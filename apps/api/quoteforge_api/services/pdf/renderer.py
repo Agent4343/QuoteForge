@@ -8,6 +8,7 @@ the internal template shows the full breakdown, code refs, and audit history.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -80,6 +81,8 @@ def _line_groups(quote: Quote, lang: str) -> list[dict]:
     library = get_library()
     groups: dict[str, dict] = {}
     for li in quote.line_items:
+        if li.is_optional:
+            continue  # optional add-ons are presented in their own section (§24.4)
         if li.source == LineSource.ASSEMBLY and li.assembly_id and li.assembly_id in library:
             label = _CATEGORY_LABELS[library.get(li.assembly_id).category][lang]
         elif li.source == LineSource.PERMIT:
@@ -94,6 +97,52 @@ def _line_groups(quote: Quote, lang: str) -> list[dict]:
             "total": format_currency(li.line_total_cad, lang),
         })
     return list(groups.values())
+
+
+_OPTIONAL_LABEL = {"en": "Optional add-ons", "fr": "Options supplémentaires"}
+_OPTIONAL_NOTE = {
+    "en": "Optional items are not included in the total above. Prices are valid for "
+          "the same period; ask us to add any of these.",
+    "fr": "Les options ne sont pas incluses dans le total ci-dessus. Les prix sont "
+          "valides pour la même période; demandez-nous d'en ajouter.",
+}
+
+
+def _optional_section(quote: Quote, lang: str) -> dict | None:
+    """Optional add-ons (§24.4): each priced individually, with a tax-inclusive
+    'if added' total. Kept entirely separate from the project total."""
+    opt = [li for li in quote.line_items if li.is_optional]
+    if not opt:
+        return None
+    library = get_library()
+    lines: list[dict] = []
+    materials = Decimal("0")
+    labor_service = Decimal("0")
+    for li in opt:
+        if li.source == LineSource.ASSEMBLY and li.assembly_id and li.assembly_id in library:
+            label = _CATEGORY_LABELS[library.get(li.assembly_id).category][lang]
+        else:
+            label = _OTHER_LABEL[lang]
+        description = (li.description_fr if lang == "fr" else li.description_en) or li.description_en
+        lines.append({
+            "category": label,
+            "description": description,
+            "quantity": str(li.quantity.normalize()),
+            "total": format_currency(li.line_total_cad, lang),
+        })
+        materials += li.materials_cost_cad
+        # Permits are untaxed pass-throughs; everything else is a taxable service/good.
+        if li.source != LineSource.PERMIT:
+            labor_service += li.line_total_cad - li.materials_cost_cad
+    subtotal = sum((li.line_total_cad for li in opt), Decimal("0"))
+    tax = compute_taxes(quote.province, materials, labor_service)
+    return {
+        "label": _OPTIONAL_LABEL[lang],
+        "note": _OPTIONAL_NOTE[lang],
+        "lines": lines,
+        "subtotal": format_currency(subtotal, lang),
+        "total": format_currency(subtotal + tax.total_tax_cad, lang),
+    }
 
 
 def _tax_lines(quote: Quote, lang: str) -> list[dict]:
@@ -209,6 +258,7 @@ def _customer_context(quote: Quote, user: User, customer: Customer, lang: str) -
         "subtotal": format_currency(subtotal, lang),
         "tax_lines": _tax_lines(quote, lang),
         "total": format_currency(quote.total_cad, lang),
+        "optional": _optional_section(quote, lang),
         "terms": _terms(user, lang),
         "code_edition": quote.code_edition,
         "code": _code_block(quote, lang),

@@ -475,6 +475,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dashboard/assemblies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Assembly Metrics
+         * @description Per-assembly usage and edit-rate metrics (§19).
+         *
+         *     Across this contractor's quotes: how often each assembly is used, and how
+         *     often a line's parameters deviate from the assembly's defaults. A high edit
+         *     rate is a signal that an assembly's defaults are off and it should be
+         *     prioritised for electrician review (§8/§22). Note: a deviation can also come
+         *     from the AI choosing a job-specific value, so treat it as a review signal,
+         *     not a literal count of manual keystrokes.
+         */
+        get: operations["assembly_metrics_api_dashboard_assemblies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -889,6 +916,11 @@ export interface components {
             parameters?: {
                 [key: string]: unknown;
             };
+            /**
+             * Is Optional
+             * @default false
+             */
+            is_optional: boolean;
             /** Description En */
             description_en?: string | null;
             /** Description Fr */
@@ -933,6 +965,11 @@ export interface components {
             line_total_cad: string;
             /** Code Refs */
             code_refs: unknown[];
+            /**
+             * Is Optional
+             * @default false
+             */
+            is_optional: boolean;
         };
         /** QuoteOut */
         QuoteOut: {
@@ -1010,6 +1047,11 @@ export interface components {
              * @default false
              */
             pdf_blocked: boolean;
+            /**
+             * Optional Subtotal Cad
+             * @description Pre-tax sum of optional add-on lines (excluded from total_cad, §24.4).
+             */
+            readonly optional_subtotal_cad: string;
         };
         /**
          * QuoteStatus
@@ -2230,6 +2272,28 @@ export interface operations {
         };
     };
     stats_api_dashboard_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    assembly_metrics_api_dashboard_assemblies_get: {
         parameters: {
             query?: never;
             header?: never;

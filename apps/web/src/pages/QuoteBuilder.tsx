@@ -44,6 +44,7 @@ function toInput(lines: QuoteLineItemOut[]): QuoteLineItemIn[] {
         assembly_id: l.source === "assembly" ? l.assembly_id : undefined,
         quantity: l.quantity,
         parameters: (l.parameters ?? {}) as { [key: string]: unknown },
+        is_optional: l.is_optional ?? false,
         description_en: l.description_en,
         description_fr: l.description_fr,
         amount_cad: l.line_total_cad,
@@ -167,6 +168,8 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
       next.has(lineId) ? next.delete(lineId) : next.add(lineId);
       return next;
     });
+  const setOptional = (idx: number, value: boolean) =>
+    setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, is_optional: value } : l)));
   const removeLine = (idx: number) => setLines((ls) => ls.filter((_, i) => i !== idx));
   const addAssembly = () => {
     if (!addId) return;
@@ -182,6 +185,7 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
         description_fr: a?.names.fr ?? addId,
         quantity: "1",
         parameters: {},
+        is_optional: false,
         materials_cost_cad: "0",
         labor_hours: "0",
         labor_cost_cad: "0",
@@ -208,9 +212,27 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
             <div key={l.id} className="py-2">
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <div className="text-sm">{lang === "fr" ? l.description_fr : l.description_en}</div>
+                  <div className="text-sm">
+                    {lang === "fr" ? l.description_fr : l.description_en}
+                    {l.is_optional && (
+                      <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        {t("quotes.optional")}
+                      </span>
+                    )}
+                  </div>
                   {l.assembly_id && <div className="text-xs text-gray-400">{l.assembly_id}</div>}
                 </div>
+                {!isGenerated(l) && (
+                  <button
+                    type="button"
+                    className={`px-1 text-xs ${l.is_optional ? "text-amber-600" : "text-gray-400"}`}
+                    onClick={() => setOptional(idx, !l.is_optional)}
+                    aria-pressed={l.is_optional}
+                    title={t("quotes.markOptional")}
+                  >
+                    {l.is_optional ? "★" : "☆"}
+                  </button>
+                )}
                 {editable && params.length > 0 && (
                   <button
                     type="button"
@@ -283,6 +305,12 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
           <span>{t("quotes.total")}</span>
           <span>{money(quote.total_cad, lang)}</span>
         </div>
+        {Number(quote.optional_subtotal_cad) > 0 && (
+          <Row
+            label={`${t("quotes.optionalAddons")} (${t("quotes.excluded")})`}
+            value={money(quote.optional_subtotal_cad, lang)}
+          />
+        )}
         <Row label={t("quotes.margin")} value={percent(quote.gross_margin_pct, lang)} />
       </dl>
 

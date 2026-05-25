@@ -133,6 +133,12 @@ def compute_estimate(
     raw_labor_total = ZERO
     total_labor_hours = ZERO
     callout_eligible = False
+    # Optional add-ons (§24.4): accumulated separately; never affect the project
+    # total, tax, margin, or the minimum call-out for the required work.
+    opt_materials = ZERO
+    opt_labor = ZERO
+    opt_other = ZERO
+    opt_permits = ZERO
 
     for req in assemblies:
         assembly = library.get(req.assembly_id)
@@ -158,9 +164,11 @@ def compute_estimate(
         revenue_labor_base = line_hours * rate
         line_labor_cost = line_hours * cost_rate
 
-        if assembly.labor.minimum_callout_applies:
+        # Optional work is priced but doesn't drive the required job's call-out.
+        if assembly.labor.minimum_callout_applies and not req.is_optional:
             callout_eligible = True
-        total_labor_hours += line_hours
+        if not req.is_optional:
+            total_labor_hours += line_hours
 
         priced_materials = raw_material_cost * (D(1) + mat_markup / D(100))
         priced_labor = revenue_labor_base * (D(1) + lab_markup / D(100))
@@ -185,22 +193,31 @@ def compute_estimate(
                 raw_materials_cost_cad=money(raw_material_cost),
                 raw_labor_cost_cad=money(line_labor_cost),
                 base_labor_hours=D(base_hours) * req.quantity,
+                is_optional=req.is_optional,
             )
         )
-        sub_materials += money(priced_materials)
-        sub_labor += money(priced_labor)
-        raw_materials_total += raw_material_cost
-        raw_labor_total += line_labor_cost
+        if req.is_optional:
+            opt_materials += money(priced_materials)
+            opt_labor += money(priced_labor)
+        else:
+            sub_materials += money(priced_materials)
+            sub_labor += money(priced_labor)
+            raw_materials_total += raw_material_cost
+            raw_labor_total += line_labor_cost
 
     # Custom + permit lines.
     for item in additional_line_items:
-        total_labor_hours += item.labor_hours
-        if item.source == "permit":
+        if not item.is_optional:
+            total_labor_hours += item.labor_hours
+        if item.is_optional:
+            if item.source == "permit":
+                opt_permits += item.amount_cad
+            else:
+                opt_other += item.amount_cad
+        elif item.source == "permit":
             sub_permits += item.amount_cad
-            target_total = item.amount_cad
         else:
             sub_other += item.amount_cad
-            target_total = item.amount_cad
         lines.append(
             ComputedLineItem(
                 line_number=(line_no := line_no + 1),
@@ -213,8 +230,9 @@ def compute_estimate(
                 materials_cost_cad=ZERO,
                 labor_hours=item.labor_hours,
                 labor_cost_cad=ZERO,
-                line_total_cad=money(target_total),
+                line_total_cad=money(item.amount_cad),
                 code_refs=item.code_refs,
+                is_optional=item.is_optional,
             )
         )
 
@@ -259,6 +277,15 @@ def compute_estimate(
 
     total = money(sub_materials + sub_labor + sub_permits + sub_other + tax.total_tax_cad)
 
+    # Optional add-ons priced on the same basis but kept out of the project total.
+    opt_materials = money(opt_materials)
+    opt_labor = money(opt_labor)
+    opt_other = money(opt_other)
+    opt_permits = money(opt_permits)
+    optional_subtotal = money(opt_materials + opt_labor + opt_other + opt_permits)
+    optional_tax = compute_taxes(province, opt_materials, opt_labor + opt_other)
+    optional_total = money(optional_subtotal + optional_tax.total_tax_cad)
+
     # Gross margin on the marked-up assembly work (where we know cost). §10 audit.
     work_revenue = sub_materials + sub_labor
     work_cost = money(raw_materials_total + raw_labor_total)
@@ -281,4 +308,7 @@ def compute_estimate(
         code_edition=code_edition_at_permit_date,
         assumptions=assumptions,
         total_cost_cad=work_cost,
+        subtotal_optional_cad=optional_subtotal,
+        optional_tax_cad=optional_tax.total_tax_cad,
+        optional_total_cad=optional_total,
     )

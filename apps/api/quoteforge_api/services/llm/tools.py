@@ -17,6 +17,7 @@ from dataclasses import dataclass
 
 from quoteforge_api.assemblies.loader import AssemblyLibrary
 from quoteforge_api.models import Customer, Quote, User
+from quoteforge_api.money import D
 from quoteforge_api.pricebook import PriceBook
 from quoteforge_api.services import quote_service
 from quoteforge_api.services.estimating import AssemblyRequest, CustomLineItem
@@ -45,7 +46,9 @@ TOOL_DEFS: list[dict] = [
             "Compute the full estimate for the chosen assemblies and any additional "
             "line items. This is the ONLY way to get prices, labour, tax, and totals. "
             "It persists the result to the quote and runs the audit. Call it after you "
-            "have resolved the assemblies and parameters."
+            "have resolved the assemblies and parameters. Set is_optional: true on "
+            "recommended add-on work the customer can decline; optional items are "
+            "priced separately and excluded from the project total and margin."
         ),
         "input_schema": {
             "type": "object",
@@ -58,6 +61,7 @@ TOOL_DEFS: list[dict] = [
                             "assembly_id": {"type": "string"},
                             "quantity": {"type": "number"},
                             "parameters": {"type": "object"},
+                            "is_optional": {"type": "boolean"},
                         },
                         "required": ["assembly_id"],
                     },
@@ -72,6 +76,7 @@ TOOL_DEFS: list[dict] = [
                             "amount_cad": {"type": "number"},
                             "source": {"type": "string", "enum": ["custom", "permit"]},
                             "labor_hours": {"type": "number"},
+                            "is_optional": {"type": "boolean"},
                         },
                         "required": ["description_en", "description_fr", "amount_cad", "source"],
                     },
@@ -170,7 +175,12 @@ def _compute_estimate(ctx: ToolContext, payload: dict) -> dict:
             return {"error": f"unknown assembly id {aid!r}. Do not invent ids; "
                              "add unknown work as an additional custom line item instead."}
         assemblies.append(
-            AssemblyRequest(aid, item.get("quantity", 1), item.get("parameters", {}) or {})
+            AssemblyRequest(
+                aid,
+                item.get("quantity", 1),
+                item.get("parameters", {}) or {},
+                is_optional=bool(item.get("is_optional", False)),
+            )
         )
     extras = [
         CustomLineItem(
@@ -179,6 +189,7 @@ def _compute_estimate(ctx: ToolContext, payload: dict) -> dict:
             amount_cad=i["amount_cad"],
             source=i.get("source", "custom"),
             labor_hours=i.get("labor_hours", 0),
+            is_optional=bool(i.get("is_optional", False)),
         )
         for i in payload.get("additional_line_items", []) or []
     ]
@@ -187,6 +198,9 @@ def _compute_estimate(ctx: ToolContext, payload: dict) -> dict:
 
 
 def _estimate_summary(quote: Quote) -> dict:
+    optional_subtotal = sum(
+        (li.line_total_cad for li in quote.line_items if li.is_optional), D(0)
+    )
     return {
         "subtotal_materials_cad": str(quote.subtotal_materials_cad),
         "subtotal_labor_cad": str(quote.subtotal_labor_cad),
@@ -196,11 +210,13 @@ def _estimate_summary(quote: Quote) -> dict:
         "tax_pst_qst_hst_cad": str(quote.tax_pst_qst_hst_cad),
         "total_cad": str(quote.total_cad),
         "gross_margin_pct": str(quote.gross_margin_pct),
+        "optional_subtotal_cad": str(optional_subtotal),
         "line_items": [
             {
                 "description_en": li.description_en,
                 "quantity": str(li.quantity),
                 "line_total_cad": str(li.line_total_cad),
+                "is_optional": li.is_optional,
             }
             for li in quote.line_items
         ],

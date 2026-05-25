@@ -55,6 +55,28 @@ def test_single_receptacle_ontario_hand_verified(contractor, library, pricebook)
     assert any("Minimum service call-out" in a for a in r.assumptions)
 
 
+def test_optional_addon_excluded_from_total_and_margin(contractor, library, pricebook):
+    # An optional add-on is priced but must not move the project total or margin (§24.4).
+    required = [AssemblyRequest("circuit_new_15a_residential", D("1"),
+                                {"run_length_ft": 40, "access": "open"})]
+    base = _estimate(contractor, library, pricebook, Province.ON, list(required))
+    with_opt = _estimate(
+        contractor, library, pricebook, Province.ON,
+        required + [AssemblyRequest("ev_charger_l2_attached_garage", D("1"), is_optional=True)],
+    )
+    assert with_opt.total_cad == base.total_cad
+    assert with_opt.gross_margin_pct == base.gross_margin_pct
+    assert with_opt.subtotal_materials_cad == base.subtotal_materials_cad
+    assert with_opt.subtotal_labor_cad == base.subtotal_labor_cad
+    # The add-on is priced separately, tax-inclusive total = pre-tax + its own tax.
+    assert with_opt.subtotal_optional_cad > D("0")
+    assert with_opt.optional_tax_cad > D("0")
+    assert with_opt.optional_total_cad == with_opt.subtotal_optional_cad + with_opt.optional_tax_cad
+    opt_lines = [li for li in with_opt.line_items if li.is_optional]
+    assert len(opt_lines) == 1
+    assert opt_lines[0].assembly_id == "ev_charger_l2_attached_garage"
+
+
 def test_new_circuit_ontario_hand_verified(contractor, library, pricebook):
     # Wire 40*1.10=44ft*0.55=24.20; breaker 7; box 1.20; recep 1.50; plate 0.75;
     # staples ceil(40/4)=10*0.06=0.60; 4 connectors 0.48; 2 NM conn 0.70 = 36.43

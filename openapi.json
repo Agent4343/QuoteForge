@@ -1455,6 +1455,35 @@
           }
         ]
       }
+    },
+    "/api/dashboard/assemblies": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Assembly Metrics",
+        "description": "Per-assembly usage and edit-rate metrics (\u00a719).\n\nAcross this contractor's quotes: how often each assembly is used, and how\noften a line's parameters deviate from the assembly's defaults. A high edit\nrate is a signal that an assembly's defaults are off and it should be\nprioritised for electrician review (\u00a78/\u00a722). Note: a deviation can also come\nfrom the AI choosing a job-specific value, so treat it as a review signal,\nnot a literal count of manual keystrokes.",
+        "operationId": "assembly_metrics_api_dashboard_assemblies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Assembly Metrics Api Dashboard Assemblies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2693,6 +2722,11 @@
             "type": "object",
             "title": "Parameters"
           },
+          "is_optional": {
+            "type": "boolean",
+            "title": "Is Optional",
+            "default": false
+          },
           "description_en": {
             "anyOf": [
               {
@@ -2817,6 +2851,11 @@
             "items": {},
             "type": "array",
             "title": "Code Refs"
+          },
+          "is_optional": {
+            "type": "boolean",
+            "title": "Is Optional",
+            "default": false
           }
         },
         "type": "object",
@@ -3031,6 +3070,13 @@
             "type": "boolean",
             "title": "Pdf Blocked",
             "default": false
+          },
+          "optional_subtotal_cad": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Optional Subtotal Cad",
+            "description": "Pre-tax sum of optional add-on lines (excluded from total_cad, \u00a724.4).",
+            "readOnly": true
           }
         },
         "type": "object",
@@ -3064,7 +3110,8 @@
           "sent_at",
           "approved_at",
           "line_items",
-          "audit_flags"
+          "audit_flags",
+          "optional_subtotal_cad"
         ],
         "title": "QuoteOut"
       },
