@@ -13,7 +13,10 @@
     "title": "Tableau de bord", "openQuotes": "Soumissions ouvertes", "winRate": "Taux de réussite",
     "avgMargin": "Marge moyenne", "approved": "Acceptées", "declined": "Refusées",
     "byStatus": "Soumissions par statut", "none": "Aucune donnée — créez votre première soumission.",
-    "aiUsage": "Utilisation de l'IA", "aiCost": "Coût de l'IA", "aiQuotes": "Sessions IA"
+    "aiUsage": "Utilisation de l'IA", "aiCost": "Coût de l'IA", "aiQuotes": "Sessions IA",
+    "assemblyUsage": "Utilisation des ensembles", "assembly": "Ensemble", "uses": "Utilisations", "quotes": "Soumissions",
+    "editRate": "Taux de modification", "editRateHint": "Fréquence à laquelle les paramètres de cet ensemble ont été modifiés par rapport aux valeurs par défaut — un taux élevé le signale pour révision.",
+    "noAssemblyUsage": "Aucun ensemble utilisé pour l'instant."
   },
   "customers": {
     "title": "Clients", "new": "Nouveau client", "name": "Nom", "company": "Entreprise",

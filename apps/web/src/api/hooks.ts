@@ -152,6 +152,13 @@ export function useDashboard() {
   return useQuery({ queryKey: ["dashboard"], queryFn: () => api.get<DashboardStats>("/api/dashboard/stats") });
 }
 
+export function useAssemblyMetrics() {
+  return useQuery({
+    queryKey: ["dashboard", "assemblies"],
+    queryFn: () => api.get<{ assemblies: AssemblyMetric[] }>("/api/dashboard/assemblies"),
+  });
+}
+
 export interface DashboardStats {
   open_quotes: number;
   approved: number;
@@ -162,6 +169,19 @@ export interface DashboardStats {
   llm_input_tokens: number;
   llm_output_tokens: number;
   ai_sessions: number;
+}
+
+export interface AssemblyMetric {
+  assembly_id: string;
+  name_en: string;
+  name_fr: string;
+  category: string | null;
+  status: string;
+  line_count: number;
+  quote_count: number;
+  total_quantity: number;
+  edited_count: number;
+  edit_rate_pct: number;
 }
 
 /** Quote mutations that return the updated quote; callers update the ["quote", id] cache. */

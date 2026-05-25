@@ -13,7 +13,10 @@
     "title": "Dashboard", "openQuotes": "Open quotes", "winRate": "Win rate",
     "avgMargin": "Average margin", "approved": "Approved", "declined": "Declined",
     "byStatus": "Quotes by status", "none": "No data yet — create your first quote.",
-    "aiUsage": "AI usage", "aiCost": "AI cost", "aiQuotes": "AI sessions"
+    "aiUsage": "AI usage", "aiCost": "AI cost", "aiQuotes": "AI sessions",
+    "assemblyUsage": "Assembly usage", "assembly": "Assembly", "uses": "Uses", "quotes": "Quotes",
+    "editRate": "Edit rate", "editRateHint": "How often this assembly's parameters were changed from their defaults — a high rate flags it for review.",
+    "noAssemblyUsage": "No assemblies used yet."
   },
   "customers": {
     "title": "Customers", "new": "New customer", "name": "Name", "company": "Company",

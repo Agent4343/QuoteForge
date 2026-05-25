@@ -214,6 +214,34 @@ async def test_dashboard_stats(client):
 
 
 @pytest.mark.asyncio
+async def test_dashboard_assembly_metrics(client):
+    token = await _register(client)
+    await _set_rates(client, token)
+    cust = await _create_customer(client, token)
+    # One line at the assembly defaults (run_length_ft=40, access=open) and one
+    # with both parameters changed -> a 50% edit rate for this assembly.
+    await client.post("/api/quotes", headers=_auth(token), json={
+        "customer_id": cust, "job_title": "two circuits",
+        "line_items": [
+            {"source": "assembly", "assembly_id": "circuit_new_15a_residential",
+             "quantity": "1", "parameters": {"run_length_ft": 40, "access": "open"}},
+            {"source": "assembly", "assembly_id": "circuit_new_15a_residential",
+             "quantity": "2", "parameters": {"run_length_ft": 75, "access": "finished"}},
+        ]})
+    r = await client.get("/api/dashboard/assemblies", headers=_auth(token))
+    assert r.status_code == 200
+    items = r.json()["assemblies"]
+    row = next(a for a in items if a["assembly_id"] == "circuit_new_15a_residential")
+    assert row["line_count"] == 2
+    assert row["quote_count"] == 1
+    assert row["edited_count"] == 1
+    assert row["edit_rate_pct"] == 50.0
+    assert row["total_quantity"] == 3.0
+    # Generated minimum-callout lines carry no assembly_id and are excluded.
+    assert all(a["assembly_id"] for a in items)
+
+
+@pytest.mark.asyncio
 async def test_generate_requires_job_and_key(client):
     token = await _register(client)
     cust = await _create_customer(client, token)

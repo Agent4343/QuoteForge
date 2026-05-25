@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { useDashboard, useQuotes } from "../api/hooks";
-import { PageHeader, Spinner } from "../components/ui";
+import { useAssemblyMetrics, useDashboard, useQuotes } from "../api/hooks";
+import { Badge, PageHeader, Spinner } from "../components/ui";
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -14,11 +14,14 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 export default function Dashboard() {
   const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const stats = useDashboard();
   const quotes = useQuotes();
+  const assemblies = useAssemblyMetrics();
 
   if (stats.isLoading) return <Spinner label={t("common.loading")} />;
   const s = stats.data;
+  const usage = assemblies.data?.assemblies ?? [];
 
   const counts: Record<string, number> = {};
   for (const q of quotes.data ?? []) counts[q.status] = (counts[q.status] ?? 0) + 1;
@@ -73,6 +76,47 @@ export default function Dashboard() {
           </ResponsiveContainer>
         ) : (
           <p className="text-sm text-gray-500">{t("dashboard.none")}</p>
+        )}
+      </div>
+
+      <div className="card mt-6">
+        <h2 className="mb-1 font-semibold">{t("dashboard.assemblyUsage")}</h2>
+        <p className="mb-3 text-xs text-gray-400">{t("dashboard.editRateHint")}</p>
+        {usage.length === 0 ? (
+          <p className="text-sm text-gray-500">{t("dashboard.noAssemblyUsage")}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-xs text-gray-500">
+                  <th className="py-2 pr-2 font-medium">{t("dashboard.assembly")}</th>
+                  <th className="py-2 px-2 text-right font-medium">{t("dashboard.uses")}</th>
+                  <th className="py-2 px-2 text-right font-medium">{t("dashboard.quotes")}</th>
+                  <th className="py-2 pl-2 text-right font-medium">{t("dashboard.editRate")}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {usage.map((a) => (
+                  <tr key={a.assembly_id}>
+                    <td className="py-2 pr-2">
+                      <div className="flex items-center gap-2">
+                        <span>{lang === "fr" ? a.name_fr : a.name_en}</span>
+                        {a.status !== "reviewed" && <Badge tone="amber">{a.status}</Badge>}
+                      </div>
+                      <div className="text-xs text-gray-400">{a.assembly_id}</div>
+                    </td>
+                    <td className="py-2 px-2 text-right tabular-nums">{a.line_count}</td>
+                    <td className="py-2 px-2 text-right tabular-nums">{a.quote_count}</td>
+                    <td className="py-2 pl-2 text-right tabular-nums">
+                      <span className={a.edit_rate_pct >= 50 ? "font-semibold text-amber-600" : "text-gray-600"}>
+                        {a.edit_rate_pct}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
