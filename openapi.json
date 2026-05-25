@@ -11,7 +11,7 @@
           "meta"
         ],
         "summary": "Healthz",
-        "description": "Liveness + DB connectivity check (\u00a718).",
+        "description": "Liveness + DB connectivity check (\u00a718).\n\nDeliberately takes NO DB-session dependency: a bad/unparseable DATABASE_URL\nraises when the engine is built, which during dependency injection would\n500 before any handler code runs. We build the connection inside a broad\ntry/except so the healthcheck always returns 200 (degraded when the DB is\nunreachable or misconfigured) and reports what's wrong.",
         "operationId": "healthz_api_healthz_get",
         "responses": {
           "200": {
@@ -22,6 +22,30 @@
                   "additionalProperties": true,
                   "type": "object",
                   "title": "Response Healthz Api Healthz Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/code-editions": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Code Editions",
+        "description": "Per-province electrical-code matrix (regulator, permit model, editions,\ntransition windows). Source of truth: data/code_editions.yaml.",
+        "operationId": "code_editions_api_code_editions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Code Editions Api Code Editions Get"
                 }
               }
             }
@@ -3542,6 +3566,28 @@
               }
             ],
             "title": "Primary Color Hex"
+          },
+          "terms_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terms En"
+          },
+          "terms_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terms Fr"
           }
         },
         "type": "object",
@@ -3569,7 +3615,9 @@
           "minimum_callout_hours",
           "minimum_margin_pct",
           "logo_url",
-          "primary_color_hex"
+          "primary_color_hex",
+          "terms_en",
+          "terms_fr"
         ],
         "title": "UserOut"
       },
@@ -3862,6 +3910,30 @@
               }
             ],
             "title": "Primary Color Hex"
+          },
+          "terms_en": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terms En"
+          },
+          "terms_fr": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terms Fr"
           }
         },
         "type": "object",

@@ -158,6 +158,10 @@ export interface DashboardStats {
   declined: number;
   win_rate_pct: number | null;
   average_margin_pct: number | null;
+  llm_cost_cad: number;
+  llm_input_tokens: number;
+  llm_output_tokens: number;
+  ai_sessions: number;
 }
 
 /** Quote mutations that return the updated quote; callers update the ["quote", id] cache. */

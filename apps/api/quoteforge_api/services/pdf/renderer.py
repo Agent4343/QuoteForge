@@ -154,6 +154,12 @@ def _customer_block(customer: Customer) -> dict:
     }
 
 
+def _terms(user: User, lang: str) -> str:
+    """The contractor's editable terms in ``lang``, or the built-in default."""
+    custom = user.terms_fr if lang == "fr" else user.terms_en
+    return (custom or "").strip() or _TERMS[lang]
+
+
 def _code_block(quote: Quote, lang: str) -> dict:
     """Province code context for the quote (edition locked at quote time + the
     regulator/permit model/utility from the code matrix), in ``lang``."""
@@ -189,7 +195,7 @@ def _customer_context(quote: Quote, user: User, customer: Customer, lang: str) -
         "subtotal": format_currency(subtotal, lang),
         "tax_lines": _tax_lines(quote, lang),
         "total": format_currency(quote.total_cad, lang),
-        "terms": _TERMS[lang],
+        "terms": _terms(user, lang),
         "code_edition": quote.code_edition,
         "code": _code_block(quote, lang),
     }

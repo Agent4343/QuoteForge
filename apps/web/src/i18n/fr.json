@@ -12,7 +12,8 @@
   "dashboard": {
     "title": "Tableau de bord", "openQuotes": "Soumissions ouvertes", "winRate": "Taux de réussite",
     "avgMargin": "Marge moyenne", "approved": "Acceptées", "declined": "Refusées",
-    "byStatus": "Soumissions par statut", "none": "Aucune donnée — créez votre première soumission."
+    "byStatus": "Soumissions par statut", "none": "Aucune donnée — créez votre première soumission.",
+    "aiUsage": "Utilisation de l'IA", "aiCost": "Coût de l'IA", "aiQuotes": "Sessions IA"
   },
   "customers": {
     "title": "Clients", "new": "Nouveau client", "name": "Nom", "company": "Entreprise",
@@ -47,7 +48,9 @@
     "businessEmail": "Courriel d'entreprise", "businessPhone": "Téléphone d'entreprise",
     "address1": "Adresse de l'entreprise", "address2": "Adresse (ligne 2)", "city": "Ville",
     "postal": "Code postal", "logo": "Logo", "uploadLogo": "Téléverser un logo",
-    "logoHint": "PNG, JPG, SVG ou WebP, jusqu'à 2 Mo. Affiché sur les PDF clients."
+    "logoHint": "PNG, JPG, SVG ou WebP, jusqu'à 2 Mo. Affiché sur les PDF clients.",
+    "terms": "Conditions générales de la soumission", "termsEn": "Conditions (anglais)", "termsFr": "Conditions (français)",
+    "termsHint": "Affiché au bas du PDF client. Laissez vide pour utiliser le texte par défaut."
   },
   "code": {
     "title": "Référence du code provincial",

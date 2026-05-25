@@ -54,6 +54,11 @@ class User(Base):
     logo_url: Mapped[str | None] = mapped_column(sa.String(500), nullable=True)
     primary_color_hex: Mapped[str | None] = mapped_column(sa.String(7), nullable=True)
 
+    # Customer-facing quote terms & conditions (bilingual). Null falls back to the
+    # built-in default boilerplate in the PDF renderer (§14).
+    terms_en: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
+    terms_fr: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), server_default=sa.func.now())
     updated_at: Mapped[datetime] = mapped_column(
         sa.DateTime(timezone=True), server_default=sa.func.now(), onupdate=sa.func.now()

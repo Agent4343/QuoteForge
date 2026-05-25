@@ -14,8 +14,35 @@ export interface paths {
         /**
          * Healthz
          * @description Liveness + DB connectivity check (§18).
+         *
+         *     Deliberately takes NO DB-session dependency: a bad/unparseable DATABASE_URL
+         *     raises when the engine is built, which during dependency injection would
+         *     500 before any handler code runs. We build the connection inside a broad
+         *     try/except so the healthcheck always returns 200 (degraded when the DB is
+         *     unreachable or misconfigured) and reports what's wrong.
          */
         get: operations["healthz_api_healthz_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/code-editions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Code Editions
+         * @description Per-province electrical-code matrix (regulator, permit model, editions,
+         *     transition windows). Source of truth: data/code_editions.yaml.
+         */
+        get: operations["code_editions_api_code_editions_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1134,6 +1161,10 @@ export interface components {
             logo_url: string | null;
             /** Primary Color Hex */
             primary_color_hex: string | null;
+            /** Terms En */
+            terms_en: string | null;
+            /** Terms Fr */
+            terms_fr: string | null;
         };
         /**
          * UserUpdate
@@ -1182,6 +1213,10 @@ export interface components {
             logo_url?: string | null;
             /** Primary Color Hex */
             primary_color_hex?: string | null;
+            /** Terms En */
+            terms_en?: string | null;
+            /** Terms Fr */
+            terms_fr?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1206,6 +1241,28 @@ export interface components {
 export type $defs = Record<string, never>;
 export interface operations {
     healthz_api_healthz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    code_editions_api_code_editions_get: {
         parameters: {
             query?: never;
             header?: never;

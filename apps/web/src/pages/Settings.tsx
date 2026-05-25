@@ -124,6 +124,17 @@ export default function Settings() {
           </Field>
         </section>
 
+        <section className="card">
+          <h2 className="mb-1 font-semibold">{t("settings.terms")}</h2>
+          <p className="mb-3 text-xs text-gray-500">{t("settings.termsHint")}</p>
+          <Field label={t("settings.termsEn")}>
+            <textarea className="input min-h-[90px] py-2" {...register("terms_en")} />
+          </Field>
+          <Field label={t("settings.termsFr")}>
+            <textarea className="input min-h-[90px] py-2" {...register("terms_fr")} />
+          </Field>
+        </section>
+
         <div>
           <button className="btn-primary" disabled={update.isPending}>
             {update.isPending ? t("common.saving") : t("settings.save")}

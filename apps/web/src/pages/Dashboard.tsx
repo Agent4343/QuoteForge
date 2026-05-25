@@ -13,7 +13,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const stats = useDashboard();
   const quotes = useQuotes();
 
@@ -35,6 +35,28 @@ export default function Dashboard() {
         <Stat label={t("dashboard.openQuotes")} value={String(s?.open_quotes ?? 0)} />
         <Stat label={t("dashboard.winRate")} value={s?.win_rate_pct != null ? `${s.win_rate_pct}%` : "—"} />
         <Stat label={t("dashboard.avgMargin")} value={s?.average_margin_pct != null ? `${s.average_margin_pct}%` : "—"} />
+      </div>
+
+      <div className="card mt-4">
+        <h2 className="mb-1 font-semibold">{t("dashboard.aiUsage")}</h2>
+        <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm">
+          <span>
+            <span className="text-gray-500">{t("dashboard.aiCost")}: </span>
+            <span className="font-semibold text-brand">
+              {new Intl.NumberFormat(i18n.language === "fr" ? "fr-CA" : "en-CA", {
+                style: "currency",
+                currency: "CAD",
+              }).format(s?.llm_cost_cad ?? 0)}
+            </span>
+          </span>
+          <span>
+            <span className="text-gray-500">{t("dashboard.aiQuotes")}: </span>
+            <span className="font-semibold">{s?.ai_sessions ?? 0}</span>
+          </span>
+          <span className="text-gray-400">
+            {(s?.llm_input_tokens ?? 0) + (s?.llm_output_tokens ?? 0)} tokens
+          </span>
+        </div>
       </div>
 
       <div className="card mt-6">

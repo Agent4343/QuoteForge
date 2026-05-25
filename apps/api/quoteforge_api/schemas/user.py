@@ -38,6 +38,8 @@ class UserOut(BaseModel):
     minimum_margin_pct: Decimal
     logo_url: str | None
     primary_color_hex: str | None
+    terms_en: str | None
+    terms_fr: str | None
 
 
 class UserUpdate(BaseModel):
@@ -65,3 +67,5 @@ class UserUpdate(BaseModel):
     minimum_margin_pct: Decimal | None = Field(default=None, ge=0)
     logo_url: str | None = Field(default=None, max_length=500)
     primary_color_hex: str | None = Field(default=None, max_length=7)
+    terms_en: str | None = Field(default=None, max_length=4000)
+    terms_fr: str | None = Field(default=None, max_length=4000)

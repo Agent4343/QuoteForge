@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from sqlalchemy import func, select
 
 from quoteforge_api.auth.dependencies import CurrentUser, SessionDep
-from quoteforge_api.models import Quote
+from quoteforge_api.models import LLMSession, Quote
 from quoteforge_api.models.enums import QuoteStatus
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
@@ -33,10 +33,30 @@ async def stats(user: CurrentUser, session: SessionDep) -> dict:
         )
     )
 
+    # AI usage: aggregate LLM cost/tokens across this contractor's quotes (§19).
+    llm = (
+        await session.execute(
+            select(
+                func.coalesce(func.sum(LLMSession.cost_cad), 0),
+                func.coalesce(func.sum(LLMSession.input_tokens), 0),
+                func.coalesce(func.sum(LLMSession.output_tokens), 0),
+                func.count(LLMSession.id),
+            )
+            .select_from(LLMSession)
+            .join(Quote, LLMSession.quote_id == Quote.id)
+            .where(Quote.user_id == user.id)
+        )
+    ).one()
+    llm_cost, llm_in, llm_out, llm_sessions = llm
+
     return {
         "open_quotes": open_quotes,
         "approved": approved,
         "declined": declined,
         "win_rate_pct": float(win_rate) if win_rate is not None else None,
         "average_margin_pct": round(float(avg_margin), 2) if avg_margin is not None else None,
+        "llm_cost_cad": round(float(llm_cost), 4),
+        "llm_input_tokens": int(llm_in),
+        "llm_output_tokens": int(llm_out),
+        "ai_sessions": int(llm_sessions),
     }

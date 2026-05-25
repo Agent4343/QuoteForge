@@ -206,7 +206,11 @@ async def test_dashboard_stats(client):
         "line_items": [{"source": "assembly", "assembly_id": "recep_duplex_15a_residential"}]})
     stats = await client.get("/api/dashboard/stats", headers=_auth(token))
     assert stats.status_code == 200
-    assert stats.json()["open_quotes"] == 1
+    body = stats.json()
+    assert body["open_quotes"] == 1
+    # AI usage aggregates are present and zero with no LLM sessions yet.
+    assert body["llm_cost_cad"] == 0
+    assert body["ai_sessions"] == 0
 
 
 @pytest.mark.asyncio

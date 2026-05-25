@@ -12,7 +12,8 @@
   "dashboard": {
     "title": "Dashboard", "openQuotes": "Open quotes", "winRate": "Win rate",
     "avgMargin": "Average margin", "approved": "Approved", "declined": "Declined",
-    "byStatus": "Quotes by status", "none": "No data yet — create your first quote."
+    "byStatus": "Quotes by status", "none": "No data yet — create your first quote.",
+    "aiUsage": "AI usage", "aiCost": "AI cost", "aiQuotes": "AI sessions"
   },
   "customers": {
     "title": "Customers", "new": "New customer", "name": "Name", "company": "Company",
@@ -47,7 +48,9 @@
     "businessEmail": "Business email", "businessPhone": "Business phone",
     "address1": "Business address", "address2": "Address line 2", "city": "City",
     "postal": "Postal code", "logo": "Logo", "uploadLogo": "Upload logo",
-    "logoHint": "PNG, JPG, SVG or WebP, up to 2 MB. Shown on customer PDFs."
+    "logoHint": "PNG, JPG, SVG or WebP, up to 2 MB. Shown on customer PDFs.",
+    "terms": "Quote terms & conditions", "termsEn": "Terms (English)", "termsFr": "Terms (French)",
+    "termsHint": "Shown at the bottom of the customer PDF. Leave blank to use the built-in default."
   },
   "code": {
     "title": "Provincial code reference",
