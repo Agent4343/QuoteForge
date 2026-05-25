@@ -22,6 +22,15 @@ from quoteforge_api.config import get_settings
 from quoteforge_api.provinces import Province
 
 
+class Bilingual(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    en: str
+    fr: str
+
+    def text(self, lang: str) -> str:
+        return self.fr if lang == "fr" else self.en
+
+
 class Edition(BaseModel):
     model_config = ConfigDict(extra="forbid")
     label: str
@@ -37,8 +46,8 @@ class Transition(BaseModel):
 
 class ProvinceCode(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    regulator: str
-    permit_model: str
+    regulator: Bilingual
+    permit_model: Bilingual
     utility: str | None = None
     customer_language_default: str = "en"
     current_edition: Edition

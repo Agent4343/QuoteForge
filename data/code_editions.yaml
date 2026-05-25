@@ -7,12 +7,17 @@ _notes:
   - "(and a licensed electrician) before any of it appears on a customer document"
   - "(principle §3.6). Editions and adoption dates change on a ~3-year cycle."
   - "All provinces adopt the Canadian Electrical Code (CSA C22.1) with amendments."
+  - "French strings are machine drafts pending professional review (§3.6)."
 status: draft  # not yet verified by a licensed electrician (§21)
 
 provinces:
   "ON":
-    regulator: "Electrical Safety Authority (ESA)"
-    permit_model: "ESA notification of work"
+    regulator:
+      en: "Electrical Safety Authority (ESA)"
+      fr: "Electrical Safety Authority (ESA)"
+    permit_model:
+      en: "ESA notification of work"
+      fr: "Avis de travaux à l'ESA"
     utility: "Hydro One / local distribution company"
     customer_language_default: en
     current_edition:
@@ -22,8 +27,12 @@ provinces:
     transition: null
 
   "QC":
-    regulator: "Régie du bâtiment du Québec (RBQ); master electricians via CMEQ"
-    permit_model: "Municipal electrical permit + Hydro-Québec coordination"
+    regulator:
+      en: "Régie du bâtiment du Québec (RBQ); master electricians via CMEQ"
+      fr: "Régie du bâtiment du Québec (RBQ); maîtres électriciens via la CMEQ"
+    permit_model:
+      en: "Municipal electrical permit + Hydro-Québec coordination"
+      fr: "Permis d'électricité municipal + coordination Hydro-Québec"
     utility: "Hydro-Québec"
     customer_language_default: fr
     current_edition:
@@ -40,8 +49,12 @@ provinces:
       end: "2026-09-26"
 
   "BC":
-    regulator: "Technical Safety BC"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "Technical Safety BC"
+      fr: "Technical Safety BC"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "BC Hydro / FortisBC"
     customer_language_default: en
     current_edition:
@@ -49,8 +62,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "AB":
-    regulator: "Safety Codes Council / accredited municipalities"
-    permit_model: "Municipal/agency electrical permit"
+    regulator:
+      en: "Safety Codes Council / accredited municipalities"
+      fr: "Safety Codes Council / municipalités accréditées"
+    permit_model:
+      en: "Municipal/agency electrical permit"
+      fr: "Permis d'électricité municipal ou d'agence"
     utility: "local distribution company"
     customer_language_default: en
     current_edition:
@@ -58,8 +75,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "SK":
-    regulator: "Technical Safety Authority of Saskatchewan (TSASK)"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "Technical Safety Authority of Saskatchewan (TSASK)"
+      fr: "Technical Safety Authority of Saskatchewan (TSASK)"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "SaskPower"
     customer_language_default: en
     current_edition:
@@ -67,8 +88,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "MB":
-    regulator: "Provincial electrical inspection (verify current body)"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "Provincial electrical inspection (verify current body)"
+      fr: "Inspection électrique provinciale (vérifier l'organisme actuel)"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "Manitoba Hydro"
     customer_language_default: en
     current_edition:
@@ -76,8 +101,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "NS":
-    regulator: "Nova Scotia provincial inspection; municipal permits"
-    permit_model: "Provincial/municipal electrical permit"
+    regulator:
+      en: "Nova Scotia provincial inspection; municipal permits"
+      fr: "Inspection provinciale de la Nouvelle-Écosse; permis municipaux"
+    permit_model:
+      en: "Provincial/municipal electrical permit"
+      fr: "Permis d'électricité provincial ou municipal"
     utility: "Nova Scotia Power"
     customer_language_default: en
     current_edition:
@@ -85,8 +114,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "NB":
-    regulator: "New Brunswick Technical Inspection Services"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "New Brunswick Technical Inspection Services"
+      fr: "Services d'inspection technique du Nouveau-Brunswick"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "NB Power"
     customer_language_default: en
     current_edition:
@@ -94,8 +127,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "NL":
-    regulator: "Service NL / Government Services"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "Service NL / Government Services"
+      fr: "Service NL / Services gouvernementaux"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "Newfoundland Power / NL Hydro"
     customer_language_default: en
     current_edition:
@@ -103,8 +140,12 @@ provinces:
       base_cec: "CSA C22.1"
 
   "PE":
-    regulator: "PEI provincial inspection (Office of the Fire Marshal)"
-    permit_model: "Provincial electrical permit"
+    regulator:
+      en: "PEI provincial inspection (Office of the Fire Marshal)"
+      fr: "Inspection provinciale de l'Î.-P.-É. (Bureau du commissaire aux incendies)"
+    permit_model:
+      en: "Provincial electrical permit"
+      fr: "Permis d'électricité provincial"
     utility: "Maritime Electric"
     customer_language_default: en
     current_edition:

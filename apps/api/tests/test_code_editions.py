@@ -35,3 +35,12 @@ def test_quebec_transition_window_drives_edition():
 
 def test_quebec_defaults_to_french():
     assert load_code_matrix().customer_language(Province.QC) == "fr"
+
+
+def test_regulator_and_permit_model_are_bilingual():
+    qc = load_code_matrix().get(Province.QC)
+    assert qc.regulator.text("en") != ""
+    assert "Hydro-Québec" in qc.permit_model.text("fr")
+    assert qc.permit_model.text("fr") != qc.permit_model.text("en")
+    on = load_code_matrix().get(Province.ON)
+    assert on.permit_model.text("fr") == "Avis de travaux à l'ESA"

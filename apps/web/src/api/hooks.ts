@@ -127,9 +127,13 @@ interface CodeEdition {
   base_cec?: string | null;
   effective_date?: string | null;
 }
+interface Bilingual {
+  en: string;
+  fr: string;
+}
 export interface ProvinceCode {
-  regulator: string;
-  permit_model: string;
+  regulator: Bilingual;
+  permit_model: Bilingual;
   utility: string | null;
   customer_language_default: string;
   current_edition: CodeEdition;

@@ -50,8 +50,8 @@ export default function CodeReference() {
                   value={`${formatDate(pc.transition.start, lang)} – ${formatDate(pc.transition.end, lang)}`}
                 />
               )}
-              <Row label={t("code.regulator")} value={pc.regulator} />
-              <Row label={t("code.permit")} value={pc.permit_model} />
+              <Row label={t("code.regulator")} value={lang === "fr" ? pc.regulator.fr : pc.regulator.en} />
+              <Row label={t("code.permit")} value={lang === "fr" ? pc.permit_model.fr : pc.permit_model.en} />
               <Row label={t("code.utility")} value={pc.utility} />
               <Row label={t("code.language")} value={pc.customer_language_default.toUpperCase()} />
             </div>
