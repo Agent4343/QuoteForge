@@ -1,6 +1,6 @@
 {
   "app": { "name": "QuoteForge", "tagline": "AI-powered estimating for Canadian electrical contractors" },
-  "nav": { "dashboard": "Dashboard", "quotes": "Quotes", "customers": "Customers", "settings": "Settings", "logout": "Log out" },
+  "nav": { "dashboard": "Dashboard", "quotes": "Quotes", "customers": "Customers", "settings": "Settings", "codeRef": "Code", "logout": "Log out" },
   "auth": {
     "login": "Log in", "register": "Create account", "email": "Email", "password": "Password",
     "fullName": "Your name", "businessName": "Business name", "province": "Province",
@@ -48,6 +48,13 @@
     "address1": "Business address", "address2": "Address line 2", "city": "City",
     "postal": "Postal code", "logo": "Logo", "uploadLogo": "Upload logo",
     "logoHint": "PNG, JPG, SVG or WebP, up to 2 MB. Shown on customer PDFs."
+  },
+  "code": {
+    "title": "Provincial code reference",
+    "regulator": "Regulator", "permit": "Permit model", "utility": "Utility",
+    "language": "Default language", "current": "Current edition", "pending": "Pending edition",
+    "transition": "Transition window", "transitioning": "In transition",
+    "disclaimer": "Reference only. Verify editions, dates, regulators, and permit models with each province's official sources before relying on them (draft — not yet electrician-reviewed)."
   },
   "common": { "loading": "Loading…", "error": "Something went wrong", "back": "Back", "cancel": "Cancel", "saving": "Saving…", "yes": "Yes", "no": "No" },
   "status": { "draft": "Draft", "sent": "Sent", "approved": "Approved", "declined": "Declined", "expired": "Expired" }

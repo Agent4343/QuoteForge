@@ -13,6 +13,7 @@ import Quotes from "./pages/Quotes";
 import QuoteNew from "./pages/QuoteNew";
 import QuoteBuilder from "./pages/QuoteBuilder";
 import PdfPreview from "./pages/PdfPreview";
+import CodeReference from "./pages/CodeReference";
 import Settings from "./pages/Settings";
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/quotes/new" element={<QuoteNew />} />
         <Route path="/quotes/:id" element={<QuoteBuilder />} />
         <Route path="/quotes/:id/pdf-preview" element={<PdfPreview />} />
+        <Route path="/code-reference" element={<CodeReference />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/labor-rates" element={<Settings />} />
         <Route path="/settings/markup" element={<Settings />} />

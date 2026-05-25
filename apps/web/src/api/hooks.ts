@@ -122,6 +122,28 @@ export function useCreateQuote() {
   });
 }
 
+interface CodeEdition {
+  label: string;
+  base_cec?: string | null;
+  effective_date?: string | null;
+}
+export interface ProvinceCode {
+  regulator: string;
+  permit_model: string;
+  utility: string | null;
+  customer_language_default: string;
+  current_edition: CodeEdition;
+  pending_edition: CodeEdition | null;
+  transition: { start: string; end: string } | null;
+}
+
+export function useCodeEditions() {
+  return useQuery({
+    queryKey: ["code-editions"],
+    queryFn: () => api.get<{ provinces: Record<string, ProvinceCode> }>("/api/code-editions"),
+  });
+}
+
 export function useDashboard() {
   return useQuery({ queryKey: ["dashboard"], queryFn: () => api.get<DashboardStats>("/api/dashboard/stats") });
 }

@@ -1,6 +1,6 @@
 {
   "app": { "name": "QuoteForge", "tagline": "Estimation assistée par IA pour les électriciens canadiens" },
-  "nav": { "dashboard": "Tableau de bord", "quotes": "Soumissions", "customers": "Clients", "settings": "Paramètres", "logout": "Déconnexion" },
+  "nav": { "dashboard": "Tableau de bord", "quotes": "Soumissions", "customers": "Clients", "settings": "Paramètres", "codeRef": "Code", "logout": "Déconnexion" },
   "auth": {
     "login": "Connexion", "register": "Créer un compte", "email": "Courriel", "password": "Mot de passe",
     "fullName": "Votre nom", "businessName": "Nom de l'entreprise", "province": "Province",
@@ -48,6 +48,13 @@
     "address1": "Adresse de l'entreprise", "address2": "Adresse (ligne 2)", "city": "Ville",
     "postal": "Code postal", "logo": "Logo", "uploadLogo": "Téléverser un logo",
     "logoHint": "PNG, JPG, SVG ou WebP, jusqu'à 2 Mo. Affiché sur les PDF clients."
+  },
+  "code": {
+    "title": "Référence du code provincial",
+    "regulator": "Organisme de réglementation", "permit": "Type de permis", "utility": "Distributeur",
+    "language": "Langue par défaut", "current": "Édition en vigueur", "pending": "Édition à venir",
+    "transition": "Période de transition", "transitioning": "En transition",
+    "disclaimer": "À titre de référence seulement. Vérifiez les éditions, les dates, les organismes et les types de permis auprès des sources officielles de chaque province avant de vous y fier (provisoire — non vérifié par un électricien)."
   },
   "common": { "loading": "Chargement…", "error": "Une erreur est survenue", "back": "Retour", "cancel": "Annuler", "saving": "Enregistrement…", "yes": "Oui", "no": "Non" },
   "status": { "draft": "Brouillon", "sent": "Envoyée", "approved": "Acceptée", "declined": "Refusée", "expired": "Expirée" }

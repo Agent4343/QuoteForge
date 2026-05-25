@@ -36,6 +36,7 @@ export default function Layout() {
     { to: "/dashboard", label: t("nav.dashboard") },
     { to: "/quotes", label: t("nav.quotes") },
     { to: "/customers", label: t("nav.customers") },
+    { to: "/code-reference", label: t("nav.codeRef") },
     { to: "/settings", label: t("nav.settings") },
   ];
 
