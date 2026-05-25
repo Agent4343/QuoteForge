@@ -414,6 +414,52 @@ def weather_delay_risk(ctx: AuditContext) -> list[AuditFlag]:
     return []
 
 
+# --- terminology enforcement (§24.2) ----------------------------------------
+# Utility-"service" wording must be reserved for an actual change to the utility's
+# incoming supply / main service. A panel fed from the existing supply (e.g. a
+# detached garage) is a feeder to a subpanel, not a "new service".
+
+_SERVICE_TERMS = (
+    "new service", "new electrical service", "utility service", "service upgrade",
+    "service entrance", "upgrade the service", "upgrading the service",
+    "nouveau branchement", "branchement électrique", "entrée de service",
+    "mise à niveau du branchement",
+)
+
+
+def service_terminology_flag(scope_text: str, has_service_work: bool) -> AuditFlag | None:
+    """Warn when the customer scope uses utility-service wording but the quote
+    contains no service-upgrade work — a common mislabel of a feeder/subpanel."""
+    if has_service_work:
+        return None
+    text = (scope_text or "").lower()
+    if not any(term in text for term in _SERVICE_TERMS):
+        return None
+    return AuditFlag(
+        "warn", "TERMINOLOGY_SERVICE_MISUSE",
+        "The customer scope uses utility-'service' wording, but this quote has no "
+        "service-upgrade work. A panel fed from the existing supply (e.g. a detached "
+        "garage) is a feeder to a subpanel/distribution panel, not a new utility service.",
+        "La portée client emploie le terme « branchement », mais cette soumission ne "
+        "comprend aucune mise à niveau du branchement. Un panneau alimenté depuis "
+        "l'alimentation existante (p. ex. un garage détaché) est une dérivation vers un "
+        "sous-panneau, et non un nouveau branchement.",
+        "Reword the scope: call it a feeder / subpanel / distribution panel unless the "
+        "utility service itself is being changed.",
+        "Reformulez : parlez de dérivation / sous-panneau / panneau de distribution, sauf "
+        "si le branchement du service public est réellement modifié.",
+    )
+
+
+def terminology_service_misuse(ctx: AuditContext) -> list[AuditFlag]:
+    has_service_work = any(
+        ctx.library.get(r.assembly_id).category == Category.SERVICE
+        for r in _required_requests(ctx)
+    )
+    flag = service_terminology_flag(ctx.customer_facing_scope, has_service_work)
+    return [flag] if flag else []
+
+
 ALL_RULES = [
     requires_permit_when_service_change,
     afci_required_for_new_circuits_in_dwelling,
@@ -436,4 +482,6 @@ ALL_RULES = [
     customer_supplied_equipment_check,
     permit_inspection_timeline,
     weather_delay_risk,
+    # Terminology enforcement (§24.2):
+    terminology_service_misuse,
 ]

@@ -205,3 +205,39 @@ def apply_estimate(
 
 def mark_sent(quote: Quote) -> None:
     quote.sent_at = datetime.now(UTC)
+
+
+def ensure_terminology_flag(quote: Quote) -> None:
+    """Finalize-time terminology lint (§24.2).
+
+    The LLM writes the customer scope after the last audit ran, so a terminology
+    slip can reach finalize unflagged. This re-lints the persisted scope against
+    the quote's assemblies and appends a (non-blocking) warn flag if one isn't
+    already recorded — without disturbing existing flags or their overrides.
+    """
+    from quoteforge_api.assemblies.schema import Category
+    from quoteforge_api.services.audit.rules import service_terminology_flag
+
+    library = get_library()
+    has_service_work = any(
+        li.source == LineSource.ASSEMBLY
+        and li.assembly_id
+        and not li.is_optional
+        and li.assembly_id in library
+        and library.get(li.assembly_id).category == Category.SERVICE
+        for li in quote.line_items
+    )
+    scope = (quote.customer_facing_scope_en or "") + " " + (quote.customer_facing_scope_fr or "")
+    flag = service_terminology_flag(scope, has_service_work)
+    if flag is None or any(f.code == flag.code for f in quote.audit_flags):
+        return
+    quote.audit_flags.append(
+        EstimateAuditFlag(
+            severity=FlagSeverity(flag.severity),
+            code=flag.code,
+            message_en=flag.message_en,
+            message_fr=flag.message_fr,
+            suggested_action=flag.suggested_action_en,
+            overridden=False,
+        )
+    )

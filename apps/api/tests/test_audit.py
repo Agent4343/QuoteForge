@@ -21,6 +21,7 @@ from quoteforge_api.services.audit.rules import (
     scope_creep_language_in_description,
     service_capacity_verification,
     stale_material_pricing,
+    terminology_service_misuse,
     travel_time_for_long_jobs,
     utility_locate_required,
 )
@@ -268,3 +269,24 @@ def test_customer_supplied_equipment_flagged(contractor, library, pricebook):
                job_description="Install the chandelier the customer supplied.")
     flags = customer_supplied_equipment_check(ctx)
     assert flags and flags[0].code == "CUSTOMER_SUPPLIED_EQUIPMENT" and flags[0].severity == "warn"
+
+
+# --- terminology enforcement (§24.2) ----------------------------------------
+
+def test_service_terminology_misuse_flagged(contractor, library, pricebook):
+    # A subpanel is a feeder/distribution panel, not a "new utility service".
+    assemblies = [AssemblyRequest("subpanel_60a", D("1"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    ctx = _ctx(est, assemblies, library, pricebook,
+               customer_facing_scope="Install a new utility service to the detached garage.")
+    flags = terminology_service_misuse(ctx)
+    assert flags and flags[0].code == "TERMINOLOGY_SERVICE_MISUSE"
+    assert not flags[0].blocks_pdf
+
+
+def test_service_terminology_ok_when_service_upgrade_present(contractor, library, pricebook):
+    assemblies = [AssemblyRequest("service_upgrade_200a_overhead", D("1"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    ctx = _ctx(est, assemblies, library, pricebook,
+               customer_facing_scope="Upgrade the electrical service to 200A.")
+    assert terminology_service_misuse(ctx) == []

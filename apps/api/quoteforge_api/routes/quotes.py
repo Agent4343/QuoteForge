@@ -192,6 +192,8 @@ async def finalize(quote_id: uuid.UUID, user: CurrentUser, session: SessionDep) 
             status_code=409,
             detail="Critical audit flags must be overridden before finalizing.",
         )
+    # §24.2: lint the customer scope's terminology before the PDF is produced.
+    quote_service.ensure_terminology_flag(quote)
     quote.audit_passed = True
     await session.commit()
     return _serialize(await _load_quote(session, user, quote.id))
