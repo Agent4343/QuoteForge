@@ -8,7 +8,7 @@ written here only via the engine — never by the LLM (principle §3.1).
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,19 +34,21 @@ from quoteforge_api.services.estimating.engine import get_library
 
 _GENERATED_MARKER = "_generated"
 
-# Default code edition per province, locked onto a quote at creation (§3.3/§3.4).
-_DEFAULT_CODE_EDITION: dict[Province, str] = {
-    Province.ON: "OESC 2024 (28th)",
-    Province.QC: "Chapitre V (CCÉ 2015 + modifications QC)",
-}
 
+def default_code_edition(province: Province, permit_date: date | None = None) -> str:
+    """Code edition in force for the province on the permit date (§3.3/§3.4).
 
-def default_code_edition(province: Province) -> str:
-    return _DEFAULT_CODE_EDITION.get(province, "")
+    Sourced from the version-controlled code matrix (data/code_editions.yaml).
+    """
+    from quoteforge_api.code_editions import get_code_matrix
+
+    return get_code_matrix().edition_in_force(province, permit_date)
 
 
 def default_customer_language(province: Province) -> Language:
-    return Language.FR if province == Province.QC else Language.EN
+    from quoteforge_api.code_editions import get_code_matrix
+
+    return Language(get_code_matrix().customer_language(province))
 
 
 def contractor_rates(user: User) -> ContractorRates:

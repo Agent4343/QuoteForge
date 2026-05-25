@@ -1,0 +1,112 @@
+schema_version: "1.0"
+_notes:
+  - "Authoritative per-province electrical-code matrix. The launch provinces ON and"
+  - "QC are populated in detail; the other eight are schema-ready STUBS with"
+  - "best-effort values. VERIFY every edition label, effective/transition date,"
+  - "regulator, and permit model against the official provincial code and regulator"
+  - "(and a licensed electrician) before any of it appears on a customer document"
+  - "(principle §3.6). Editions and adoption dates change on a ~3-year cycle."
+  - "All provinces adopt the Canadian Electrical Code (CSA C22.1) with amendments."
+status: draft  # not yet verified by a licensed electrician (§21)
+
+provinces:
+  "ON":
+    regulator: "Electrical Safety Authority (ESA)"
+    permit_model: "ESA notification of work"
+    utility: "Hydro One / local distribution company"
+    customer_language_default: en
+    current_edition:
+      label: "OESC 2024 (28th)"
+      base_cec: "CSA C22.1"
+    pending_edition: null
+    transition: null
+
+  "QC":
+    regulator: "Régie du bâtiment du Québec (RBQ); master electricians via CMEQ"
+    permit_model: "Municipal electrical permit + Hydro-Québec coordination"
+    utility: "Hydro-Québec"
+    customer_language_default: fr
+    current_edition:
+      label: "Chapitre V (CCÉ 2015 + modifications QC)"
+      base_cec: "CSA C22.1:15"
+    pending_edition:
+      label: "Chapitre V 2026 (CCÉ 2021 + modifications QC)"
+      base_cec: "CSA C22.1:21"
+      effective_date: "2026-03-26"
+    # During the transition window either edition may apply; after `end` the
+    # pending edition is mandatory (§3.4).
+    transition:
+      start: "2026-03-26"
+      end: "2026-09-26"
+
+  "BC":
+    regulator: "Technical Safety BC"
+    permit_model: "Provincial electrical permit"
+    utility: "BC Hydro / FortisBC"
+    customer_language_default: en
+    current_edition:
+      label: "BC Electrical Code (CEC + BC amendments)"
+      base_cec: "CSA C22.1"
+
+  "AB":
+    regulator: "Safety Codes Council / accredited municipalities"
+    permit_model: "Municipal/agency electrical permit"
+    utility: "local distribution company"
+    customer_language_default: en
+    current_edition:
+      label: "Alberta — CEC + Alberta amendments"
+      base_cec: "CSA C22.1"
+
+  "SK":
+    regulator: "Technical Safety Authority of Saskatchewan (TSASK)"
+    permit_model: "Provincial electrical permit"
+    utility: "SaskPower"
+    customer_language_default: en
+    current_edition:
+      label: "Saskatchewan — CEC + SK amendments"
+      base_cec: "CSA C22.1"
+
+  "MB":
+    regulator: "Provincial electrical inspection (verify current body)"
+    permit_model: "Provincial electrical permit"
+    utility: "Manitoba Hydro"
+    customer_language_default: en
+    current_edition:
+      label: "Manitoba — CEC + MB amendments"
+      base_cec: "CSA C22.1"
+
+  "NS":
+    regulator: "Nova Scotia provincial inspection; municipal permits"
+    permit_model: "Provincial/municipal electrical permit"
+    utility: "Nova Scotia Power"
+    customer_language_default: en
+    current_edition:
+      label: "Nova Scotia — CEC + NS amendments"
+      base_cec: "CSA C22.1"
+
+  "NB":
+    regulator: "New Brunswick Technical Inspection Services"
+    permit_model: "Provincial electrical permit"
+    utility: "NB Power"
+    customer_language_default: en
+    current_edition:
+      label: "New Brunswick — CEC + NB amendments"
+      base_cec: "CSA C22.1"
+
+  "NL":
+    regulator: "Service NL / Government Services"
+    permit_model: "Provincial electrical permit"
+    utility: "Newfoundland Power / NL Hydro"
+    customer_language_default: en
+    current_edition:
+      label: "Newfoundland and Labrador — CEC + NL amendments"
+      base_cec: "CSA C22.1"
+
+  "PE":
+    regulator: "PEI provincial inspection (Office of the Fire Marshal)"
+    permit_model: "Provincial electrical permit"
+    utility: "Maritime Electric"
+    customer_language_default: en
+    current_edition:
+      label: "Prince Edward Island — CEC + PE amendments"
+      base_cec: "CSA C22.1"

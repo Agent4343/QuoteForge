@@ -34,12 +34,14 @@ async def lifespan(_: FastAPI):
     # app from binding — it's reported via /healthz instead of an opaque crash.
     try:
         from quoteforge_api.assemblies.loader import get_library
+        from quoteforge_api.code_editions import get_code_matrix
         from quoteforge_api.pricebook import get_pricebook
 
         get_library()
         get_pricebook()
+        get_code_matrix()
         STARTUP_STATE["data"] = "ok"
-        logger.info("Assemblies and price book loaded")
+        logger.info("Assemblies, price book, and code matrix loaded")
     except Exception as exc:  # noqa: BLE001
         STARTUP_STATE["data"] = f"failed: {exc.__class__.__name__}"
         logger.exception("Failed to load assemblies/price book")

@@ -9,14 +9,11 @@ from datetime import date
 from decimal import Decimal
 
 from quoteforge_api.assemblies.schema import Assembly, Category
+from quoteforge_api.code_editions import get_code_matrix
 from quoteforge_api.money import ZERO, D
 from quoteforge_api.provinces import Province
 from quoteforge_api.services.audit.types import AuditContext, AuditFlag
 from quoteforge_api.services.estimating.engine import effective_materials, unit_labor_hours
-
-# Quebec code transition window (§3.4).
-QC_TRANSITION_START = date(2026, 3, 26)
-QC_TRANSITION_END = date(2026, 9, 26)
 
 _SCOPE_CREEP_PHRASES = [
     "might need", "may need", "while you're at it", "while we're at it",
@@ -219,18 +216,21 @@ def qc_customer_language_check(ctx: AuditContext) -> list[AuditFlag]:
 
 
 def qc_code_edition_transition_warning(ctx: AuditContext) -> list[AuditFlag]:
-    if ctx.province == Province.QC and ctx.permit_date is not None:
-        if QC_TRANSITION_START <= ctx.permit_date <= QC_TRANSITION_END:
-            return [AuditFlag(
-                "warn", "QC_CODE_TRANSITION",
-                "Permit date falls in the Quebec code transition window "
-                "(2026-03-26 to 2026-09-26). Confirm which code edition applies.",
-                "La date du permis se situe dans la période de transition du code québécois "
-                "(du 2026-03-26 au 2026-09-26). Confirmez l'édition du code applicable.",
-                "Confirm CCÉ 2015 vs CCÉ 2021 (QC) with the contractor and lock it on the quote.",
-                "Confirmez CCÉ 2015 ou CCÉ 2021 (QC) avec l'entrepreneur et verrouillez-la sur la soumission.",
-            )]
-    return []
+    """Warn when the permit date falls inside a province's code-edition
+    transition window (driven by the code matrix; currently only Quebec)."""
+    if ctx.permit_date is None or not get_code_matrix().in_transition(ctx.province, ctx.permit_date):
+        return []
+    pc = get_code_matrix().get(ctx.province)
+    window = f"{pc.transition.start.isoformat()} to {pc.transition.end.isoformat()}"
+    return [AuditFlag(
+        "warn", "CODE_EDITION_TRANSITION",
+        f"Permit date falls in the {ctx.province.value} code transition window "
+        f"({window}). Confirm which code edition applies.",
+        f"La date du permis se situe dans la période de transition du code de {ctx.province.value} "
+        f"({window}). Confirmez l'édition du code applicable.",
+        f"Confirm '{pc.current_edition.label}' vs '{pc.pending_edition.label}' and lock it on the quote.",
+        f"Confirmez « {pc.current_edition.label} » ou « {pc.pending_edition.label} » et verrouillez-la.",
+    )]
 
 
 def esa_notification_present_in_on_quote(ctx: AuditContext) -> list[AuditFlag]:

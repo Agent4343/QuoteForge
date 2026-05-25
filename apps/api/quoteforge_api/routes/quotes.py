@@ -104,7 +104,8 @@ async def create_quote(body: QuoteCreate, user: CurrentUser, session: SessionDep
         job_description=body.job_description,
         job_site_address=body.job_site_address,
         province=province,
-        code_edition=body.code_edition or quote_service.default_code_edition(province),
+        code_edition=body.code_edition
+        or quote_service.default_code_edition(province, body.permit_expected_date),
         permit_expected_date=body.permit_expected_date,
         customer_language=body.customer_language
         or quote_service.default_customer_language(province),

@@ -47,6 +47,20 @@ async def healthz() -> dict:
     }
 
 
+@router.get("/code-editions")
+def code_editions() -> dict:
+    """Per-province electrical-code matrix (regulator, permit model, editions,
+    transition windows). Source of truth: data/code_editions.yaml."""
+    from quoteforge_api.code_editions import get_code_matrix
+
+    matrix = get_code_matrix()
+    return {
+        "provinces": {
+            p.value: pc.model_dump(mode="json") for p, pc in matrix.all().items()
+        }
+    }
+
+
 @router.get("/logos/{user_id}")
 def get_logo(user_id: uuid.UUID) -> FileResponse:
     """Serve a contractor logo from the volume. Public (logos appear on quotes)."""
