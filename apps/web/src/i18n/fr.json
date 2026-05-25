@@ -34,7 +34,8 @@
     "scope": "Description des travaux", "noScope": "Aucune description rédigée.",
     "pdfBlocked": "Un drapeau critique doit être levé avant l'envoi ou le téléchargement du PDF client.",
     "downloadPdf": "Télécharger le PDF", "internalPdf": "Copie interne", "markStatus": "Marquer comme",
-    "assemblyId": "Ensemble", "auditFlags": "Vérification", "noFlags": "Aucun drapeau."
+    "assemblyId": "Ensemble", "auditFlags": "Vérification", "noFlags": "Aucun drapeau.",
+    "options": "Options", "resetParam": "Réinitialiser"
   },
   "settings": {
     "title": "Paramètres", "profile": "Profil d'entreprise", "laborRates": "Taux de main-d'œuvre",

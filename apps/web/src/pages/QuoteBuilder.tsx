@@ -9,10 +9,17 @@ import { Badge, PageHeader, Spinner } from "../components/ui";
 import { errorMessage } from "../lib/errors";
 import { money, percent } from "../lib/format";
 
+interface AssemblyParam {
+  type: string; // number | enum | boolean
+  default: unknown;
+  values: string[] | null;
+  sensitivity: string;
+}
 interface AssemblyIndexItem {
   id: string;
   category: string;
   names: { en: string; fr: string };
+  parameters: Record<string, AssemblyParam>;
 }
 
 function useAssemblies() {
@@ -136,11 +143,30 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
   const assemblies = useAssemblies();
   const [lines, setLines] = useState<QuoteLineItemOut[]>(quote.line_items);
   const [addId, setAddId] = useState("");
+  const [open, setOpen] = useState<Set<string>>(new Set());
 
   useEffect(() => setLines(quote.line_items), [quote.line_items]);
 
+  const assembliesById = new Map(
+    (assemblies.data?.assemblies ?? []).map((a) => [a.id, a] as const),
+  );
+
   const setQty = (idx: number, qty: string) =>
     setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, quantity: qty } : l)));
+  const setParam = (idx: number, name: string, value: unknown) =>
+    setLines((ls) =>
+      ls.map((l, i) =>
+        i === idx
+          ? { ...l, parameters: { ...((l.parameters ?? {}) as Record<string, unknown>), [name]: value } }
+          : l,
+      ),
+    );
+  const toggleOpen = (lineId: string) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      next.has(lineId) ? next.delete(lineId) : next.add(lineId);
+      return next;
+    });
   const removeLine = (idx: number) => setLines((ls) => ls.filter((_, i) => i !== idx));
   const addAssembly = () => {
     if (!addId) return;
@@ -172,31 +198,63 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
       <h2 className="mb-2 font-semibold">{t("quotes.estimate")}</h2>
 
       <div className="divide-y divide-gray-100">
-        {lines.map((l, idx) => (
-          <div key={l.id} className="flex items-center gap-2 py-2">
-            <div className="flex-1">
-              <div className="text-sm">{lang === "fr" ? l.description_fr : l.description_en}</div>
-              {l.assembly_id && <div className="text-xs text-gray-400">{l.assembly_id}</div>}
+        {lines.map((l, idx) => {
+          const editable = l.source === "assembly" && !isGenerated(l);
+          const spec = l.assembly_id ? assembliesById.get(l.assembly_id) : undefined;
+          const params = spec ? Object.entries(spec.parameters) : [];
+          const cur = (l.parameters ?? {}) as Record<string, unknown>;
+          const expanded = open.has(l.id);
+          return (
+            <div key={l.id} className="py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <div className="text-sm">{lang === "fr" ? l.description_fr : l.description_en}</div>
+                  {l.assembly_id && <div className="text-xs text-gray-400">{l.assembly_id}</div>}
+                </div>
+                {editable && params.length > 0 && (
+                  <button
+                    type="button"
+                    className="px-1 text-xs text-brand"
+                    onClick={() => toggleOpen(l.id)}
+                    aria-expanded={expanded}
+                  >
+                    {expanded ? "▾" : "▸"} {t("quotes.options")}
+                  </button>
+                )}
+                {editable ? (
+                  <input
+                    className="input w-16 text-center"
+                    inputMode="decimal"
+                    value={l.quantity}
+                    onChange={(e) => setQty(idx, e.target.value)}
+                    aria-label={t("quotes.qty")}
+                  />
+                ) : (
+                  <span className="w-16 text-center text-sm text-gray-400">{l.quantity}</span>
+                )}
+                <span className="w-24 text-right text-sm">{money(l.line_total_cad, lang)}</span>
+                {!isGenerated(l) && (
+                  <button className="text-red-500 px-2" onClick={() => removeLine(idx)} aria-label={t("quotes.remove")}>
+                    ×
+                  </button>
+                )}
+              </div>
+              {editable && expanded && params.length > 0 && (
+                <div className="mt-2 ml-2 space-y-1 border-l-2 border-gray-100 pl-3">
+                  {params.map(([name, p]) => (
+                    <ParamField
+                      key={name}
+                      name={name}
+                      spec={p}
+                      value={name in cur ? cur[name] : p.default}
+                      onChange={(v) => setParam(idx, name, v)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            {l.source === "assembly" && !isGenerated(l) ? (
-              <input
-                className="input w-16 text-center"
-                inputMode="decimal"
-                value={l.quantity}
-                onChange={(e) => setQty(idx, e.target.value)}
-                aria-label={t("quotes.qty")}
-              />
-            ) : (
-              <span className="w-16 text-center text-sm text-gray-400">{l.quantity}</span>
-            )}
-            <span className="w-24 text-right text-sm">{money(l.line_total_cad, lang)}</span>
-            {!isGenerated(l) && (
-              <button className="text-red-500 px-2" onClick={() => removeLine(idx)} aria-label={t("quotes.remove")}>
-                ×
-              </button>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-3 flex gap-2">
@@ -252,6 +310,54 @@ function EstimatePane({ quote, id }: { quote: QuoteOut; id: string }) {
         </div>
       )}
     </div>
+  );
+}
+
+function ParamField({
+  name,
+  spec,
+  value,
+  onChange,
+}: {
+  name: string;
+  spec: AssemblyParam;
+  value: unknown;
+  onChange: (v: unknown) => void;
+}) {
+  const label = name.replace(/_/g, " ");
+  return (
+    <label className="flex items-center justify-between gap-2 text-xs">
+      <span className="capitalize text-gray-600">{label}</span>
+      {spec.type === "enum" ? (
+        <select
+          className="input w-40 py-1 text-xs"
+          value={value == null ? "" : String(value)}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          {(spec.values ?? []).map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+      ) : spec.type === "boolean" ? (
+        <input
+          type="checkbox"
+          checked={value === true || value === "true"}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+      ) : (
+        <input
+          className="input w-24 py-1 text-right text-xs"
+          inputMode="decimal"
+          value={value == null ? "" : String(value)}
+          onChange={(e) => {
+            const raw = e.target.value;
+            onChange(raw === "" ? (spec.default ?? "") : raw);
+          }}
+        />
+      )}
+    </label>
   );
 }
 

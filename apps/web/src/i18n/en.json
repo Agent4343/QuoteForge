@@ -34,7 +34,8 @@
     "scope": "Scope of work", "noScope": "No scope written yet.",
     "pdfBlocked": "A critical flag must be overridden before sending or downloading the customer PDF.",
     "downloadPdf": "Download PDF", "internalPdf": "Internal copy", "markStatus": "Mark as",
-    "assemblyId": "Assembly", "auditFlags": "Audit", "noFlags": "No audit flags."
+    "assemblyId": "Assembly", "auditFlags": "Audit", "noFlags": "No audit flags.",
+    "options": "Options", "resetParam": "Reset to default"
   },
   "settings": {
     "title": "Settings", "profile": "Business profile", "laborRates": "Labour rates",
