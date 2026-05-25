@@ -219,6 +219,36 @@ Pre-launch, human (not code) work remaining:
 
 YAML-in-git assemblies (no admin UI), Claude-only (no provider abstraction), no queue (FastAPI background tasks), no feature-flag system, no Spanish, pytest only. CI = GitHub Actions lint+test on PR, deploy on merge. If a feature feels easy to add but isn't in §4, it belongs in §5.
 
+## 24. Contractor Realism & Proposal Quality Layer
+
+> **Target layer, mostly not yet built.** This is the quality bar QuoteForge proposals must hit, not a description of current output. The deterministic engine, audit gating, internal-vs-customer PDF split, and per-assembly edit-rate metrics (§9/§10/§15/§19) are the foundation it builds on; terminology enforcement, assembly confidence scoring, and the engineering sanity checks below are **new work**. Build it in the §3 spirit: the model improves *language and presentation*, never the numbers, and never invents code/technical facts.
+
+**Goal.** Proposals must feel indistinguishable from high-end professional estimating software used by experienced Canadian electrical contractors — optimizing for homeowner trust, contractor protection, technical credibility, fewer disputes, higher close rates, and field practicality. Applies to AI scope text, PDF layout, estimate explanations, exclusions, assumptions, recommendation language, terminology, risk disclosure, and presentation.
+
+### 24.1 Proposal generation rules (AI scope prose)
+Generated prose must be concise, experienced, and field-practical — sounding like a premium residential electrical contractor / seasoned estimator / practical PM / homeowner-friendly professional. **Avoid:** robotic AI phrasing, generic sales language, excessive jargon, vague scope wording. **Never sound like:** marketing copy, startup software, AI fluff, legal overkill, or an engineering textbook. (Enforced in the LLM system prompt + a post-generation style pass; numbers and code refs stay engine/data-sourced per §3.)
+
+### 24.2 Technical terminology enforcement
+The system must distinguish, and use correctly: utility service · feeder · subfeed · distribution panel · disconnect · subpanel · branch circuits. A detached structure fed from the house is **never** a "new utility service" — prefer "garage feeder" / "garage electrical feed" / "garage distribution panel." The AI must detect terminology misuse and **self-correct before PDF generation** (terminology lint as a finalize-time gate).
+
+### 24.3 Real-world estimating protection
+Every estimate should automatically consider, and the audit engine (§10) should **warn or auto-inject an assumption** when missing: trenching difficulty · rock-excavation risk · utility-locate conflicts · concealed-space access · material price volatility · permit delays · weather delays · customer-supplied equipment compatibility · service-capacity verification · code-transition periods · inspection-scheduling delays.
+
+### 24.4 Customer-trust optimization
+Customer PDFs should explain recommendations, justify upgrades without pressure, reduce sticker shock, **separate required vs optional work**, and explain future-proofing value. Preferred framing: "room for future expansion," "avoids future upgrade costs," "supports future EV charging," "improves long-term flexibility." Avoid aggressive upselling.
+
+### 24.5 PDF presentation quality
+Customer proposals should resemble Jobber / Joist / Housecall Pro — clean spacing, readable tables, work grouped by category, concise descriptions, minimal clutter, visually obvious totals, strong hierarchy. **Never** generate giant text blocks, duplicated sections, repetitive scope wording, or material dumps in the customer PDF. Internal PDFs may carry full technical detail; customer PDFs prioritize clarity (extends §15's customer/internal split).
+
+### 24.6 Assembly confidence system
+Assemblies should grow (beyond today's `status: draft|reviewed`): reviewed confidence score · electrician review count · province-review completeness · last field-validation date · edit-frequency metrics (the §19 edit-rate feeds this) · actual-vs-estimated variance tracking. High customer-risk assemblies surface warnings **internally**.
+
+### 24.7 Estimate sanity checks (finalize-time)
+Before finalizing, verify: markup logic · margin thresholds · conductor sizing consistency · breaker compatibility · receptacle/circuit compatibility · service terminology · provincial tax handling · code-edition references. If patterns look unrealistic, **surface a warning to the contractor — never silently continue.** Implement as new deterministic audit rules (§10), not as LLM judgment.
+
+### 24.8 Competitive positioning
+QuoteForge should feel smarter than generic quoting apps, safer than AI-only estimators, more contractor-aware than consumer software, more trustworthy than chat-based AI quoting tools. **The moat is** deterministic estimating · contractor realism · province-aware code logic · audit protection · assembly quality · proposal professionalism — **not chatbot novelty.**
+
 -----
 
 ## End of Live Spec
