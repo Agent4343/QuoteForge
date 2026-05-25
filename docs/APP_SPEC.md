@@ -206,6 +206,8 @@ Pre-launch, human (not code) work remaining:
 3. A **live in-browser / E2E pass** (golden path on a real phone over LTE) in CI.
 4. Verify the 10 reference estimates against an electrician's hand calcs (±$5).
 
+Tooling: `python scripts/review_status.py` reports what's still unreviewed/stale (assemblies, SKUs, code matrix, permit fees); `--worksheet` emits a per-assembly CSV checklist to hand to an electrician (logic in `quoteforge_api/review.py`).
+
 ## 22. Resolved decisions (were §23 open questions)
 
 - **Quote numbering:** per-contractor sequential, `Q-YYYY-NNNN`.
