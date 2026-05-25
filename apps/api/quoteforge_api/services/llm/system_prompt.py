@@ -43,12 +43,41 @@ HARD RULES (do not violate):
   which code edition applies before finalizing; otherwise use the current edition.
 """
 
+# Proposal quality layer (§24): how the customer-facing scope must read. Invariant
+# across quotes, so it lives in the cached block alongside the hard rules.
+_SCOPE_STYLE = """\
+SCOPE OF WORK — STYLE & TRUST (applies to the customer-facing scope you write):
+- Voice: an experienced, premium residential electrical contractor writing to a
+  homeowner. Concise, plain, field-practical. Say what you will do; cut filler.
+- Do NOT sound like marketing copy, startup software, an AI assistant, a legal
+  document, or an engineering textbook. Avoid robotic openers ("This proposal
+  outlines..."), generic sales language, hedging, and vague scope wording.
+- Use correct electrical terminology and self-correct if you slip. A panel in a
+  detached structure fed from the house is a FEEDER to a subpanel / distribution
+  panel (e.g. "garage feeder", "garage distribution panel"), NEVER a "new utility
+  service". Reserve "service" / "service upgrade" for the utility's incoming supply
+  and main service equipment. Distinguish: utility service, feeder, subfeed,
+  distribution panel, disconnect, subpanel, branch circuits.
+- Separate REQUIRED work (needed to do the job safely and to code) from
+  RECOMMENDED / OPTIONAL work (improvements the homeowner can choose), and label
+  which is which so the customer can tell them apart.
+- Justify recommendations without pressure. When an upgrade adds value, explain it
+  in practical terms — room for future expansion, avoids paying for a future
+  upgrade, supports future EV charging, improves long-term flexibility. Never use
+  high-pressure or aggressive upsell language.
+- Keep it tight and skimmable: short paragraphs grouped logically, no repeated
+  scope items, no material dumps, no code section numbers unless asked. Separate
+  distinct topics with a blank line so the proposal reads cleanly.
+"""
+
 
 def build_system(
     user: User, customer: Customer, quote: Quote, index: list[dict]
 ) -> list[dict]:
     invariant = (
         _HARD_RULES
+        + "\n"
+        + _SCOPE_STYLE
         + "\n\nASSEMBLY INDEX (the only assemblies you may reference):\n"
         + json.dumps(index, ensure_ascii=False)
     )

@@ -63,6 +63,19 @@ _TERMS = {
 }
 
 
+def _paragraphs(text: str | None) -> list[str]:
+    """Split scope prose into paragraphs for clean rendering (§24.5).
+
+    The LLM separates topics with blank lines; we render one <p> each so the
+    customer PDF never shows a single wall of text. Collapses runs of blank
+    lines and trims surrounding whitespace.
+    """
+    if not text:
+        return []
+    blocks = [b.strip() for b in text.replace("\r\n", "\n").split("\n\n")]
+    return [b for b in blocks if b]
+
+
 def _line_groups(quote: Quote, lang: str) -> list[dict]:
     library = get_library()
     groups: dict[str, dict] = {}
@@ -191,6 +204,7 @@ def _customer_context(quote: Quote, user: User, customer: Customer, lang: str) -
         "job_title": quote.job_title,
         "job_site_address": quote.job_site_address,
         "scope": scope or quote.job_description,
+        "scope_paragraphs": _paragraphs(scope or quote.job_description),
         "groups": _line_groups(quote, lang),
         "subtotal": format_currency(subtotal, lang),
         "tax_lines": _tax_lines(quote, lang),

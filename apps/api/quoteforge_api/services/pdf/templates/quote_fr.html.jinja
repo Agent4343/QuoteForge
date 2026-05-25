@@ -41,10 +41,10 @@
     </div>
   </div>
 
-  {% if scope %}
+  {% if scope_paragraphs %}
   <div class="scope">
     <h3>Description des travaux</h3>
-    <div>{{ scope }}</div>
+    {% for p in scope_paragraphs %}<p>{{ p }}</p>{% endfor %}
   </div>
   {% endif %}
 

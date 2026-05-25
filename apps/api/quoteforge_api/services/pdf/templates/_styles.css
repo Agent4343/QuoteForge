@@ -42,6 +42,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 .scope { margin: 14px 0; padding: 12px 14px; background: #f5f7fa; border-radius: 6px; }
 .scope h3 { font-size: 10pt; margin-bottom: 6px; }
+.scope p { margin: 0 0 6px; }
+.scope p:last-child { margin-bottom: 0; }
 
 table { width: 100%; border-collapse: collapse; margin-top: 8px; }
 th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em;
