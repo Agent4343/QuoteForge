@@ -56,6 +56,7 @@ class Settings(BaseSettings):
 
     environment: str = Field(default="dev")  # dev | staging | prod
     log_level: str = Field(default="INFO")
+    log_format: str = Field(default="json")  # json | plain (structured logs to stdout, §18)
 
     database_url: str = Field(default="postgresql+asyncpg://localhost/quoteforge")
     jwt_secret: str = Field(default="dev-insecure-change-me")

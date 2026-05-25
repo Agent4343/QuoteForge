@@ -16,10 +16,12 @@ from fastapi.staticfiles import StaticFiles
 
 from quoteforge_api import __version__
 from quoteforge_api.config import get_settings
+from quoteforge_api.observability import configure_logging, init_sentry
 from quoteforge_api.routes import auth, customers, dashboard, estimate, me, meta, quotes
 
+configure_logging(get_settings())
+init_sentry(get_settings())
 logger = logging.getLogger("quoteforge.startup")
-logging.basicConfig(level=get_settings().log_level.upper())
 
 # Surfaced via /api/healthz so a degraded boot is visible instead of opaque.
 STARTUP_STATE: dict[str, str] = {"data": "pending", "migrations": "skipped"}
