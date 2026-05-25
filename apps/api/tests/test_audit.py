@@ -11,6 +11,7 @@ from quoteforge_api.provinces import Province
 from quoteforge_api.services.audit import AuditContext, run_audit
 from quoteforge_api.services.audit.rules import (
     afci_required_for_new_circuits_in_dwelling,
+    customer_supplied_equipment_check,
     hq_coordination_for_qc_service_changes,
     labor_hours_outside_band_per_assembly,
     margin_below_minimum,
@@ -18,8 +19,10 @@ from quoteforge_api.services.audit.rules import (
     qc_customer_language_check,
     requires_permit_when_service_change,
     scope_creep_language_in_description,
+    service_capacity_verification,
     stale_material_pricing,
     travel_time_for_long_jobs,
+    utility_locate_required,
 )
 from quoteforge_api.services.estimating import (
     AssemblyRequest,
@@ -217,3 +220,51 @@ def test_margin_rule_unit(library, pricebook):
     est = _estimate(underbid, library, pricebook, Province.ON, assemblies)
     flags = margin_below_minimum(_ctx(est, assemblies, library, pricebook, min_margin="20"))
     assert flags and flags[0].blocks_pdf
+
+
+# --- real-world estimating protection (§24.3) -------------------------------
+
+def test_underground_work_flags_locate_and_excavation(contractor, library, pricebook):
+    assemblies = [AssemblyRequest("conduit_run_pvc_buried_per_ft", D("40"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    ctx = _ctx(est, assemblies, library, pricebook)
+    locate = utility_locate_required(ctx)
+    assert locate and locate[0].code == "UTILITY_LOCATE_REQUIRED" and not locate[0].blocks_pdf
+
+
+def test_locate_warning_suppressed_when_scope_mentions_it(contractor, library, pricebook):
+    assemblies = [AssemblyRequest("conduit_run_pvc_buried_per_ft", D("40"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    ctx = _ctx(est, assemblies, library, pricebook,
+               customer_facing_scope="We will arrange utility locates before digging.")
+    assert utility_locate_required(ctx) == []
+
+
+def test_added_load_without_service_upgrade_flags_capacity(contractor, library, pricebook):
+    assemblies = [AssemblyRequest("ev_charger_l2_attached_garage", D("1"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    flags = service_capacity_verification(_ctx(est, assemblies, library, pricebook))
+    assert flags and flags[0].code == "SERVICE_CAPACITY_VERIFY"
+    # A service upgrade in the same quote clears it (capacity is being addressed).
+    upgraded = assemblies + [AssemblyRequest("service_upgrade_200a_overhead", D("1"))]
+    est2 = _estimate(contractor, library, pricebook, Province.ON, upgraded)
+    assert service_capacity_verification(_ctx(est2, upgraded, library, pricebook)) == []
+
+
+def test_optional_addon_does_not_trigger_risk_rules(contractor, library, pricebook):
+    # An optional EV charger must not raise a service-capacity warning (§24.4 + §24.3).
+    assemblies = [
+        AssemblyRequest("recep_duplex_15a_residential", D("1")),
+        AssemblyRequest("ev_charger_l2_attached_garage", D("1"), is_optional=True),
+    ]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    assert service_capacity_verification(_ctx(est, assemblies, library, pricebook)) == []
+
+
+def test_customer_supplied_equipment_flagged(contractor, library, pricebook):
+    assemblies = [AssemblyRequest("light_fixture_install_new", D("1"))]
+    est = _estimate(contractor, library, pricebook, Province.ON, assemblies)
+    ctx = _ctx(est, assemblies, library, pricebook,
+               job_description="Install the chandelier the customer supplied.")
+    flags = customer_supplied_equipment_check(ctx)
+    assert flags and flags[0].code == "CUSTOMER_SUPPLIED_EQUIPMENT" and flags[0].severity == "warn"

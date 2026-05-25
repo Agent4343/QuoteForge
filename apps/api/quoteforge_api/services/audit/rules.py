@@ -248,6 +248,172 @@ def esa_notification_present_in_on_quote(ctx: AuditContext) -> list[AuditFlag]:
     return []
 
 
+# --- real-world estimating protection (§24.3) -------------------------------
+# These never block the PDF; they surface the assumptions an experienced
+# estimator would record so the contractor isn't caught by field conditions.
+
+_UNDERGROUND_TOKENS = ("trench", "buried", "underground", "detached")
+_EXTERIOR_TOKENS = ("outdoor", "yard", "exterior")
+_LOAD_TOKENS = ("ev_charger", "hot_tub", "240v", "subpanel", "_range", "_dryer")
+_VOLATILE_TOKENS = ("service_upgrade", "subpanel", "ev_charger", "conduit", "240v")
+
+
+def _required_requests(ctx: AuditContext):
+    """Risk assumptions apply to the committed scope, not optional add-ons (§24.4)."""
+    return [r for r in ctx.requested_assemblies if not r.is_optional]
+
+
+def _any_id_contains(ctx: AuditContext, tokens: tuple[str, ...]) -> bool:
+    return any(any(tok in r.assembly_id for tok in tokens) for r in _required_requests(ctx))
+
+
+def _scope_text(ctx: AuditContext) -> str:
+    return (ctx.job_description + " " + ctx.customer_facing_scope).lower()
+
+
+def _mentions(ctx: AuditContext, *phrases: str) -> bool:
+    text = _scope_text(ctx)
+    return any(p in text for p in phrases)
+
+
+def _has_underground(ctx: AuditContext) -> bool:
+    return _any_id_contains(ctx, _UNDERGROUND_TOKENS)
+
+
+def _has_exterior(ctx: AuditContext) -> bool:
+    if _has_underground(ctx) or _any_id_contains(ctx, _EXTERIOR_TOKENS):
+        return True
+    return any(
+        ctx.library.get(r.assembly_id).category == Category.EXTERIOR
+        for r in _required_requests(ctx)
+    )
+
+
+def utility_locate_required(ctx: AuditContext) -> list[AuditFlag]:
+    if _has_underground(ctx) and not _mentions(
+        ctx, "locate", "call before you dig", "call-before", "localis", "info-excavation"
+    ):
+        return [AuditFlag(
+            "warn", "UTILITY_LOCATE_REQUIRED",
+            "Underground/trench work is included but utility locates aren't mentioned. "
+            "Locates must be arranged before any excavation.",
+            "Des travaux souterrains/de tranchée sont inclus, mais la localisation des "
+            "services publics n'est pas mentionnée. Elle doit être faite avant toute excavation.",
+            "Arrange utility locates and note them (and any locate conflicts) in the scope.",
+            "Faites localiser les services publics et indiquez-le (et tout conflit) dans la portée.",
+        )]
+    return []
+
+
+def excavation_conditions_assumed(ctx: AuditContext) -> list[AuditFlag]:
+    if _has_underground(ctx) and not _mentions(ctx, "rock", "hardpan", "roc"):
+        return [AuditFlag(
+            "info", "EXCAVATION_CONDITIONS_ASSUMED",
+            "Excavation is priced assuming normal soil and an unobstructed route. "
+            "Rock, hardpan, or buried obstructions would be extra.",
+            "L'excavation est estimée en supposant un sol normal et un tracé dégagé. "
+            "Le roc, la couche dure ou des obstacles enfouis seraient en sus.",
+            "State the excavation assumption (or add a rock/obstruction allowance).",
+            "Précisez l'hypothèse d'excavation (ou ajoutez une provision pour roc/obstacles).",
+        )]
+    return []
+
+
+def concealed_access_assumed(ctx: AuditContext) -> list[AuditFlag]:
+    finished = any(
+        isinstance(v, str) and "finish" in v.lower()
+        for r in _required_requests(ctx)
+        for v in (r.parameters or {}).values()
+    )
+    if finished or _mentions(ctx, "finished wall", "concealed", "fishing"):
+        return [AuditFlag(
+            "info", "CONCEALED_ACCESS_ASSUMED",
+            "Routing in finished/concealed areas assumes reasonable access. "
+            "Significant drywall or finish repair is excluded unless noted.",
+            "Le passage dans des zones finies/dissimulées suppose un accès raisonnable. "
+            "Les réparations importantes de cloison ou de finition sont exclues sauf indication.",
+            "Confirm the access assumption and whether finish repair is in or out of scope.",
+            "Confirmez l'hypothèse d'accès et si la réparation de finition est incluse ou non.",
+        )]
+    return []
+
+
+def material_price_volatility(ctx: AuditContext) -> list[AuditFlag]:
+    if _any_id_contains(ctx, _VOLATILE_TOKENS):
+        return [AuditFlag(
+            "info", "MATERIAL_PRICE_VOLATILITY",
+            "This scope is copper/equipment-heavy; supplier prices can move. Pricing holds "
+            "until the quote's valid-until date.",
+            "Cette portée est riche en cuivre/équipement; les prix des fournisseurs peuvent varier. "
+            "Les prix tiennent jusqu'à la date de validité de la soumission.",
+            "Confirm wire/equipment pricing is current before sending.",
+            "Confirmez que les prix du câble/de l'équipement sont à jour avant l'envoi.",
+        )]
+    return []
+
+
+def service_capacity_verification(ctx: AuditContext) -> list[AuditFlag]:
+    adds_load = _any_id_contains(ctx, _LOAD_TOKENS)
+    has_service_upgrade = _any_id_contains(ctx, ("service_upgrade",))
+    if adds_load and not has_service_upgrade and not _mentions(
+        ctx, "load calc", "service capacity", "capacity", "calcul de charge", "capacité"
+    ):
+        return [AuditFlag(
+            "warn", "SERVICE_CAPACITY_VERIFY",
+            "New load is being added without a service upgrade. Verify the existing service "
+            "has spare capacity (load calculation) before committing.",
+            "Une nouvelle charge est ajoutée sans mise à niveau du branchement. Vérifiez que le "
+            "branchement existant a une capacité suffisante (calcul de charge) avant de vous engager.",
+            "Perform/confirm a load calculation and note the result in the internal scope.",
+            "Effectuez/confirmez un calcul de charge et notez le résultat dans la portée interne.",
+        )]
+    return []
+
+
+def customer_supplied_equipment_check(ctx: AuditContext) -> list[AuditFlag]:
+    if _mentions(
+        ctx, "customer supplied", "customer-supplied", "owner supplied", "owner-supplied",
+        "supplied by the customer", "homeowner provides", "their own",
+        "fourni par le client", "fournie par le client",
+    ):
+        return [AuditFlag(
+            "warn", "CUSTOMER_SUPPLIED_EQUIPMENT",
+            "Customer-supplied equipment is noted. Verify it is CSA/cUL-approved and compatible; "
+            "warranty/defects on supplied gear are excluded.",
+            "De l'équipement fourni par le client est mentionné. Vérifiez qu'il est approuvé CSA/cUL "
+            "et compatible; la garantie/les défauts de l'équipement fourni sont exclus.",
+            "Confirm approval/compatibility and state the exclusion for supplied equipment.",
+            "Confirmez l'approbation/compatibilité et indiquez l'exclusion pour l'équipement fourni.",
+        )]
+    return []
+
+
+def permit_inspection_timeline(ctx: AuditContext) -> list[AuditFlag]:
+    if ctx.estimate.subtotal_permits_cad > ZERO or _service_change_assemblies(ctx):
+        return [AuditFlag(
+            "info", "PERMIT_INSPECTION_TIMELINE",
+            "Permit-bearing work: permit issuance and final inspection scheduling can affect "
+            "the completion timeline.",
+            "Travaux soumis à permis : la délivrance du permis et la planification de "
+            "l'inspection finale peuvent influer sur l'échéancier.",
+            "Set the customer's expectation on permit/inspection lead times.",
+            "Précisez au client les délais de permis/inspection.",
+        )]
+    return []
+
+
+def weather_delay_risk(ctx: AuditContext) -> list[AuditFlag]:
+    if _has_exterior(ctx):
+        return [AuditFlag(
+            "info", "WEATHER_DELAY_RISK",
+            "Outdoor/underground work is weather-dependent and may need to be rescheduled.",
+            "Les travaux extérieurs/souterrains dépendent de la météo et pourraient être reportés.",
+            "Note that outdoor work timing is weather-permitting.",
+            "Indiquez que le calendrier des travaux extérieurs est sujet aux conditions météo.",
+        )]
+    return []
+
+
 ALL_RULES = [
     requires_permit_when_service_change,
     afci_required_for_new_circuits_in_dwelling,
@@ -261,4 +427,13 @@ ALL_RULES = [
     qc_customer_language_check,
     qc_code_edition_transition_warning,
     esa_notification_present_in_on_quote,
+    # Real-world estimating protection (§24.3):
+    utility_locate_required,
+    excavation_conditions_assumed,
+    concealed_access_assumed,
+    material_price_volatility,
+    service_capacity_verification,
+    customer_supplied_equipment_check,
+    permit_inspection_timeline,
+    weather_delay_risk,
 ]
