@@ -77,6 +77,8 @@ def list_assemblies() -> dict:
     Includes draft assemblies (with a flag) since none are electrician-reviewed
     yet (§8); the LLM index — separate — only exposes reviewed ones.
     """
+    from quoteforge_api.assemblies.confidence import assembly_confidence
+
     lib = get_library()
     return {
         "assemblies": [
@@ -85,6 +87,12 @@ def list_assemblies() -> dict:
                 "category": a.category.value,
                 "names": {"en": a.names.en, "fr": a.names.fr},
                 "status": a.status.value,
+                # Confidence metadata (§24.6); confidence is derived, never hand-set.
+                "confidence": assembly_confidence(a).value,
+                "customer_risk": a.customer_risk.value,
+                "review_count": a.review_count,
+                "provinces_reviewed": [p.value for p in a.provinces_reviewed],
+                "last_field_validation": a.last_field_validation,
                 "parameters": {
                     name: {
                         "type": p.type.value,

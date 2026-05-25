@@ -3,6 +3,10 @@ clean paragraph rendering in the customer PDF."""
 
 from __future__ import annotations
 
+from datetime import date
+
+from quoteforge_api.assemblies.confidence import Confidence, assembly_confidence
+from quoteforge_api.assemblies.schema import Status
 from quoteforge_api.models import Customer, Quote, QuoteLineItem, User
 from quoteforge_api.models.enums import Language, LineSource
 from quoteforge_api.provinces import Province
@@ -63,6 +67,29 @@ def test_finalize_terminology_lint_silent_for_real_service_upgrade():
     quote = _quote_with("service_upgrade_200a_overhead", "Upgrade the service to 200A.")
     ensure_terminology_flag(quote)
     assert [f.code for f in quote.audit_flags] == []
+
+
+def test_assembly_confidence_unreviewed_for_drafts(library):
+    a = library.all()[0]
+    assert a.status == Status.DRAFT  # the whole library is draft today
+    assert assembly_confidence(a) == Confidence.UNREVIEWED
+
+
+def test_assembly_confidence_derived_from_metadata(library):
+    base = library.all()[0]
+    today = date(2026, 5, 25)
+    moderate = base.model_copy(update={
+        "status": Status.REVIEWED, "review_count": 1, "last_field_validation": "2026-05-01"})
+    assert assembly_confidence(moderate, today) == Confidence.MODERATE
+    high = base.model_copy(update={
+        "status": Status.REVIEWED, "review_count": 2,
+        "provinces_reviewed": [Province.ON], "last_field_validation": "2026-05-01"})
+    assert assembly_confidence(high, today) == Confidence.HIGH
+    # Reviewed but the sign-off is over a year old -> decays to low.
+    stale = base.model_copy(update={
+        "status": Status.REVIEWED, "review_count": 3, "provinces_reviewed": [Province.ON],
+        "last_reviewed": "2024-01-01", "last_field_validation": None})
+    assert assembly_confidence(stale, today) == Confidence.LOW
 
 
 def test_scope_paragraph_split():

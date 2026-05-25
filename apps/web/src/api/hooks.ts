@@ -177,6 +177,9 @@ export interface AssemblyMetric {
   name_fr: string;
   category: string | null;
   status: string;
+  confidence: string;
+  customer_risk: string;
+  needs_review: boolean;
   line_count: number;
   quote_count: number;
   total_quantity: number;

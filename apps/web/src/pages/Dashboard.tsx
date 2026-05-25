@@ -3,6 +3,14 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { useAssemblyMetrics, useDashboard, useQuotes } from "../api/hooks";
 import { Badge, PageHeader, Spinner } from "../components/ui";
 
+const CONFIDENCE_TONE: Record<string, "gray" | "green" | "red" | "amber" | "blue"> = {
+  high: "green",
+  moderate: "blue",
+  low: "amber",
+  unreviewed: "gray",
+  unknown: "gray",
+};
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="card">
@@ -90,6 +98,7 @@ export default function Dashboard() {
               <thead>
                 <tr className="border-b text-left text-xs text-gray-500">
                   <th className="py-2 pr-2 font-medium">{t("dashboard.assembly")}</th>
+                  <th className="py-2 px-2 font-medium">{t("dashboard.confidence")}</th>
                   <th className="py-2 px-2 text-right font-medium">{t("dashboard.uses")}</th>
                   <th className="py-2 px-2 text-right font-medium">{t("dashboard.quotes")}</th>
                   <th className="py-2 pl-2 text-right font-medium">{t("dashboard.editRate")}</th>
@@ -99,11 +108,18 @@ export default function Dashboard() {
                 {usage.map((a) => (
                   <tr key={a.assembly_id}>
                     <td className="py-2 pr-2">
-                      <div className="flex items-center gap-2">
-                        <span>{lang === "fr" ? a.name_fr : a.name_en}</span>
-                        {a.status !== "reviewed" && <Badge tone="amber">{a.status}</Badge>}
-                      </div>
+                      <div>{lang === "fr" ? a.name_fr : a.name_en}</div>
                       <div className="text-xs text-gray-400">{a.assembly_id}</div>
+                    </td>
+                    <td className="py-2 px-2">
+                      <div className="flex items-center gap-1">
+                        <Badge tone={CONFIDENCE_TONE[a.confidence] ?? "gray"}>
+                          {t(`confidence.${a.confidence}`)}
+                        </Badge>
+                        {a.needs_review && (
+                          <span className="text-xs text-amber-600" title={t("dashboard.review")}>⚠</span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-2 px-2 text-right tabular-nums">{a.line_count}</td>
                     <td className="py-2 px-2 text-right tabular-nums">{a.quote_count}</td>

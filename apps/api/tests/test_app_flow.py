@@ -272,6 +272,10 @@ async def test_dashboard_assembly_metrics(client):
     assert row["edited_count"] == 1
     assert row["edit_rate_pct"] == 50.0
     assert row["total_quantity"] == 3.0
+    # §24.6: every assembly is draft today -> unreviewed confidence, flagged for review.
+    assert row["confidence"] == "unreviewed"
+    assert row["customer_risk"] == "low"
+    assert row["needs_review"] is True
     # Generated minimum-callout lines carry no assembly_id and are excluded.
     assert all(a["assembly_id"] for a in items)
 

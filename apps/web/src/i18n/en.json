@@ -16,7 +16,11 @@
     "aiUsage": "AI usage", "aiCost": "AI cost", "aiQuotes": "AI sessions",
     "assemblyUsage": "Assembly usage", "assembly": "Assembly", "uses": "Uses", "quotes": "Quotes",
     "editRate": "Edit rate", "editRateHint": "How often this assembly's parameters were changed from their defaults — a high rate flags it for review.",
-    "noAssemblyUsage": "No assemblies used yet."
+    "noAssemblyUsage": "No assemblies used yet.",
+    "confidence": "Confidence", "review": "Needs electrician review"
+  },
+  "confidence": {
+    "unreviewed": "Unreviewed", "low": "Low", "moderate": "Moderate", "high": "High", "unknown": "Unknown"
   },
   "customers": {
     "title": "Customers", "new": "New customer", "name": "Name", "company": "Company",

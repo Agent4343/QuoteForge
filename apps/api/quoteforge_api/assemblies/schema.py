@@ -64,6 +64,12 @@ class Status(StrEnum):
     REVIEWED = "reviewed"
 
 
+class RiskLevel(StrEnum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
 class LocalizedText(BaseModel):
     model_config = ConfigDict(extra="forbid")
     en: str
@@ -168,6 +174,12 @@ class Assembly(BaseModel):
     last_reviewed: str | None = None
     reviewed_by: str | None = None
     status: Status = Status.DRAFT
+    # Confidence metadata (§24.6) — set by reviewers; safe defaults until then, so
+    # derived confidence stays honest (everything is "unreviewed" out of the gate).
+    review_count: int = Field(default=0, ge=0)
+    provinces_reviewed: list[Province] = Field(default_factory=list)
+    last_field_validation: str | None = None
+    customer_risk: RiskLevel = RiskLevel.LOW
 
     def variant_for(self, province: Province) -> ProvincialVariant | None:
         return self.provincial_variants.get(province)

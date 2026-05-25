@@ -16,7 +16,11 @@
     "aiUsage": "Utilisation de l'IA", "aiCost": "Coût de l'IA", "aiQuotes": "Sessions IA",
     "assemblyUsage": "Utilisation des ensembles", "assembly": "Ensemble", "uses": "Utilisations", "quotes": "Soumissions",
     "editRate": "Taux de modification", "editRateHint": "Fréquence à laquelle les paramètres de cet ensemble ont été modifiés par rapport aux valeurs par défaut — un taux élevé le signale pour révision.",
-    "noAssemblyUsage": "Aucun ensemble utilisé pour l'instant."
+    "noAssemblyUsage": "Aucun ensemble utilisé pour l'instant.",
+    "confidence": "Confiance", "review": "Révision par un électricien requise"
+  },
+  "confidence": {
+    "unreviewed": "Non révisé", "low": "Faible", "moderate": "Modérée", "high": "Élevée", "unknown": "Inconnue"
   },
   "customers": {
     "title": "Clients", "new": "Nouveau client", "name": "Nom", "company": "Entreprise",

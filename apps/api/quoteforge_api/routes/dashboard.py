@@ -8,6 +8,7 @@ from decimal import Decimal, DecimalException
 from fastapi import APIRouter
 from sqlalchemy import func, select
 
+from quoteforge_api.assemblies.confidence import assembly_confidence
 from quoteforge_api.assemblies.loader import AssemblyLibrary, get_library
 from quoteforge_api.auth.dependencies import CurrentUser, SessionDep
 from quoteforge_api.models import LLMSession, Quote, QuoteLineItem
@@ -137,6 +138,16 @@ async def assembly_metrics(user: CurrentUser, session: SessionDep) -> dict:
     items = []
     for assembly_id, agg in aggs.items():
         assembly = lib.get(assembly_id) if assembly_id in lib else None
+        edit_rate = round(agg.edited_count / agg.line_count * 100, 1)
+        confidence = assembly_confidence(assembly).value if assembly else "unknown"
+        customer_risk = assembly.customer_risk.value if assembly else "low"
+        # Surface review priority internally (§24.6): low-confidence, frequently
+        # edited, or high customer-risk assemblies that aren't fully trusted yet.
+        needs_review = (
+            confidence in {"unreviewed", "low", "unknown"}
+            or edit_rate >= 50
+            or (customer_risk == "high" and confidence != "high")
+        )
         items.append(
             {
                 "assembly_id": assembly_id,
@@ -144,12 +155,16 @@ async def assembly_metrics(user: CurrentUser, session: SessionDep) -> dict:
                 "name_fr": assembly.names.fr if assembly else assembly_id,
                 "category": assembly.category.value if assembly else None,
                 "status": assembly.status.value if assembly else "unknown",
+                "confidence": confidence,
+                "customer_risk": customer_risk,
+                "needs_review": needs_review,
                 "line_count": agg.line_count,
                 "quote_count": len(agg.quote_ids),
                 "total_quantity": float(agg.total_quantity),
                 "edited_count": agg.edited_count,
-                "edit_rate_pct": round(agg.edited_count / agg.line_count * 100, 1),
+                "edit_rate_pct": edit_rate,
             }
         )
-    items.sort(key=lambda x: (x["line_count"], x["edit_rate_pct"]), reverse=True)
+    # Review-priority first, then most-used.
+    items.sort(key=lambda x: (x["needs_review"], x["line_count"], x["edit_rate_pct"]), reverse=True)
     return {"assemblies": items}
